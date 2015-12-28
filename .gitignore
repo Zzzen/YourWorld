@@ -1,0 +1,6 @@
+*
+!.gitignore
+proj.android-studio/
+!*/
+!Classes/*
+!Resources/*
