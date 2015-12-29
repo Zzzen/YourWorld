@@ -29,17 +29,24 @@ bool GameScene::init(){
 	addChild(_joystick, ZOrder::JOYSTICK);
 
 
-	auto manager = new ChunkManager(_holder);
-	manager->updateChunks(Point(1, 2));
-	manager->updateChunks(Point(4, 4));
+	_manager = new ChunkManager(_holder);
+	_manager->updateChunks(Point(1, 2));
+	_manager->updateChunks(Point(4, 4));
 
 	//add move listener
 	auto mListener = EventListenerCustom::create(YourMoveEvent::EVENT_YOURMOVE, [=](EventCustom* event){
 		auto moveEvent = static_cast<YourMoveEvent*>(event->getUserData());
 	//	log("--------------got move event, x=%f, y=%f", moveEvent->offset.x, moveEvent->offset.y);
-		_holder->setPosition(_holder->getPosition() - moveEvent->offset);
+		auto offset = moveEvent->offset;
+		_holder->setPosition(_holder->getPosition() - offset);
 
-		manager->updateChunks(_you->getPosition());
+		auto pos = _you->getPosition();
+		for (int x = -1; x < 2; x++) {
+			for (int y = -1; y < 2; y++) {
+				Vec2 vec(x / 2.0f*visibleSize.width, y / 2.0f*visibleSize.height);
+				_manager->updateChunks(pos + vec);
+			}
+		}
 	});
 	_eventDispatcher->addEventListenerWithFixedPriority(mListener, 1);
 

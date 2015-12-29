@@ -3,6 +3,7 @@
 
 #include "math\CCMath.h"
 #include "cocos2d.h"
+#include <vector>
 
 USING_NS_CC;
 
@@ -19,9 +20,6 @@ ChunkManager::ChunkManager(Node* parent)
 }
 
 ChunkManager::~ChunkManager(){
-	for (auto t : _chunks){
-		delete t;
-	}
 }
 
 void ChunkManager::updateChunks(const Point& point, bool visible){
@@ -29,9 +27,24 @@ void ChunkManager::updateChunks(const Point& point, bool visible){
 		return;
 	}
 
+	discardInvisibleChunk(point);
+
 	if (contains(point)) return;
 
 	newChunk(point);
+}
+
+void ChunkManager::discardInvisibleChunk(const Point& pos) {
+	std::vector<Chunk*> invisible;
+	for (auto chunk : _chunks) {
+		if ((chunk->getPosition() - pos).length() > Chunk::SIDE_LENGTH*TILE_SIZE * 10.0f) {
+			invisible.push_back(chunk);
+		}
+	}
+	for (auto chunk : invisible) {
+		chunk->removeFromParent();
+		_chunks.eraseObject(chunk);
+	}
 }
 
 Chunk* ChunkManager::newChunk(const Point& interior){
@@ -67,12 +80,11 @@ Chunk* ChunkManager::newChunk(const Point& interior){
 	GradientVectors vecs{ v1, v2, v3, v4 };
 
 	//new!
-	auto chunk = new Chunk(vecs);
+	auto chunk = Chunk::createWithGradientVectors(vecs);
 	chunk->setPosition(bottomLeft.x*DX, bottomLeft.y*DY);
 	
-	// dangerous when using multithread.
 	_parent->addChild(chunk);
-	_chunks.push_back(chunk);
+	_chunks.pushBack(chunk);
 
 	return chunk;
 }
@@ -83,7 +95,7 @@ inline Vec2 ChunkManager::rotatedVector(float angle){
 	return unit;
 }
 
-bool ChunkManager::contains(const Point& point){
+bool ChunkManager::contains(const Point& point) const {
 	for (auto chunk : _chunks){
 	//	Rect boundary(chunk->getPosition(), chunk->getContentSize());
 		if (chunk->getBoundingBox().containsPoint(point)){

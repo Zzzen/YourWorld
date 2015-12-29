@@ -42,19 +42,36 @@ bool Chunk::initTiles(){
 	return true;
 }
 
+Chunk* Chunk::createWithGradientVectors(const GradientVectors& vectors) {
+	auto chunk = new(std::nothrow) Chunk(vectors);
+	if (chunk && chunk->init())
+	{
+		chunk->autorelease();
+		return chunk;
+	}
+	else
+	{
+		delete chunk;
+		chunk = nullptr;
+		return nullptr;
+	}
+}
+
+bool Chunk::init() {
+	if (!Node::init()) {
+		return false;
+	}
+	return initTiles();
+}
+
 Chunk::Chunk(const GradientVectors& vectors):
   _gradientVectors(vectors)
 {
-	initTiles();
 	setContentSize(Size(SIDE_LENGTH*TILE_SIZE, SIDE_LENGTH*TILE_SIZE));
 	setAnchorPoint(Vec2(0, 0));
 }
 
 Chunk::~Chunk()
 {
-	auto parent = getParent();
-	if (parent){
-		parent->removeChild(this, true);
-	}
 	CCLOG("Chunk removed");
 }

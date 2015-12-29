@@ -6,23 +6,25 @@
 #include "CommonDefinition.h"
 
 
-//Chunk will be removed from its parent in the dtor.
 class Chunk : public Node
 {
 public:
-	Chunk(const GradientVectors& vectors);
+	static Chunk* createWithGradientVectors(const GradientVectors& vectors);
 
 	~Chunk() override;
 
-	//there is 64 tiles along one side.
+	//there are 64 tiles along one side.
 	const static size_t SIDE_LENGTH = 64;
 
 protected:
+	Chunk(const GradientVectors& vectors);
+
+	bool init() override;
 	bool initTiles();
 	/*
 	* @param weight: the weight of y, 0<= weight <=1.
 	*/
-	inline float lerp(float x, float y, float weight){
+	inline float lerp(float x, float y, float weight) const {
 		return (1 - weight)*x + weight*y;
 	}
 	

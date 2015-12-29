@@ -6,6 +6,7 @@
 USING_NS_CC;
 
 class You;
+class ChunkManager;
 class Joystick;
 class GameScene : public Scene
 {
@@ -21,6 +22,7 @@ protected:
 
 	//now I know why `HelloWorldScene` is a `Layer` ܳ_ܳ
 	Layer* _holder;
+	ChunkManager* _manager;
 	
 	virtual void updateWorld(float dt);
 
