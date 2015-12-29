@@ -1,5 +1,14 @@
 #include "Chunk.h"
 
+const std::string ChunkJoinWorldEvent::EVENT_CHUNK_JOIN_WORLD = "event_of_chunk_join_world";
+const std::string ChunkDisjoinWorldEvent::EVENT_CHUNK_DISJOIN_WORLD = "event_of_chunk_disjoin_world";
+enum TerrainType {
+	LAWN = 1,
+	POND = 2,
+	DESERT = 3,
+	JUNGLE = 4
+};
+
 bool Chunk::initTiles(){
 	auto map = cocos2d::experimental::TMXTiledMap::create("tile.tmx");
 	addChild(map);
@@ -22,21 +31,21 @@ bool Chunk::initTiles(){
 			float top = lerp(tl, tr, x / (float)SIDE_LENGTH);
 			float bt = lerp(bottom, top, y / (float)SIDE_LENGTH);
 
-			int gid = 1;
-			if (bt < -30){
-				gid = 1;
+			TerrainType type = TerrainType::LAWN;
+			if (bt < 0){
+				type = TerrainType::POND;
 			}
-			else if (bt < 0){
-				gid = 2;
+			else if (bt < 9){
+				type = TerrainType::JUNGLE;
 			}
-			else if (bt < 30){
-				gid = 3;
+			else if (bt < 15){
+				type = TerrainType::LAWN;
 			}
 			else{
-				gid = 4;
+				type = TerrainType::DESERT;
 			}
 
-			layer->setTileGID(gid, Vec2(x, SIDE_LENGTH -1 - y));
+			layer->setTileGID(type, Vec2(x, SIDE_LENGTH -1 - y));
 		}
 	}
 	return true;
@@ -51,8 +60,7 @@ Chunk* Chunk::createWithGradientVectors(const GradientVectors& vectors) {
 	}
 	else
 	{
-		delete chunk;
-		chunk = nullptr;
+		CC_SAFE_DELETE(chunk);
 		return nullptr;
 	}
 }
@@ -69,9 +77,45 @@ Chunk::Chunk(const GradientVectors& vectors):
 {
 	setContentSize(Size(SIDE_LENGTH*TILE_SIZE, SIDE_LENGTH*TILE_SIZE));
 	setAnchorPoint(Vec2(0, 0));
+
 }
 
 Chunk::~Chunk()
 {
 	CCLOG("Chunk removed");
+}
+
+
+/*************************************************************************/
+ChunkEvent::ChunkEvent(Chunk * chunk)
+	:_chunk(chunk)
+{
+	_chunk->retain();
+}
+
+Chunk * ChunkEvent::getChunk() const
+{
+	return _chunk;
+}
+
+ChunkEvent::~ChunkEvent() {
+	_chunk->release();
+}
+
+ChunkJoinWorldEvent * ChunkJoinWorldEvent::createWithChunk(Chunk* chunk)
+{
+	auto event = new (std::nothrow) ChunkJoinWorldEvent(chunk);
+	assert(event);
+	event->autorelease();
+
+	return event;
+}
+
+ChunkDisjoinWorldEvent * ChunkDisjoinWorldEvent::createWithChunk(Chunk* chunk)
+{
+	auto event = new (std::nothrow) ChunkDisjoinWorldEvent(chunk);
+	assert(event);
+	event->autorelease();
+
+	return event;
 }

@@ -6,6 +6,7 @@
 #include "CommonDefinition.h"
 
 
+
 class Chunk : public Node
 {
 public:
@@ -14,7 +15,7 @@ public:
 	~Chunk() override;
 
 	//there are 64 tiles along one side.
-	const static size_t SIDE_LENGTH = 64;
+	const static size_t SIDE_LENGTH = 128;
 
 protected:
 	Chunk(const GradientVectors& vectors);
@@ -30,5 +31,40 @@ protected:
 	
 	const GradientVectors _gradientVectors;
 };
+
+/*
+	@brief holds a reference to Chunk, retains and releases the ownership automatically.
+*/
+class ChunkEvent : public Ref {
+public:
+	Chunk* getChunk() const;
+	~ChunkEvent() override;
+
+protected:
+	ChunkEvent(Chunk* chunk);
+	Chunk* _chunk;
+};
+
+class ChunkJoinWorldEvent : public ChunkEvent {
+public:
+	static ChunkJoinWorldEvent* createWithChunk(Chunk* chunk);
+	static const std::string EVENT_CHUNK_JOIN_WORLD;
+
+protected:
+	ChunkJoinWorldEvent(Chunk* chunk) : ChunkEvent(chunk) {}
+};
+
+class ChunkDisjoinWorldEvent: public ChunkEvent
+{
+public:
+	static ChunkDisjoinWorldEvent* createWithChunk(Chunk* chunk);
+	static const std::string EVENT_CHUNK_DISJOIN_WORLD;
+
+protected:
+	ChunkDisjoinWorldEvent(Chunk* chunk) : ChunkEvent(chunk) {}
+};
+
+
+
 
 #endif
