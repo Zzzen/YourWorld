@@ -16,6 +16,7 @@ bool GameScene::init(){
 	}
 
 	_holder = Layer::create();
+	assert(_holder);
 	addChild(_holder);
 
 	Size visibleSize = Director::getInstance()->getVisibleSize();
@@ -26,6 +27,7 @@ bool GameScene::init(){
 
 	//add Joystick
 	_joystick = Joystick::create();
+	assert(_joystick);
 	addChild(_joystick, ZOrder::JOYSTICK);
 
 
@@ -65,6 +67,7 @@ void GameScene::updateWorld(float dt){
 
 void GameScene::initYou(const Point& pos){
 	_you = You::create();
+	assert(_you);
 	_you->setPosition(pos);
 	_you->setTexture("you.png");
 

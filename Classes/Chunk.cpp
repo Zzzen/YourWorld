@@ -11,8 +11,10 @@ enum TerrainType {
 
 bool Chunk::initTiles(){
 	auto map = cocos2d::experimental::TMXTiledMap::create("tile.tmx");
+	assert(map);
 	addChild(map);
 	auto layer = map->getLayer("layer");
+	assert(layer);
 
 	for (size_t x = 0; x < SIDE_LENGTH; x++){
 		for (size_t y = 0; y < SIDE_LENGTH; y++){

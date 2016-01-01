@@ -85,9 +85,11 @@ Chunk* ChunkManager::newChunk(const Point& interior){
 
 	//new!
 	auto chunk = Chunk::createWithGradientVectors(vecs);
+	assert(chunk);
 	chunk->setPosition(bottomLeft.x*DX, bottomLeft.y*DY);
 
 	auto event = ChunkJoinWorldEvent::createWithChunk(chunk);
+	assert(event);
 	Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(ChunkJoinWorldEvent::EVENT_CHUNK_JOIN_WORLD,
 		event);
 	

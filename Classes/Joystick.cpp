@@ -32,6 +32,7 @@ bool Joystick::init() {
 		}
 		// joystick的背景
 		mJsBg = Sprite::create("joystick_bg.png");
+		assert(mJsBg);
 		CC_BREAK_IF(!mJsBg);
 
 		mJsBg->setPosition(mJsPos);
@@ -39,6 +40,7 @@ bool Joystick::init() {
 
 		// joystick的中心点
 		mJsCenter = Sprite::create("joystick_center.png");
+		assert(mJsCenter);
 		CC_BREAK_IF(!mJsCenter);
 
 		mJsCenter->setPosition(mJsPos);
