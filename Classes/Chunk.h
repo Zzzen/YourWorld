@@ -3,9 +3,7 @@
 
 #include "CommonDefinition.h"
 #include "cocos2d.h"
-#include "CommonDefinition.h"
-
-
+#include "SpriteEvent.h"
 
 class Chunk : public Node
 {
@@ -35,33 +33,20 @@ protected:
 /*
 	@brief holds a reference to Chunk, retains and releases the ownership automatically.
 */
-class ChunkEvent : public Ref {
-public:
-	Chunk* getChunk() const;
-	~ChunkEvent() override;
 
-protected:
-	ChunkEvent(Chunk* chunk);
-	Chunk* _chunk;
+class ChunkJoinWorldEvent : public SpriteEvent<Chunk> {
+public:
+	static const std::string getName() {
+		return "chunk_join_world_event";
+	}
 };
 
-class ChunkJoinWorldEvent : public ChunkEvent {
-public:
-	static ChunkJoinWorldEvent* createWithChunk(Chunk* chunk);
-	static const std::string EVENT_CHUNK_JOIN_WORLD;
-
-protected:
-	ChunkJoinWorldEvent(Chunk* chunk) : ChunkEvent(chunk) {}
-};
-
-class ChunkDisjoinWorldEvent: public ChunkEvent
+class ChunkDisjoinWorldEvent: public SpriteEvent<Chunk>
 {
 public:
-	static ChunkDisjoinWorldEvent* createWithChunk(Chunk* chunk);
-	static const std::string EVENT_CHUNK_DISJOIN_WORLD;
-
-protected:
-	ChunkDisjoinWorldEvent(Chunk* chunk) : ChunkEvent(chunk) {}
+	static const std::string getName() {
+		return "chunk_disjoin_world_event";
+	}
 };
 
 

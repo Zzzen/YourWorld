@@ -2,6 +2,7 @@
 #include "Joystick.h"
 #include "ChunkManager.h"
 #include "You.h"
+#include "Statue.h"
 USING_NS_CC;
 
 enum ZOrder
@@ -34,6 +35,11 @@ bool GameScene::init(){
 	_manager = new ChunkManager(_holder);
 	_manager->updateChunks(Point(1, 2));
 	_manager->updateChunks(Point(4, 4));
+
+	auto speed = Statue::createWithType(Statue::SPEED);
+	assert(speed);
+	speed->setPosition(123, 321);
+	_holder->addChild(speed);
 
 	//add move listener
 	auto mListener = EventListenerCustom::create(YourMoveEvent::EVENT_YOURMOVE, [=](EventCustom* event){

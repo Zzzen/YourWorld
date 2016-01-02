@@ -5,22 +5,6 @@
 
 USING_NS_CC;
 
-class JoystickEvent : public Ref{
-private:
-	JoystickEvent();
-
-public:
-	virtual ~JoystickEvent();
-	virtual bool init();
-	CREATE_FUNC(JoystickEvent);
-
-public:
-	static const std::string EVENT_JOYSTICK;
-	double mAnagle;
-};
-
-
-
 class Joystick : public Node{
 private:
 	Joystick();
@@ -41,10 +25,12 @@ public:
 	CREATE_FUNC(Joystick);
 
 private:
-	Sprite* mJsBg;
-	Sprite* mJsCenter;
+	Sprite* _background;
+	Sprite* _center;
 	Vec2 _gradientVector;
-	Vec2 mJsPos = Vec2(100, 100);
+
+	double _radius;
+	Vec2 _centralPos;
 };
 
 

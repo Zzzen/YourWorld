@@ -42,8 +42,8 @@ void ChunkManager::discardInvisibleChunk(const Point& pos) {
 		}
 	}
 	for (auto chunk : invisible) {
-		auto event = ChunkDisjoinWorldEvent::createWithChunk(chunk);
-		Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(ChunkDisjoinWorldEvent::EVENT_CHUNK_DISJOIN_WORLD,
+		auto event = ChunkDisjoinWorldEvent::createWithWho(chunk);
+		Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(ChunkDisjoinWorldEvent::getName(),
 			event);
 
 		chunk->removeFromParent();
@@ -88,9 +88,9 @@ Chunk* ChunkManager::newChunk(const Point& interior){
 	assert(chunk);
 	chunk->setPosition(bottomLeft.x*DX, bottomLeft.y*DY);
 
-	auto event = ChunkJoinWorldEvent::createWithChunk(chunk);
+	auto event = ChunkJoinWorldEvent::createWithWho(chunk);
 	assert(event);
-	Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(ChunkJoinWorldEvent::EVENT_CHUNK_JOIN_WORLD,
+	Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(ChunkJoinWorldEvent::getName(),
 		event);
 	
 	_parent->addChild(chunk);

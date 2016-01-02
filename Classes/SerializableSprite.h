@@ -8,7 +8,9 @@ using namespace std;
 
 // base class of everything except tmx
 class SerializableSprite : public Sprite {
-	//store datum into a map.
+public:
+	//stores datum into a map.
+	//contains x and y coordinate.
 	virtual unordered_map<string, string> toJson();
 };
 

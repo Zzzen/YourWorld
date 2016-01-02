@@ -1,7 +1,5 @@
 #include "Chunk.h"
 
-const std::string ChunkJoinWorldEvent::EVENT_CHUNK_JOIN_WORLD = "event_of_chunk_join_world";
-const std::string ChunkDisjoinWorldEvent::EVENT_CHUNK_DISJOIN_WORLD = "event_of_chunk_disjoin_world";
 enum TerrainType {
 	LAWN = 1,
 	POND = 2,
@@ -85,39 +83,4 @@ Chunk::Chunk(const GradientVectors& vectors):
 Chunk::~Chunk()
 {
 	CCLOG("Chunk removed");
-}
-
-
-/*************************************************************************/
-ChunkEvent::ChunkEvent(Chunk * chunk)
-	:_chunk(chunk)
-{
-	_chunk->retain();
-}
-
-Chunk * ChunkEvent::getChunk() const
-{
-	return _chunk;
-}
-
-ChunkEvent::~ChunkEvent() {
-	_chunk->release();
-}
-
-ChunkJoinWorldEvent * ChunkJoinWorldEvent::createWithChunk(Chunk* chunk)
-{
-	auto event = new (std::nothrow) ChunkJoinWorldEvent(chunk);
-	assert(event);
-	event->autorelease();
-
-	return event;
-}
-
-ChunkDisjoinWorldEvent * ChunkDisjoinWorldEvent::createWithChunk(Chunk* chunk)
-{
-	auto event = new (std::nothrow) ChunkDisjoinWorldEvent(chunk);
-	assert(event);
-	event->autorelease();
-
-	return event;
 }

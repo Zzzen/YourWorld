@@ -2,18 +2,6 @@
 
 static const float PI = 3.1415926f;
 
-const std::string JoystickEvent::EVENT_JOYSTICK = "event_of_joystick";
-JoystickEvent::JoystickEvent() {
-//	log(" JoystickEvent(), %p", this);
-}
-
-JoystickEvent::~JoystickEvent() {
-//	log("~JoystickEvent(), %p", this);
-}
-
-bool JoystickEvent::init() {
-	return true;
-}
 
 Joystick::Joystick() {
 }
@@ -26,31 +14,35 @@ Joystick::~Joystick() {
 bool Joystick::init() {
 	bool result = false;
 	do {
-		// 父类初始化
 		if (!Node::init()) {
 			break;
 		}
-		// joystick的背景
-		mJsBg = Sprite::create("joystick_bg.png");
-		assert(mJsBg);
-		CC_BREAK_IF(!mJsBg);
 
-		mJsBg->setPosition(mJsPos);
-		addChild(mJsBg);
+		// joystick的背景
+		_background = Sprite::create("joystick_bg.png");
+		assert(_background);
+		CC_BREAK_IF(!_background);
+
+		_radius = _background->getContentSize().width / 2;
+		_centralPos = Vec2(_radius, _radius);
+
+		_background->setPosition(_centralPos);
+		addChild(_background);
+
+		setPosition(_centralPos*0.6f);
 
 		// joystick的中心点
-		mJsCenter = Sprite::create("joystick_center.png");
-		assert(mJsCenter);
-		CC_BREAK_IF(!mJsCenter);
+		_center = Sprite::create("joystick_center.png");
+		assert(_center);
+		CC_BREAK_IF(!_center);
 
-		mJsCenter->setPosition(mJsPos);
-		addChild(mJsCenter);
+		_center->setPosition(_centralPos);
+		addChild(_center);
 
 		// touch event监听
 		auto touchListener = EventListenerTouchOneByOne::create();
-		if (nullptr == touchListener) {
-			break;
-		}
+		CC_BREAK_IF(!touchListener);
+
 		touchListener->setSwallowTouches(true);
 		touchListener->onTouchBegan =
 			CC_CALLBACK_2(Joystick::onTouchBegan, this);
@@ -69,55 +61,29 @@ bool Joystick::init() {
 
 bool Joystick::onTouchBegan(Touch *touch, Event *unused_event) {
 //	log("onTouchBegan");
-	auto point = touch->getLocation();
-	if (mJsCenter->getBoundingBox().containsPoint(point)) {
-		// 若触摸点在joystick的中心点，则继续接受事件
-		return true;
-	}
-	// 否则不接受后续事件
-	return false;
+	auto point = convertTouchToNodeSpace(touch);
+	return _center->getBoundingBox().containsPoint(point);
 }
 
 void Joystick::onTouchMoved(Touch *touch, Event *unused_event) {
 //	log("onTouchMoved");
+	auto point = convertTouchToNodeSpace(touch);
 
-	// 1. 获得角度，
-	//第一象限是0,90度
-	//第二象限是90,180度
-	//第三象限是-90,-180度
-	//第四象限是-90,0度
-	Vec2 point = touch->getLocation();
-	double y = point.y - mJsPos.y;
-	double x = point.x - mJsPos.x;
-	double angle = atan2(y, x) * 180 / PI;
-
-	// 2. 更新joystick中心点位置，目的是想让中心点始终在它的背景图范围
-	// joystick背景图半径
-	double jsBgRadis = mJsBg->getContentSize().width * 0.5;
-	//触摸点到中心点的实际距离
-	double distanceOfTouchPointToCenter = sqrt(
-		pow(mJsPos.x - point.x, 2) + pow(mJsPos.y - point.y, 2));
-	double deltX=x, deltY=y;
-	if (distanceOfTouchPointToCenter >= jsBgRadis) {
-		//利用等比关系计算delta x y
-		deltX = x * (jsBgRadis / distanceOfTouchPointToCenter);
-		deltY = y * (jsBgRadis / distanceOfTouchPointToCenter);
-		mJsCenter->setPosition(Vec2(mJsPos.x + deltX, mJsPos.y + deltY));
+	Vec2 direction(point.x - _centralPos.x, point.y - _centralPos.y);
+	if (direction.length() > _radius) {
+		direction.normalize();
 	}
 	else {
-		mJsCenter->setPosition(point);
+		direction = direction / _radius;
 	}
 
+	_center->setPosition(direction*_radius + _centralPos);
 
-	Vec2 gradient(x, y);
-	gradient.normalize();
-	_gradientVector = gradient;
-
+	_gradientVector = direction;
 }
 
 void Joystick::onTouchEnded(Touch *touch, Event *unused_event) {
 //	log("onTouchEnded");
-	// 事件结束，还原joystick中心点位置
 	_gradientVector = Vec2::ZERO;
-	mJsCenter->setPosition(mJsPos);
+	_center->setPosition(_centralPos);
 }
