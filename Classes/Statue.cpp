@@ -35,9 +35,7 @@ bool Statue::initWithType(Type type) {
 
 unordered_map<string, string> Statue::toJson() {
 	auto map = SerializableSprite::toJson();
-
 	map["type"] = to_string(getType());
-	map["class"] = "Statue";
 
 	return map;
 }

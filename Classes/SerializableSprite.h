@@ -10,8 +10,9 @@ using namespace std;
 class SerializableSprite : public Sprite {
 public:
 	//stores datum into a map.
-	//contains x and y coordinate.
+	//+ x, y, className
 	virtual unordered_map<string, string> toJson();
+	virtual string getClassName() = 0;
 };
 
 

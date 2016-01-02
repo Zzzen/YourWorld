@@ -9,7 +9,7 @@ unordered_map<string, string> SerializableSprite::toJson() {
 
 	map["x"] = to_string(pos.x);
 	map["y"] = to_string(pos.y);
-	map["class"] = "SerializableSprite";
+	map["className"] = getClassName();
 
 	return map;
 }

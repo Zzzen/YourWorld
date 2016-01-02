@@ -15,8 +15,9 @@ public:
 
 	CC_SYNTHESIZE(Type, _type, Type);
 
-	//adds type
+	//+ statue::type
 	unordered_map<string, string> toJson() override;
+	std::string getClassName() override { return "Statue"; }
 
 	static Statue* createWithType(const Type type);
 

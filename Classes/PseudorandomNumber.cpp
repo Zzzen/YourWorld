@@ -3,14 +3,11 @@
 
 USING_NS_CC;
 
-static PseudorandomNumber* _instance = nullptr;
 
 PseudorandomNumber* PseudorandomNumber::getInstance(){
-	if (!_instance){
-		_instance = new PseudorandomNumber();
-	}
+	static auto instance = new PseudorandomNumber();
 
-	return _instance;
+	return instance;
 }
 
 PseudorandomNumber::PseudorandomNumber(){
