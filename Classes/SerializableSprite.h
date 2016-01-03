@@ -10,9 +10,12 @@ using namespace std;
 class SerializableSprite : public Sprite {
 public:
 	//stores datum into a map.
-	//+ x, y, className
-	virtual unordered_map<string, string> toJson();
-	virtual string getClassName() = 0;
+	virtual unordered_map<string, string> toJson() const;
+	virtual const string getClassName() const = 0;
+
+protected:
+	virtual bool initWithJson(const string& json) = 0 ;
+
 };
 
 

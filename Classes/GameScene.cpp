@@ -3,6 +3,8 @@
 #include "ChunkManager.h"
 #include "You.h"
 #include "Statue.h"
+#include "SQLUtils.h"
+
 USING_NS_CC;
 
 enum ZOrder
@@ -40,6 +42,9 @@ bool GameScene::init(){
 	assert(speed);
 	speed->setPosition(123, 321);
 	_holder->addChild(speed);
+
+	SQLUtils::createTable();
+	SQLUtils::insertSprite(speed);
 
 	//add move listener
 	auto mListener = EventListenerCustom::create(YourMoveEvent::EVENT_YOURMOVE, [=](EventCustom* event){
