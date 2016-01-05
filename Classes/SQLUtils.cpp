@@ -2,6 +2,8 @@
 
 #include "lib/sqlite3pp/sqlite3pp.h"
 #include "CCFileUtils.h"
+
+#define RAPIDJSON_HAS_STDSTRING 1
 #include "json/document.h"
 #include "json/writer.h"
 #include "json/stringbuffer.h"
@@ -16,21 +18,25 @@ static database& getDBInstance() {
 }
 
 static string getJsonStringFromSprite(const SerializableSprite* sprite){
-	Document doc;
-	auto& allocator = doc.GetAllocator();
-	doc.SetObject();
-
-	const auto& map = sprite->toJson();
-	for (const auto& pair : map) {
-		rapidjson::Value key(pair.first.c_str(), pair.first.size(), allocator);
-		rapidjson::Value value(pair.second.c_str(), pair.second.size(), allocator);
-		doc.AddMember(key, value, allocator);
-	}
-
 	StringBuffer sb;
 	Writer<StringBuffer> writer(sb);
 
-	doc.Accept(writer);
+	const auto& map = sprite->toJson();
+	//ensure lifetime of strings are longer than doc
+	{
+		Document doc;
+		auto& allocator = doc.GetAllocator();
+		doc.SetObject();
+		for (const auto& pair : map) {
+			doc.AddMember(
+				StringRef(pair.first),
+				StringRef(pair.second),
+				allocator);
+		}
+
+		doc.Accept(writer);
+	}
+
 	return sb.GetString();
 }
 
