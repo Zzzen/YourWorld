@@ -10,25 +10,21 @@ PseudorandomNumber* PseudorandomNumber::getInstance(){
 	return instance;
 }
 
-PseudorandomNumber::PseudorandomNumber(){
+PseudorandomNumber::PseudorandomNumber()
+	:_gen(110)
+	,_dis(0, M_PI)
+{
 	initRandomNumbers();
 }
 
-inline int lcg(int seed){
-	return seed * 48271 % 0xffffffff;
-}
-
-int PseudorandomNumber::getNumber(int index){
+float PseudorandomNumber::getNumber(size_t index){
 	assert(index < _randomNumbers.size());
 	return _randomNumbers[index];
 }
 
 void PseudorandomNumber::initRandomNumbers(size_t size){
-	int seed = 1234;
 	for (size_t i = 0; i < size; i++){
-		seed = lcg(seed);
-		_randomNumbers.push_back(seed);
-		//CCLOG("%u", seed);
+		_randomNumbers.push_back(_dis(_gen));
 		if (_randomNumbers.size() % 10000 == 0){
 			CCLOG("%u", _randomNumbers.size());
 		}

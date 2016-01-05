@@ -56,25 +56,22 @@ Chunk* ChunkManager::newChunk(const Point& interior){
 	auto bottomLeft = convertPointToGrid(interior);
 	auto br = GridCoordinate{ bottomLeft.x + 1, bottomLeft.y };
 	auto tr = GridCoordinate{ bottomLeft.x + 1, bottomLeft.y +1 };
-	auto tf = GridCoordinate{ bottomLeft.x, bottomLeft.y + 1 };
+	auto tl = GridCoordinate{ bottomLeft.x, bottomLeft.y + 1 };
 	log("new Chunk at ( %d, %d ) gridcoordinate.", bottomLeft.x, bottomLeft.y);
 	//get corresponding indexs.
 	auto i1 = convertCoorToIndex(bottomLeft);
 	auto i2 = convertCoorToIndex(br);
 	auto i3 = convertCoorToIndex(tr);
-	auto i4 = convertCoorToIndex(tf);
+	auto i4 = convertCoorToIndex(tl);
+
 	//get 4 p random angles.
 	auto rands = PseudorandomNumber::getInstance();
 	float a1 = rands->getNumber(i1);
-	a1 = fmod(a1, PI);
 	float a2 = rands->getNumber(i2);
-	a2 = fmod(a2, PI);
 	float a3 = rands->getNumber(i3);
-	a3 = fmod(a3, PI);
 	float a4 = rands->getNumber(i4);
-	a4 = fmod(a4, PI);
 
-	log("bl: %f, br: %f, tl %f, tr %f", a1, a2, a3, a4);
+//	log("bl: %f, br: %f, tr %f, tl %f \n", a1, a2, a3, a4);
 
 	Vec2 v1 = rotatedVector(a1),
 		v2 = rotatedVector(a2),
