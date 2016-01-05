@@ -41,7 +41,4 @@ public:
 	}
 };
 
-
-
-
 #endif // !__STATUE_H__

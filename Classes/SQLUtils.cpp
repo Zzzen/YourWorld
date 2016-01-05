@@ -68,3 +68,28 @@ void SQLUtils::insertSprite(const SerializableSprite* sprite){
 
 	//log("insert msg: %s", db.error_msg());
 }
+
+vector<unordered_map<string, string>> SQLUtils::selectSprites(const pair<int, int>& xRange, const pair<int, int>& yRange) {
+	auto& db = getDBInstance();
+
+	string statement("SELECT x, y, className, properties"
+		" FROM sprites"
+		" WHERE x> " + to_string(xRange.first) + " AND x< " + to_string(xRange.second) +
+		"   AND y> " + to_string(yRange.first) + " AND y< " + to_string(yRange.second));
+
+	query qry(db, statement.c_str());
+
+	vector<unordered_map<string, string>> vec;
+
+	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i) {
+		unordered_map<string, string> map;
+
+		for (int j = 0; j < qry.column_count(); ++j) {
+			map[qry.column_name(j)] = (*i).get<char const*>(j);
+		}
+
+		vec.push_back(map);
+	}
+
+	return vec;
+}

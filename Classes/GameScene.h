@@ -7,6 +7,7 @@ USING_NS_CC;
 
 class You;
 class ChunkManager;
+class SpriteManager;
 class Joystick;
 class GameScene : public Scene
 {
@@ -16,13 +17,16 @@ public:
 	// implement the "static create()" method manually
 	CREATE_FUNC(GameScene);
 
+	~GameScene();
 protected:
 	You* _you;
 	Joystick* _joystick;
+	Label* _posLabel;
 
 	//now I know why `HelloWorldScene` is a `Layer` ܳ_ܳ
 	Layer* _holder;
-	ChunkManager* _manager;
+	ChunkManager* _chunkManager;
+	SpriteManager* _spriteManager;
 	
 	virtual void updateWorld(float dt);
 

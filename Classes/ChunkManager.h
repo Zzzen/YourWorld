@@ -17,13 +17,12 @@ public:
 
 	//give manager hints to update chunks.
 	void updateChunks(const Point& point, bool visible = true);
+	static GridCoordinate convertPointToGrid(const Point& point);
+	static int convertCoorToIndex(const GridCoordinate& grid);
 
 	virtual ~ChunkManager();
 protected:
 	cocos2d::Node* _parent;
-
-	static GridCoordinate convertPointToGrid(const Point& point) ;
-	static int convertCoorToIndex(const GridCoordinate& grid);
 
 	//check whether current chunks contain it.
 	bool contains(const Point& point) const;

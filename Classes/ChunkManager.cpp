@@ -11,7 +11,7 @@ USING_NS_CC;
 const static float DX = Chunk::SIDE_LENGTH * TILE_SIZE;
 const static float DY = DX;
 
-const static float PI = 3.1415926f;
+const static int MAX_CACHED_THUNK = 5;
 
 ChunkManager::ChunkManager(Node* parent)
  : _parent(parent)
@@ -37,7 +37,7 @@ void ChunkManager::updateChunks(const Point& point, bool visible){
 void ChunkManager::discardInvisibleChunk(const Point& pos) {
 	std::vector<Chunk*> invisible;
 	for (auto chunk : _chunks) {
-		if ((chunk->getPosition() - pos).length() > Chunk::SIDE_LENGTH*TILE_SIZE * 10.0f) {
+		if ((chunk->getPosition() - pos).length() > Chunk::SIDE_LENGTH*TILE_SIZE * MAX_CACHED_THUNK) {
 			invisible.push_back(chunk);
 		}
 	}

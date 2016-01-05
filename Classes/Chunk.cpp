@@ -1,4 +1,5 @@
 #include "Chunk.h"
+#include "ChunkManager.h"
 
 enum TerrainType {
 	LAWN = 1,
@@ -7,10 +8,12 @@ enum TerrainType {
 	JUNGLE = 4
 };
 
+static const int BACKGROUND_ZORDER = 1;
+
 bool Chunk::initTiles(){
 	auto map = cocos2d::experimental::TMXTiledMap::create("tile.tmx");
 	assert(map);
-	addChild(map);
+	addChild(map, BACKGROUND_ZORDER);
 	auto layer = map->getLayer("layer");
 	assert(layer);
 
@@ -82,5 +85,6 @@ Chunk::Chunk(const GradientVectors& vectors):
 
 Chunk::~Chunk()
 {
-	CCLOG("Chunk removed");
+	auto pos = ChunkManager::convertPointToGrid(getPosition());
+	CCLOG("Chunk removed at (%d, %d)", pos.x, pos.y);
 }

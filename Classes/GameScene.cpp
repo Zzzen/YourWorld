@@ -4,6 +4,7 @@
 #include "You.h"
 #include "Statue.h"
 #include "SQLUtils.h"
+#include "SpriteManager.h"
 
 USING_NS_CC;
 
@@ -34,17 +35,21 @@ bool GameScene::init(){
 	addChild(_joystick, ZOrder::JOYSTICK);
 
 
-	_manager = new ChunkManager(_holder);
-	_manager->updateChunks(Point(1, 2));
-	_manager->updateChunks(Point(4, 4));
+	_chunkManager = new ChunkManager(_holder);
 
-	auto speed = Statue::createWithType(Statue::SPEED);
-	assert(speed);
-	speed->setPosition(123, 321);
-	_holder->addChild(speed);
+	_spriteManager = new SpriteManager(_holder);
+	auto chunkListener = EventListenerCustom::create(ChunkJoinWorldEvent::getName(),
+		CC_CALLBACK_1(SpriteManager::onChunkCreated, _spriteManager));
+	_eventDispatcher->addEventListenerWithFixedPriority(chunkListener, 1);
+
+	_chunkManager->updateChunks(Point(1, 2));
+
+
+	_posLabel = Label::create();
+	addChild(_posLabel);
+	_posLabel->setPosition(visibleSize.width/2, 300);
 
 	SQLUtils::createTable();
-	SQLUtils::insertSprite(speed);
 
 	//add move listener
 	auto mListener = EventListenerCustom::create(YourMoveEvent::EVENT_YOURMOVE, [=](EventCustom* event){
@@ -53,11 +58,15 @@ bool GameScene::init(){
 		auto offset = moveEvent->offset;
 		_holder->setPosition(_holder->getPosition() - offset);
 
+		char buffer[1024];
+		sprintf(buffer, "x: %f, y:%f", _you->getPosition().x, _you->getPosition().y);
+		_posLabel->setString(buffer);
+
 		auto pos = _you->getPosition();
 		for (int x = -1; x < 2; x++) {
 			for (int y = -1; y < 2; y++) {
 				Vec2 vec(x / 2.0f*visibleSize.width, y / 2.0f*visibleSize.height);
-				_manager->updateChunks(pos + vec);
+				_chunkManager->updateChunks(pos + vec);
 			}
 		}
 	});
@@ -83,4 +92,9 @@ void GameScene::initYou(const Point& pos){
 	_you->setTexture("you.png");
 
 	_holder->addChild(_you, YOU);
+}
+
+GameScene::~GameScene() {
+	CC_SAFE_DELETE(_spriteManager);
+	CC_SAFE_DELETE(_chunkManager);
 }
