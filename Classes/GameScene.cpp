@@ -41,9 +41,12 @@ bool GameScene::init(){
 	auto chunkListener = EventListenerCustom::create(ChunkJoinWorldEvent::getName(),
 		CC_CALLBACK_1(SpriteManager::onChunkCreated, _spriteManager));
 	_eventDispatcher->addEventListenerWithFixedPriority(chunkListener, 1);
+	
+	chunkListener = EventListenerCustom::create(ChunkDisjoinWorldEvent::getName(),
+		CC_CALLBACK_1(SpriteManager::onChunkRemoved, _spriteManager));
+	_eventDispatcher->addEventListenerWithFixedPriority(chunkListener, 1);
 
 	_chunkManager->updateChunks(Point(1, 2));
-
 
 	_posLabel = Label::create();
 	addChild(_posLabel);
@@ -73,7 +76,7 @@ bool GameScene::init(){
 	_eventDispatcher->addEventListenerWithFixedPriority(mListener, 1);
 
 
-	schedule(schedule_selector(GameScene::updateWorld), 1.0f/30);
+	schedule(schedule_selector(GameScene::updateWorld), 1.0f/24);
 
 	return true;
 }

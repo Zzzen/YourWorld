@@ -15,6 +15,7 @@ public:
 	//there are 64 tiles along one side.
 	const static size_t SIDE_LENGTH = 128;
 
+	GradientVectors getGradientVectors() const { return _gradientVectors; }
 protected:
 	Chunk(const GradientVectors& vectors);
 
