@@ -35,9 +35,11 @@ bool GameScene::init(){
 	addChild(_joystick, ZOrder::JOYSTICK);
 
 
-	_chunkManager = new ChunkManager(_holder);
+	_chunkManager = ChunkManager::getInstance();
+	_chunkManager->setLayer(_holder);
 
-	_spriteManager = new SpriteManager(_holder);
+	_spriteManager = SpriteManager::getInstance();
+	_spriteManager->setLayer(_holder);
 	auto chunkListener = EventListenerCustom::create(ChunkJoinWorldEvent::getName(),
 		CC_CALLBACK_1(SpriteManager::onChunkCreated, _spriteManager));
 	_eventDispatcher->addEventListenerWithFixedPriority(chunkListener, 1);

@@ -11,7 +11,7 @@
 class ChunkManager
 {
 public:
-	ChunkManager(Node* parent);
+	static ChunkManager* getInstance();
 
 	Vec2 rotatedVector(float angle);
 
@@ -20,9 +20,12 @@ public:
 	static GridCoordinate convertPointToGrid(const Point& point);
 	static int convertCoorToIndex(const GridCoordinate& grid);
 
+	void setLayer(Node* node) { _parent = node; }
 	virtual ~ChunkManager();
-protected:
-	cocos2d::Node* _parent;
+private:
+	ChunkManager() {}
+
+	Node* _parent;
 
 	//check whether current chunks contain it.
 	bool contains(const Point& point) const;

@@ -18,16 +18,19 @@ public:
 	//store and remove sprites on the chunk.
 	void onChunkRemoved(EventCustom* event);
 
-	SpriteManager(Layer* layer):_layer(layer) {}
+	static SpriteManager* getInstance();
+	void setLayer(Node* node) { _layer = node; }
+
 	~SpriteManager() {}
 
 private:
+	SpriteManager() {}
 	void createSprite(const unordered_map<string, string>& map);
 	void createNewSprites(const Chunk * chunk);
 
 	//add sprite to game layer and vector
 	inline void addSprite(SerializableSprite* sprite);
 
-	Layer* _layer;
+	Node* _layer;
 	Vector<SerializableSprite*> _sprites;
 };

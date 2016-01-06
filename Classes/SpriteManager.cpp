@@ -106,3 +106,8 @@ void SpriteManager::createNewSprites(const Chunk* chunk) {
 		log("new statue");
 	}
 }
+
+SpriteManager* SpriteManager::getInstance() {
+	static auto instance = new SpriteManager();
+	return instance;
+}

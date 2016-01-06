@@ -13,12 +13,6 @@ const static float DY = DX;
 
 const static int MAX_CACHED_THUNK = 5;
 
-ChunkManager::ChunkManager(Node* parent)
- : _parent(parent)
-{
-
-}
-
 ChunkManager::~ChunkManager(){
 }
 
@@ -94,6 +88,12 @@ Chunk* ChunkManager::newChunk(const Point& interior){
 	_chunks.pushBack(chunk);
 
 	return chunk;
+}
+
+ChunkManager* ChunkManager::getInstance()
+{
+	static auto instance = new ChunkManager();
+	return instance;
 }
 
 inline Vec2 ChunkManager::rotatedVector(float angle){
