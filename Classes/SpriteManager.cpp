@@ -3,9 +3,11 @@
 #include "CommonDefinition.h"
 #include "SQLUtils.h"
 
+
 #define RAPIDJSON_HAS_STDSTRING 1
 #include "json\rapidjson.h"
 #include "json\document.h"
+
 
 using namespace std;
 using namespace rapidjson;
@@ -54,9 +56,12 @@ void SpriteManager::createSprite(const unordered_map<string, string>& map) {
 	const string className = map.at("className"),
                  properties = map.at("properties");
 
+	Document json;
+	json.Parse(properties.c_str());
+
 	SerializableSprite* sprite = nullptr;
 	if (className == "Statue") {
-		sprite = createStatue(properties);
+		sprite = Statue::createWithJson(json);
 	}
 
 
@@ -96,15 +101,8 @@ void SpriteManager::createNewSprites(const Chunk* chunk) {
 		auto statue = Statue::createWithType(Statue::SPEED);
 		statue->setPosition(chunk->getPosition());
 		addSprite(statue);
+
+		SQLUtils::insertSprite(statue);
 		log("new statue");
 	}
-}
-
-Statue* SpriteManager::createStatue(const string& json) {
-	Document d;
-	d.Parse(json.c_str());
-
-	string type = d["type"].GetString();
-	int t = stoi(type);
-	return Statue::createWithType(static_cast<Statue::Type>(t));
 }

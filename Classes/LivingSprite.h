@@ -7,7 +7,7 @@ public:
 	~LivingSprite() override {}
 
 	//+HP, age
-	unordered_map<string, string> toJson() const override;
+	Document toJson() const override;
 
 	CC_PROPERTY(int, _HP, HP);
 	CC_SYNTHESIZE(int, _age, Age);
@@ -15,5 +15,11 @@ public:
 protected:
 	virtual void die() = 0;
 
-	LivingSprite() {}
+	virtual void updateCustom(float dt);
+	virtual float getUpdateInterval() = 0;
+
+	bool initWithJson(const Document& json);
+
+private:
+	void callUpdateCustom(float dt) { updateCustom(dt); }
 };

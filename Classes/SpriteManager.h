@@ -4,6 +4,7 @@
 #include "SerializableSprite.h"
 #include "Statue.h"
 
+
 USING_NS_CC;
 
 class Chunk;
@@ -29,5 +30,4 @@ private:
 
 	Layer* _layer;
 	Vector<SerializableSprite*> _sprites;
-	Statue* createStatue(const string& json);
 };

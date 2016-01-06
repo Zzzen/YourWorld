@@ -16,14 +16,16 @@ public:
 	CC_SYNTHESIZE(Type, _type, Type);
 
 	//+ statue::type
-	unordered_map<string, string> toJson() const override;
+	Document toJson() const override;
 	const std::string getClassName() const override { return "Statue"; }
 
 	static Statue* createWithType(const Type type);
 
+	static Statue* createWithJson(const Document& json);
+
 protected:
 	Statue();
-	bool initWithJson(const string& json) override;
+	bool initWithJson(const Document& json) override;
 	bool initWithType(const Type type);
 };
 

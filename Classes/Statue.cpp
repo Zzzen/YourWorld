@@ -36,18 +36,34 @@ bool Statue::initWithType(Type type) {
 	return initWithFile(filename);
 }
 
-bool Statue::initWithJson(const string& json) {
-	Document doc;
-	doc.Parse(json.c_str());
+bool Statue::initWithJson(const Document& json) {
+	if (!SerializableSprite::initWithJson(json)) {
+		return false;
+	}
 
-	auto type = doc["type"].GetInt();
+	assert(json.HasMember("type"));
+	auto type = json["type"].GetInt();
 
 	return initWithType(static_cast<Type>(type));
 }
 
-unordered_map<string, string> Statue::toJson() const {
-	auto map = SerializableSprite::toJson();
-	map["type"] = to_string(getType());
+Document Statue::toJson() const {
+	auto json = SerializableSprite::toJson();
 
-	return map;
+	int type = getType();
+	json.AddMember("type", rapidjson::Value(type), json.GetAllocator());
+
+	return json;
+}
+
+Statue* Statue::createWithJson(const Document& json) {
+	auto statue = new Statue();
+	if (statue&&statue->initWithJson(json)) {
+		statue->autorelease();
+		return statue;
+	}
+	else {
+		CC_SAFE_DELETE(statue);
+		return nullptr;
+	}
 }

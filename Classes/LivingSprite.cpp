@@ -12,10 +12,26 @@ int LivingSprite::getHP() {
 	return _HP;
 }
 
-unordered_map<string, string> LivingSprite::toJson() const {
-	auto map = SerializableSprite::toJson();
-	map["HP"] = to_string(_HP);
-	map["age"] = to_string(_age);
+Document LivingSprite::toJson() const {
+	auto json = SerializableSprite::toJson();
 
-	return map;
+	json.AddMember("HP", rapidjson::Value(_HP), json.GetAllocator());
+	json.AddMember("age", rapidjson::Value(_age), json.GetAllocator());
+
+	return json;
+}
+
+bool LivingSprite::initWithJson(const Document& json) {
+	if (!SerializableSprite::initWithJson(json)) {
+		return false;
+	}
+
+	schedule(CC_SCHEDULE_SELECTOR(LivingSprite::callUpdateCustom), getUpdateInterval(), kRepeatForever, 0);
+
+	assert(json.HasMember("HP"));
+	assert(json.HasMember("age"));
+	setHP(json["HP"].GetInt());
+	setAge(json["age"].GetInt());
+
+	return true;
 }

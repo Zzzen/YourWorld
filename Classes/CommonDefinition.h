@@ -33,7 +33,7 @@ struct GridCoordinate
 	int y;
 };
 
-const static size_t TILE_SIZE = 16;
+const size_t TILE_SIZE = 16;
 
 
 #endif

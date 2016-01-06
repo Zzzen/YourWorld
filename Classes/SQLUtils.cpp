@@ -21,21 +21,9 @@ static string getJsonStringFromSprite(const SerializableSprite* sprite){
 	StringBuffer sb;
 	Writer<StringBuffer> writer(sb);
 
-	const auto& map = sprite->toJson();
-	//ensure lifetime of strings are longer than doc
-	{
-		Document doc;
-		auto& allocator = doc.GetAllocator();
-		doc.SetObject();
-		for (const auto& pair : map) {
-			doc.AddMember(
-				StringRef(pair.first),
-				StringRef(pair.second),
-				allocator);
-		}
-
-		doc.Accept(writer);
-	}
+	const auto& json = sprite->toJson();
+	
+	json.Accept(writer);
 
 	return sb.GetString();
 }
