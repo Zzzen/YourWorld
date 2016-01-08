@@ -37,6 +37,14 @@ protected:
 
 class ChunkJoinWorldEvent : public SpriteEvent<Chunk> {
 public:
+	static ChunkJoinWorldEvent* createWithWho(Chunk* const sprite) {
+		auto event = new ChunkJoinWorldEvent();
+		event->initWithWho(sprite);
+
+		event->autorelease();
+		return event;
+	}
+
 	static const std::string getName() {
 		return "chunk_join_world_event";
 	}
@@ -45,6 +53,14 @@ public:
 class ChunkDisjoinWorldEvent: public SpriteEvent<Chunk>
 {
 public:
+	static ChunkDisjoinWorldEvent* createWithWho(Chunk* const sprite) {
+		auto event = new ChunkDisjoinWorldEvent();
+		event->initWithWho(sprite);
+
+		event->autorelease();
+		return event;
+	}
+
 	static const std::string getName() {
 		return "chunk_disjoin_world_event";
 	}

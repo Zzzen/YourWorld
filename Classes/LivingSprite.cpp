@@ -1,5 +1,11 @@
 #include "LivingSprite.h"
 
+LivingSprite::LivingSprite()
+	:_skeletalNode(nullptr),
+	 _timeline(nullptr)
+{
+}
+
 void LivingSprite::setHP(int newHP) {
 	if (newHP < 0) {
 		die();
@@ -28,10 +34,49 @@ bool LivingSprite::initWithJson(const Document& json) {
 
 	schedule(CC_SCHEDULE_SELECTOR(LivingSprite::callUpdateCustom), getUpdateInterval(), kRepeatForever, 0);
 
-	assert(json.HasMember("HP"));
-	assert(json.HasMember("age"));
+	initSkeletalAnimation();
+
+	assert(json.HasMember("HP") && json["HP"].IsInt());
+	assert(json.HasMember("age") && json["age"].IsInt());
 	setHP(json["HP"].GetInt());
 	setAge(json["age"].GetInt());
+
+	return true;
+}
+
+void LivingSprite::initSkeletalAnimation() {
+	const auto fileName = getSkeletalFileName();
+	if (!fileName.empty()) {
+		_skeletalNode = CSLoader::createNode(fileName);
+		_timeline = CSLoader::createTimeline(fileName);
+		CCASSERT( _skeletalNode && _timeline , (fileName + " :failed to initialize skeletal animation.").c_str());
+		_skeletalNode->runAction(_timeline);
+
+		_skeletalNode->setAnchorPoint(Point::ZERO);
+		_skeletalNode->setPosition(Point::ZERO);
+		addChild(_skeletalNode);
+	}
+}
+
+void LivingSprite::startSkeletalAnimation() {
+	if (_timeline) {
+		_timeline->gotoFrameAndPlay(0, true);
+	}
+}
+
+void LivingSprite::pauseSkeletalAnimation() {
+	if (_timeline) {
+		_timeline->pause();
+	}
+}
+
+bool LivingSprite::init() {
+	if (!SerializableSprite::init()) {
+		return false;
+	}
+
+	schedule(CC_SCHEDULE_SELECTOR(LivingSprite::callUpdateCustom), getUpdateInterval(), kRepeatForever, 0);
+	initSkeletalAnimation();
 
 	return true;
 }

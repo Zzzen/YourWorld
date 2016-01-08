@@ -41,7 +41,7 @@ bool Statue::initWithJson(const Document& json) {
 		return false;
 	}
 
-	assert(json.HasMember("type"));
+	assert(json.HasMember("type")&&json["type"].IsInt());
 	auto type = json["type"].GetInt();
 
 	return initWithType(static_cast<Type>(type));

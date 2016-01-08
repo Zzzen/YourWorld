@@ -1,17 +1,5 @@
 #include "You.h"
 
-const std::string YourMoveEvent::EVENT_YOURMOVE = "event_of_yourmove";
-
-//**********************************************
-
-bool You::init(){
-	if (!Sprite::init()){
-		return false;
-	}
-
-	return true;
-}
-
 void You::setPosition(const Vec2& position){
 	auto oldPosition = getPosition();
 
@@ -19,10 +7,30 @@ void You::setPosition(const Vec2& position){
 		return;
 	}
 
-	auto moveEvent = YourMoveEvent::create();
+	float flip = position.x > oldPosition.x ? 1:-1;
+	_skeletalNode->setScaleX(flip);
+
+	auto moveEvent = YourMoveEvent::createWithWho(this);
 	moveEvent->offset = position - oldPosition;
 	Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(
-		YourMoveEvent::EVENT_YOURMOVE, moveEvent);
+		YourMoveEvent::getName(), moveEvent);
 
 	Node::setPosition(position);
+}
+
+You* You::create() {
+	auto you = new You;
+	if (you && you->init()) {
+		you->startSkeletalAnimation();
+		you->autorelease();
+		return you;
+	}
+	else
+	{
+		CC_SAFE_DELETE(you);
+		return nullptr;
+	}
+}
+
+void You::updateCustom(float dt) {
 }

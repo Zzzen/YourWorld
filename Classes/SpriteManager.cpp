@@ -85,6 +85,7 @@ void SpriteManager::addSprite(SerializableSprite* sprite) {
 	_layer->addChild(sprite, SPRITE_ZORDER);
 }
 
+
 void SpriteManager::createNewSprites(const Chunk* chunk) {
 	auto vecs = chunk->getGradientVectors();
 	float a1 = vecs.bottomLeft.getAngle(),
@@ -92,7 +93,7 @@ void SpriteManager::createNewSprites(const Chunk* chunk) {
 		a3 = vecs.topRight.getAngle(),
 		a4 = vecs.topLeft.getAngle();
 
-	//create new sprite pseudorandomly
+	//to do: create new sprite pseudorandomly
 	float mean = (a1 + a2 + a3 + a4) / 4;
 	float variance = abs(a1 - mean) + abs(a2 - mean) + abs(a3 - mean) + abs(a4 - mean);
 

@@ -57,7 +57,7 @@ bool GameScene::init(){
 	SQLUtils::createTable();
 
 	//add move listener
-	auto mListener = EventListenerCustom::create(YourMoveEvent::EVENT_YOURMOVE, [=](EventCustom* event){
+	auto mListener = EventListenerCustom::create(YourMoveEvent::getName(), [=](EventCustom* event){
 		auto moveEvent = static_cast<YourMoveEvent*>(event->getUserData());
 	//	log("--------------got move event, x=%f, y=%f", moveEvent->offset.x, moveEvent->offset.y);
 		auto offset = moveEvent->offset;
