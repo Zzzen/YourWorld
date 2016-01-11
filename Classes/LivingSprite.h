@@ -29,12 +29,12 @@ protected:
 
 	virtual string getSkeletalFileName() const { return ""; }
 
-	bool initWithJson(const Document& json);
+	bool initWithJson(const Document& json) override;
 
-	//anchor and position of animationNode are ZERO.
+	//position of animationNode is ZERO.
 	Node* _skeletalNode;
-	cocostudio::timeline::ActionTimeline* _timeline;
-
+	//_idleAction is constructed from the same file as skeletalNode
+	cocostudio::timeline::ActionTimeline* _idleAction;
 
 private:
 

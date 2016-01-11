@@ -2,7 +2,7 @@
 
 LivingSprite::LivingSprite()
 	:_skeletalNode(nullptr),
-	 _timeline(nullptr)
+	 _idleAction(nullptr)
 {
 }
 
@@ -48,25 +48,25 @@ void LivingSprite::initSkeletalAnimation() {
 	const auto fileName = getSkeletalFileName();
 	if (!fileName.empty()) {
 		_skeletalNode = CSLoader::createNode(fileName);
-		_timeline = CSLoader::createTimeline(fileName);
-		CCASSERT( _skeletalNode && _timeline , (fileName + " :failed to initialize skeletal animation.").c_str());
-		_skeletalNode->runAction(_timeline);
+		_idleAction = CSLoader::createTimeline(fileName);
+		CCASSERT( _skeletalNode && _idleAction , (fileName + " :failed to initialize skeletal animation.").c_str());
+		_skeletalNode->runAction(_idleAction);
 
-		_skeletalNode->setAnchorPoint(Point::ZERO);
+//		_skeletalNode->setAnchorPoint(Point::ZERO);
 		_skeletalNode->setPosition(Point::ZERO);
 		addChild(_skeletalNode);
 	}
 }
 
 void LivingSprite::startSkeletalAnimation() {
-	if (_timeline) {
-		_timeline->gotoFrameAndPlay(0, true);
+	if (_idleAction) {
+		_idleAction->gotoFrameAndPlay(0, true);
 	}
 }
 
 void LivingSprite::pauseSkeletalAnimation() {
-	if (_timeline) {
-		_timeline->pause();
+	if (_idleAction) {
+		_idleAction->pause();
 	}
 }
 
