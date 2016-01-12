@@ -3,6 +3,7 @@
 #include "LivingSprite.h"
 
 class AttackableSprite : public LivingSprite {
+public:
 	enum SpriteState
 	{
 		IDLE = 1,
@@ -20,11 +21,18 @@ class AttackableSprite : public LivingSprite {
 
 	SpriteState getCurrentState() const { return _state; }
 
+	virtual void startAttacking() { setCurrentState(ATTACK); }
+
+
 	~AttackableSprite() override;
 
 protected:
 	bool init() override;
 	bool initWithJson(const Document& json) override;
+
+	virtual void attack() = 0;
+
+	//prepare actions from 
 	virtual bool initActions();
 
 	SpriteState _state;

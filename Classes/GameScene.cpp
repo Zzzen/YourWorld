@@ -94,7 +94,7 @@ void GameScene::initYou(const Point& pos){
 	_you = You::create();
 	assert(_you);
 	_you->setPosition(pos);
-	_you->setTexture("you.png");
+	//_you->setTexture("you.png");
 
 	_holder->addChild(_you, YOU);
 }

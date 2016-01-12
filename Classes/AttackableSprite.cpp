@@ -13,9 +13,10 @@ void AttackableSprite::setCurrentState(SpriteState state)
 {
 	_state = state;
 	auto action = _actions[state];
-	if (action) {
-		runAction(action);
-	}
+	CCASSERT(action, "no corresponding action");
+	_skeletalNode->stopAllActions();
+	_skeletalNode->runAction(action);
+	action->gotoFrameAndPlay(0, true);
 
 	switch (state)
 	{
@@ -49,10 +50,13 @@ AttackableSprite::~AttackableSprite()
 
 bool AttackableSprite::init()
 {
-	setCurrentState(IDLE);
+	if (!LivingSprite::init()) {
+		return false;
+	}
 
 	initActions();
 
+	setCurrentState(IDLE);
 
 	return true;
 }
@@ -73,12 +77,12 @@ bool AttackableSprite::initWithJson(const Document & json)
 
 bool AttackableSprite::initActions()
 {
-	auto nodeName = getSkeletalFileName();
+	const string nodeName = getSkeletalFileName();
 	const auto dot = nodeName.find_last_of('.');
-	const string follow = nodeName.insert(dot, "Follow");
-	const string attack = nodeName.insert(dot, "Attack");
-	const string flee = nodeName.insert(dot, "Flee");
-	const string freezed = nodeName.insert(dot, "Freeze");
+	const string follow = string(nodeName).insert(dot, "Follow");
+	const string attack = string(nodeName).insert(dot, "Attack");
+	const string flee = string(nodeName).insert(dot, "Flee");
+	const string freezed = string(nodeName).insert(dot, "Freezed");
 
 	auto followAction = CSLoader::createTimeline(follow);
 	auto attackAction = CSLoader::createTimeline(attack);

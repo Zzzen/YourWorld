@@ -21,7 +21,6 @@ void You::setPosition(const Vec2& position){
 You* You::create() {
 	auto you = new You;
 	if (you && you->init()) {
-		you->startSkeletalAnimation();
 		you->autorelease();
 		return you;
 	}

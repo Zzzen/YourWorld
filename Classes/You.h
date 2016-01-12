@@ -3,14 +3,14 @@
 
 #include "cocos2d.h"
 
-#include "LivingSprite.h"
+#include "AttackableSprite.h"
 #include "SpriteEvent.h"
 
 USING_NS_CC;
 
 
 
-class You : public LivingSprite{
+class You : public AttackableSprite {
 public:
 	static You* create();
 
@@ -20,10 +20,13 @@ protected:
 	string getSkeletalFileName() const override  { return "res/yourSkeleton.csb"; }
 	const string getClassName() const override { return "You"; }
 
+
 	void updateCustom(float dt) override;
 	float getUpdateInterval() override { return 1.0f; }
 
 	void die() override {}
+	
+	void attack() override {}
 
 	You(){}
 };
