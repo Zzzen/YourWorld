@@ -1,4 +1,7 @@
 #include "AttackableSprite.h"
+#include "DamageEvent.h"
+#include "Utils.h"
+
 
 Document AttackableSprite::toJson() const
 {
@@ -27,7 +30,7 @@ void AttackableSprite::setCurrentState(SpriteState state)
 		//run towards player
 		break;
 	case AttackableSprite::ATTACK:
-		//play attack animation
+		//play attackFile animation
 		break;
 	case AttackableSprite::FLEE:
 		break;
@@ -39,6 +42,27 @@ void AttackableSprite::setCurrentState(SpriteState state)
 	}
 }
 
+
+void AttackableSprite::onAttacked(EventCustom * event)
+{
+	auto damage = static_cast<DamageEvent*> (event->getUserData());
+	CCASSERT(damage, "Something is wrong with damage event");
+
+	if ( damage->getSource()==this || !getBoundingBox().intersectsRect(damage->getRange()) ) {
+		return;
+	}
+	auto value = damage->getDamage();
+	setHP(getHP() - value);
+	CCLOG("%p onAttacked; damage: %f", this, value);
+}
+
+void AttackableSprite::setPosition(const Point& pos)
+{
+	auto old = getPosition();
+	LivingSprite::setPosition(pos);
+
+	_direction = (pos - old).getNormalized();
+}
 
 AttackableSprite::~AttackableSprite()
 {
@@ -57,6 +81,9 @@ bool AttackableSprite::init()
 	initActions();
 
 	setCurrentState(IDLE);
+
+	_damageListener = EventListenerCustom::create(DamageEvent::getEventName(),
+		                                          CC_CALLBACK_1(AttackableSprite::onAttacked, this));
 
 	return true;
 }
@@ -79,15 +106,15 @@ bool AttackableSprite::initActions()
 {
 	const string nodeName = getSkeletalFileName();
 	const auto dot = nodeName.find_last_of('.');
-	const string follow = string(nodeName).insert(dot, "Follow");
-	const string attack = string(nodeName).insert(dot, "Attack");
-	const string flee = string(nodeName).insert(dot, "Flee");
-	const string freezed = string(nodeName).insert(dot, "Freezed");
+	const string followFile = string(nodeName).insert(dot, "Follow");
+	const string attackFile = string(nodeName).insert(dot, "Attack");
+	const string fleeFile = string(nodeName).insert(dot, "Flee");
+	const string freezedFile = string(nodeName).insert(dot, "Freezed");
 
-	auto followAction = CSLoader::createTimeline(follow);
-	auto attackAction = CSLoader::createTimeline(attack);
-	auto fleeAction = CSLoader::createTimeline(flee);
-	auto freezedAction = CSLoader::createTimeline(freezed);
+	auto followAction = CSLoader::createTimeline(followFile);
+	auto attackAction = CSLoader::createTimeline(attackFile);
+	auto fleeAction = CSLoader::createTimeline(fleeFile);
+	auto freezedAction = CSLoader::createTimeline(freezedFile);
 
 	CCASSERT( followAction && attackAction && fleeAction && freezedAction,
 		(nodeName + " action files not found.").c_str());
@@ -101,6 +128,20 @@ bool AttackableSprite::initActions()
 	for (auto pair : _actions) {
 		pair.second->retain();
 	}
+
+
+	//set action callbacks.
+	auto setIdle = [this] { setCurrentState(IDLE); };
+	followAction->setLastFrameCallFunc(setIdle);
+	fleeAction->setLastFrameCallFunc(setIdle);
+	freezedAction->setLastFrameCallFunc(setIdle);
+
+	auto attackAndIdle = [this, setIdle] {
+		setIdle();
+		attack();
+	};
+	attackAction->setLastFrameCallFunc(attackAndIdle);
+
 
 	return true;
 }

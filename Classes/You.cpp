@@ -15,7 +15,7 @@ void You::setPosition(const Vec2& position){
 	Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(
 		YourMoveEvent::getName(), moveEvent);
 
-	Node::setPosition(position);
+	AttackableSprite::setPosition(position);
 }
 
 You* You::create() {

@@ -5,6 +5,8 @@
 #include "Statue.h"
 #include "SQLUtils.h"
 #include "SpriteManager.h"
+#include "ui\UIButton.h"
+#include "ui\UIWidget.h"
 
 USING_NS_CC;
 
@@ -33,6 +35,18 @@ bool GameScene::init(){
 	_joystick = Joystick::create();
 	assert(_joystick);
 	addChild(_joystick, ZOrder::JOYSTICK);
+
+	//add action button
+	auto button = cocos2d::ui::Button::create("blade.png");
+	assert(button);
+	button->addTouchEventListener([this](Ref *pSender, cocos2d::ui::Widget::TouchEventType type) {
+		using namespace cocos2d::ui;
+		if (Widget::TouchEventType::BEGAN == type) {
+			_you->startAttacking();
+		}
+	});
+	button->setPosition(Point(visibleSize.width-40,50));
+	addChild(button, JOYSTICK);
 
 
 	_chunkManager = ChunkManager::getInstance();
@@ -67,6 +81,7 @@ bool GameScene::init(){
 		sprintf(buffer, "x: %f, y:%f", _you->getPosition().x, _you->getPosition().y);
 		_posLabel->setString(buffer);
 
+
 		auto pos = _you->getPosition();
 		for (int x = -1; x < 2; x++) {
 			for (int y = -1; y < 2; y++) {
@@ -97,6 +112,7 @@ void GameScene::initYou(const Point& pos){
 	//_you->setTexture("you.png");
 
 	_holder->addChild(_you, YOU);
+
 }
 
 GameScene::~GameScene() {

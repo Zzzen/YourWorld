@@ -32,7 +32,7 @@ bool LivingSprite::initWithJson(const Document& json) {
 		return false;
 	}
 
-	schedule(CC_SCHEDULE_SELECTOR(LivingSprite::callUpdateCustom), getUpdateInterval(), kRepeatForever, 0);
+	schedule(CC_SCHEDULE_SELECTOR(LivingSprite::updateCustom), getUpdateInterval(), kRepeatForever, 0);
 
 	initSkeletalAnimation();
 
@@ -75,8 +75,14 @@ bool LivingSprite::init() {
 		return false;
 	}
 
-	schedule(CC_SCHEDULE_SELECTOR(LivingSprite::callUpdateCustom), getUpdateInterval(), kRepeatForever, 0);
+	schedule(CC_SCHEDULE_SELECTOR(LivingSprite::updateCustom), getUpdateInterval(), kRepeatForever, 0);
 	initSkeletalAnimation();
 
 	return true;
+}
+
+
+Rect LivingSprite::getBoundingBox() const {
+	auto rect = _skeletalNode->getBoundingBox();
+	return RectApplyAffineTransform(rect, getNodeToParentAffineTransform());
 }

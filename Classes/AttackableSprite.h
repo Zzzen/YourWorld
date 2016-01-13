@@ -2,6 +2,7 @@
 
 #include "LivingSprite.h"
 
+class DamageEvent;
 class AttackableSprite : public LivingSprite {
 public:
 	enum SpriteState
@@ -21,8 +22,12 @@ public:
 
 	SpriteState getCurrentState() const { return _state; }
 
-	virtual void startAttacking() { setCurrentState(ATTACK); }
+	// start play attack animation
+	virtual void startAttacking() { if( ATTACK!=_state && FREEZED!=_state) setCurrentState(ATTACK); }
+	//receive damage event, may not be in range.
+	virtual void onAttacked(EventCustom* event);
 
+	void setPosition(const Point& pos) override;
 
 	~AttackableSprite() override;
 
@@ -31,10 +36,13 @@ protected:
 	bool initWithJson(const Document& json) override;
 
 	virtual void attack() = 0;
+	EventListenerCustom* _damageListener;
 
 	//prepare actions from 
 	virtual bool initActions();
 
 	SpriteState _state;
 	map<SpriteState, cocostudio::timeline::ActionTimeline*> _actions;
+
+	Vec2 _direction;
 };

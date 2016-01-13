@@ -10,6 +10,8 @@ public:
 	//+HP, age
 	Document toJson() const override;
 
+	//redirect to skeleton node.
+	Rect getBoundingBox() const override;
 
 	void startSkeletalAnimation();
 	void pauseSkeletalAnimation();
@@ -37,9 +39,6 @@ protected:
 	cocostudio::timeline::ActionTimeline* _idleAction;
 
 private:
-
 	//add skeletal animation if file name is specified.
 	void initSkeletalAnimation();
-
-	void callUpdateCustom(float dt) { updateCustom(dt); }
 };
