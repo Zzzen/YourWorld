@@ -12,11 +12,13 @@ USING_NS_CC;
 
 class You : public AttackableSprite {
 public:
-	static You* create();
+	static You* getInstance();
 
 	void setPosition(const Vec2& position) override;
 
 protected:
+	static You* create();
+
 	string getSkeletalFileName() const override  { return "res/yourSkeleton.csb"; }
 	const string getClassName() const override { return "You"; }
 
@@ -24,11 +26,12 @@ protected:
 	void updateCustom(float dt) override;
 	float getUpdateInterval() override { return 1.0f; }
 
+	float getStrength()const override { return 10.0f; }
 	void die() override {}
 	
-	void attack() override {}
+	void attack() override;
 
-	You(){}
+	You() { setHP(1000.0f); }
 };
 
 

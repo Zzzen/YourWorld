@@ -25,6 +25,11 @@ protected:
 
 	//now I know why `HelloWorldScene` is a `Layer` ܳ_ܳ
 	Layer* _holder;
+
+	//to do: use GameLayer?
+	void addChild(Node* child, int zOrder) override { CCASSERT(false, "use _holder->addChild() or Scene::addChild()"); }
+	void addChild(Node* child) override { CCASSERT(false, "use _holder->addChild() or Scene::addChild()"); }
+
 	ChunkManager* _chunkManager;
 	SpriteManager* _spriteManager;
 	

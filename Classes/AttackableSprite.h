@@ -24,8 +24,6 @@ public:
 
 	// start play attack animation
 	virtual void startAttacking() { if( ATTACK!=_state && FREEZED!=_state) setCurrentState(ATTACK); }
-	//receive damage event, may not be in range.
-	virtual void onAttacked(EventCustom* event);
 
 	void setPosition(const Point& pos) override;
 
@@ -36,7 +34,11 @@ protected:
 	bool initWithJson(const Document& json) override;
 
 	virtual void attack() = 0;
-	EventListenerCustom* _damageListener;
+	virtual float getStrength() const = 0 ;
+
+	//receive damage event, may not be in range.
+	virtual void onAttacked(EventCustom* event);
+
 
 	//prepare actions from 
 	virtual bool initActions();
@@ -45,4 +47,10 @@ protected:
 	map<SpriteState, cocostudio::timeline::ActionTimeline*> _actions;
 
 	Vec2 _direction;
+
+	AttackableSprite() :_state(IDLE) {}
+
+private:
+	EventListenerCustom* _damageListener;
+
 };

@@ -7,6 +7,7 @@
 #include "SpriteManager.h"
 #include "ui\UIButton.h"
 #include "ui\UIWidget.h"
+#include "Human.h"
 
 USING_NS_CC;
 
@@ -23,7 +24,7 @@ bool GameScene::init(){
 
 	_holder = Layer::create();
 	assert(_holder);
-	addChild(_holder);
+	Scene::addChild(_holder);
 
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -34,7 +35,7 @@ bool GameScene::init(){
 	//add Joystick
 	_joystick = Joystick::create();
 	assert(_joystick);
-	addChild(_joystick, ZOrder::JOYSTICK);
+	Scene::addChild(_joystick, ZOrder::JOYSTICK);
 
 	//add action button
 	auto button = cocos2d::ui::Button::create("blade.png");
@@ -46,7 +47,7 @@ bool GameScene::init(){
 		}
 	});
 	button->setPosition(Point(visibleSize.width-40,50));
-	addChild(button, JOYSTICK);
+	Scene::addChild(button, JOYSTICK);
 
 
 	_chunkManager = ChunkManager::getInstance();
@@ -65,7 +66,7 @@ bool GameScene::init(){
 	_chunkManager->updateChunks(Point(1, 2));
 
 	_posLabel = Label::create();
-	addChild(_posLabel);
+	Scene::addChild(_posLabel);
 	_posLabel->setPosition(visibleSize.width/2, 300);
 
 	SQLUtils::createTable();
@@ -106,13 +107,15 @@ void GameScene::updateWorld(float dt){
 }
 
 void GameScene::initYou(const Point& pos){
-	_you = You::create();
+	_you = You::getInstance();
 	assert(_you);
 	_you->setPosition(pos);
-	//_you->setTexture("you.png");
 
 	_holder->addChild(_you, YOU);
 
+	auto h = Human::create();
+	_holder->addChild(h, YOU);
+	h->setPosition(Point(123,312));
 }
 
 GameScene::~GameScene() {

@@ -14,6 +14,9 @@ Document AttackableSprite::toJson() const
 
 void AttackableSprite::setCurrentState(SpriteState state)
 {
+	auto lastStateAction = _actions[_state];
+	_skeletalNode->stopAction(lastStateAction);
+
 	_state = state;
 	auto action = _actions[state];
 	CCASSERT(action, "no corresponding action");
@@ -51,6 +54,7 @@ void AttackableSprite::onAttacked(EventCustom * event)
 	if ( damage->getSource()==this || !getBoundingBox().intersectsRect(damage->getRange()) ) {
 		return;
 	}
+	setCurrentState(FREEZED);
 	auto value = damage->getDamage();
 	setHP(getHP() - value);
 	CCLOG("%p onAttacked; damage: %f", this, value);
@@ -66,6 +70,7 @@ void AttackableSprite::setPosition(const Point& pos)
 
 AttackableSprite::~AttackableSprite()
 {
+	_eventDispatcher->removeEventListener(_damageListener);
 	for (auto it = _actions.begin(); it != _actions.end(); ) {
 		it->second->release();
 		it = _actions.erase(it);
@@ -83,7 +88,9 @@ bool AttackableSprite::init()
 	setCurrentState(IDLE);
 
 	_damageListener = EventListenerCustom::create(DamageEvent::getEventName(),
-		                                          CC_CALLBACK_1(AttackableSprite::onAttacked, this));
+		CC_CALLBACK_1(AttackableSprite::onAttacked, this));
+
+	_eventDispatcher->addEventListenerWithFixedPriority(_damageListener, 1);
 
 	return true;
 }
