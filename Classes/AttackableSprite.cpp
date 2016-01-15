@@ -48,6 +48,7 @@ void AttackableSprite::setCurrentState(SpriteState state)
 
 void AttackableSprite::onAttacked(EventCustom * event)
 {
+	Xu xu(this);
 	auto damage = static_cast<DamageEvent*> (event->getUserData());
 	CCASSERT(damage, "Something is wrong with damage event");
 

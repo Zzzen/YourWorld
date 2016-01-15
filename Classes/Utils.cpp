@@ -17,3 +17,20 @@ string str(const Rect& rect) {
 	string s = " Rect: ";
 	return s + str(rect.origin) + str(rect.size);
 }
+
+
+void setNodePauseRecursively(Vector<Node*>& nodes, bool pause)
+{
+	if (pause) {
+		for (auto node : nodes) {
+			node->pause();
+			setNodePauseRecursively(node->getChildren(), pause);
+		}
+	}
+	else {
+		for (auto node : nodes) {
+			node->resume();
+			setNodePauseRecursively(node->getChildren(), pause);
+		}
+	}
+}

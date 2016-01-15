@@ -6,7 +6,7 @@ class Human: public Mob{
 public:
 	static Human* create();
 
-	void die() override { removeFromParent(); };
+	void die() override { removeFromParent(); }
 
 protected:
 	string getSkeletalFileName() const override { return "res/yourSkeleton.csb"; }

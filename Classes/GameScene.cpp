@@ -37,10 +37,14 @@ bool GameScene::init(){
 	assert(_joystick);
 	Scene::addChild(_joystick, ZOrder::JOYSTICK);
 
+	//add setting button
+	addSettingButton();
+
 	//add action button
 	auto button = cocos2d::ui::Button::create("blade.png");
 	assert(button);
 	button->addTouchEventListener([this](Ref *pSender, cocos2d::ui::Widget::TouchEventType type) {
+		if (isPaused()) return;
 		using namespace cocos2d::ui;
 		if (Widget::TouchEventType::BEGAN == type) {
 			_you->startAttacking();
@@ -93,13 +97,14 @@ bool GameScene::init(){
 	});
 	_eventDispatcher->addEventListenerWithFixedPriority(mListener, 1);
 
-
 	schedule(schedule_selector(GameScene::updateWorld), 1.0f/24);
 
 	return true;
 }
 
 void GameScene::updateWorld(float dt){
+	if (isPaused()) return;
+
 	Vec2 vel(5, 5);
 	vel.scale(_joystick->getGradientVector());
 
@@ -121,4 +126,25 @@ void GameScene::initYou(const Point& pos){
 GameScene::~GameScene() {
 	CC_SAFE_DELETE(_spriteManager);
 	CC_SAFE_DELETE(_chunkManager);
+}
+
+void GameScene::addSettingButton() {
+	using namespace cocos2d::ui;
+
+	auto button = Button::create("setting.png");
+	assert(button);
+	button->addTouchEventListener([this](Ref *pSender, cocos2d::ui::Widget::TouchEventType type) {
+		static bool pause = false;
+		if (Widget::TouchEventType::BEGAN == type) {
+			//to do;
+			pause = !pause;
+			pause ? pauseLayer() : resumeLayer();
+		}
+	});
+	
+	auto screen = Director::getInstance()->getVisibleSize();
+	auto size = button->getContentSize();
+	button->setPosition(Point(size.width + 20, screen.height - size.height));
+
+	Scene::addChild(button, JOYSTICK);
 }

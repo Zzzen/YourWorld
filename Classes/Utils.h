@@ -10,3 +10,13 @@ string str(const Point& point);
 string str(const Size& size);
 
 string str(const Rect& rect);
+
+void setNodePauseRecursively(Vector<Node*>& nodes, bool paused);
+
+class Xu {
+public:
+	Xu(Ref* ref) : _ref(ref) { _ref->retain(); }
+	~Xu() { _ref->release(); }
+
+	Ref* _ref;
+};
