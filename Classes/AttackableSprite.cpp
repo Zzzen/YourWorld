@@ -56,7 +56,8 @@ void AttackableSprite::onAttacked(EventCustom * event)
 		return;
 	}
 	setCurrentState(FREEZED);
-	auto value = damage->getDamage();
+	auto value = damage->getDamage() - getArmor();
+	value = value < 0 ? 1 : value;
 	setHP(getHP() - value);
 	CCLOG("%p onAttacked; damage: %f", this, value);
 }
@@ -67,6 +68,12 @@ void AttackableSprite::setPosition(const Point& pos)
 	LivingSprite::setPosition(pos);
 
 	_direction = (pos - old).getNormalized();
+}
+
+void AttackableSprite::setHP(int hp)
+{
+	LivingSprite::setHP(hp);
+	_HPBar->setPercentage(100 * getHP() / getMaxHP());
 }
 
 AttackableSprite::~AttackableSprite()
@@ -80,9 +87,21 @@ AttackableSprite::~AttackableSprite()
 
 bool AttackableSprite::init()
 {
+	auto HPPic = Sprite::create("HP.png");
+	HPPic->setVisible(false);
+
+	_HPBar = ProgressTimer::create(HPPic);
+	_HPBar->addChild(HPPic);
+	_HPBar->setType(ProgressTimer::Type::RADIAL);
+	addChild(_HPBar);
+	_HPBar->setPercentage(100);
+
+
 	if (!LivingSprite::init()) {
 		return false;
 	}
+
+	_HPBar->setPosition(Vec2(0, 40));
 
 	initActions();
 

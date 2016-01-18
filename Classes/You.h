@@ -27,11 +27,11 @@ protected:
 	float getUpdateInterval() override { return 1.0f; }
 
 	float getStrength()const override { return 10.0f; }
+	float getMoveSpeed() const override { return 15.0f; }
+	int getMaxHP() const override { return 10000; }
 	void die() override {}
 	
 	void attack() override;
-
-	You() { setHP(1000.0f); }
 };
 
 

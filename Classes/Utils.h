@@ -13,6 +13,8 @@ string str(const Rect& rect);
 
 void setNodePauseRecursively(Vector<Node*>& nodes, bool paused);
 
+Vec2 randomVector(float radian);
+
 class Xu {
 public:
 	Xu(Ref* ref) : _ref(ref) { _ref->retain(); }

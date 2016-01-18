@@ -19,11 +19,17 @@ void Mob::updateCustom(float dt) {
 		return;
 	}
 
-	auto moveAction = MoveBy::create(0.3f, gradient.getNormalized() * 10);
+	auto moveAction = MoveBy::create(0.3f, gradient.getNormalized() * getMoveSpeed());
 	moveAction->setTag(MOVE_ACTION_TAG);
 	runAction(moveAction);
 }
 
 float Mob::getAlarmDistance() const {
 	return 400.0f;
+}
+
+void Mob::die() {
+	auto event = MobDieEvent::createWithWho(this);
+	Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(MobDieEvent::getName(),
+																	   event);
 }

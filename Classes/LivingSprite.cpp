@@ -7,7 +7,7 @@ LivingSprite::LivingSprite()
 }
 
 void LivingSprite::setHP(int newHP) {
-	if (newHP < 0) {
+	if (newHP < 1) {
 		die();
 	}
 
@@ -74,6 +74,8 @@ bool LivingSprite::init() {
 	if (!SerializableSprite::init()) {
 		return false;
 	}
+
+	setHP(getMaxHP());
 
 	schedule(CC_SCHEDULE_SELECTOR(LivingSprite::updateCustom), getUpdateInterval(), kRepeatForever, 0);
 	initSkeletalAnimation();

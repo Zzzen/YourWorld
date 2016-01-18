@@ -25,6 +25,7 @@ protected:
 	bool init() override;
 
 	virtual void die() = 0;
+	virtual int getMaxHP()const = 0;
 
 	virtual void updateCustom(float dt) = 0;
 	virtual float getUpdateInterval() = 0;

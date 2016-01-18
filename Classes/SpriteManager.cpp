@@ -2,7 +2,7 @@
 #include "Chunk.h"
 #include "CommonDefinition.h"
 #include "SQLUtils.h"
-
+#include "Human.h"
 
 #define RAPIDJSON_HAS_STDSTRING 1
 #include "json\rapidjson.h"
@@ -50,6 +50,12 @@ void SpriteManager::onChunkRemoved(EventCustom* event) {
 	}
 }
 
+void SpriteManager::onMobDied(EventCustom * event)
+{
+	Mob* mob = (static_cast<MobDieEvent*>(event->getUserData()))->getWho();
+	removeSprite(mob);
+}
+
 void SpriteManager::createSprite(const unordered_map<string, string>& map) {
 	const int x = stoi(map.at("x")),
 		      y = stoi(map.at("y"));
@@ -85,6 +91,11 @@ void SpriteManager::addSprite(SerializableSprite* sprite) {
 	_layer->addChild(sprite, SPRITE_ZORDER);
 }
 
+void SpriteManager::removeSprite(SerializableSprite* sprite) {
+	_sprites.eraseObject(sprite);
+	sprite->removeFromParent();
+}
+
 
 void SpriteManager::createNewSprites(const Chunk* chunk) {
 	auto vecs = chunk->getGradientVectors();
@@ -111,4 +122,16 @@ void SpriteManager::createNewSprites(const Chunk* chunk) {
 SpriteManager* SpriteManager::getInstance() {
 	static auto instance = new SpriteManager();
 	return instance;
+}
+
+AttackableSprite* SpriteManager::createSprite(const string& name) {
+	auto it = _createFuncs.find(name);
+	CCASSERT(it!=_createFuncs.end(), (name + " not found").c_str());
+
+    auto s = dynamic_cast<AttackableSprite*>((*it).second());
+	CCASSERT(s, (name + " failed to cast").c_str());
+
+	addSprite(s);
+
+	return s;
 }

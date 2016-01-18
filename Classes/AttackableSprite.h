@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LivingSprite.h"
+#include "ui\UILoadingBar.h"
 
 class DamageEvent;
 class AttackableSprite : public LivingSprite {
@@ -27,6 +28,12 @@ public:
 
 	void setPosition(const Point& pos) override;
 
+	void setHP(int hp) override;
+
+	virtual float getStrength() const = 0;
+	virtual float getArmor() const { return 0; }
+	virtual float getMoveSpeed() const = 0;
+
 	~AttackableSprite() override;
 
 protected:
@@ -34,7 +41,6 @@ protected:
 	bool initWithJson(const Document& json) override;
 
 	virtual void attack() = 0;
-	virtual float getStrength() const = 0 ;
 
 	//receive damage event, may not be in range.
 	virtual void onAttacked(EventCustom* event);
@@ -52,5 +58,5 @@ protected:
 
 private:
 	EventListenerCustom* _damageListener;
-
+	ProgressTimer* _HPBar;
 };

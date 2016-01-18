@@ -6,7 +6,9 @@
 
 
 USING_NS_CC;
+using namespace std;
 
+class AttackableSprite;
 class Chunk;
 class SpriteManager 
 {
@@ -18,11 +20,19 @@ public:
 	//store and remove sprites on the chunk.
 	void onChunkRemoved(EventCustom* event);
 
+	void onMobDied(EventCustom* event);
+
 	static SpriteManager* getInstance();
 	void setLayer(Node* node) { _layer = node; }
 
 	~SpriteManager() {}
 
+	//create sprite and add it to _layer
+	AttackableSprite* createSprite(const string& name);
+
+	void registerCreateFunc(const string& name, function<SerializableSprite* ()> func) {
+		_createFuncs.insert(pair<string, function<SerializableSprite* ()>>(name, func)); 
+	}
 private:
 	SpriteManager() {}
 	void createSprite(const unordered_map<string, string>& map);
@@ -30,7 +40,9 @@ private:
 
 	//add sprite to game layer and vector
 	inline void addSprite(SerializableSprite* sprite);
+	inline void removeSprite(SerializableSprite* sprite);
 
 	Node* _layer;
 	Vector<SerializableSprite*> _sprites;
+	map < string, function< SerializableSprite* ()> > _createFuncs;
 };

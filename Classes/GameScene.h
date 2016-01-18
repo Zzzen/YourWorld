@@ -29,6 +29,8 @@ protected:
 	You* _you;
 	Joystick* _joystick;
 	Label* _posLabel;
+	Label* _timeLabel;
+	Label* _HPLabel;
 
 	//now I know why `HelloWorldScene` is a `Layer` ܳ_ܳ
 	Layer* _holder;

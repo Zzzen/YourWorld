@@ -8,6 +8,8 @@
 #include "ui\UIButton.h"
 #include "ui\UIWidget.h"
 #include "Human.h"
+#include "Time.h"
+#include "Utils.h"
 
 USING_NS_CC;
 
@@ -29,8 +31,6 @@ bool GameScene::init(){
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	initYou(Vec2(origin.x + visibleSize.width / 2,
-				 origin.y + visibleSize.height / 2));
 
 	//add Joystick
 	_joystick = Joystick::create();
@@ -59,6 +59,8 @@ bool GameScene::init(){
 
 	_spriteManager = SpriteManager::getInstance();
 	_spriteManager->setLayer(_holder);
+	_spriteManager->registerCreateFunc("Human", [] { return Human::create(); });
+
 	auto chunkListener = EventListenerCustom::create(ChunkJoinWorldEvent::getName(),
 		CC_CALLBACK_1(SpriteManager::onChunkCreated, _spriteManager));
 	_eventDispatcher->addEventListenerWithFixedPriority(chunkListener, 1);
@@ -67,11 +69,26 @@ bool GameScene::init(){
 		CC_CALLBACK_1(SpriteManager::onChunkRemoved, _spriteManager));
 	_eventDispatcher->addEventListenerWithFixedPriority(chunkListener, 1);
 
+	auto mobDieListener = EventListenerCustom::create(MobDieEvent::getName(),
+		CC_CALLBACK_1(SpriteManager::onMobDied, _spriteManager));
+	_eventDispatcher->addEventListenerWithFixedPriority(mobDieListener, 1);
+
 	_chunkManager->updateChunks(Point(1, 2));
+
+
+	initYou(Vec2(origin.x + visibleSize.width / 2,
+		origin.y + visibleSize.height / 2));
+
 
 	_posLabel = Label::create();
 	Scene::addChild(_posLabel);
 	_posLabel->setPosition(visibleSize.width/2, 300);
+	_timeLabel = Label::create();
+	Scene::addChild(_timeLabel);
+	_timeLabel->setPosition(visibleSize.width / 2, 280.0f);
+	_HPLabel = Label::create();
+	Scene::addChild(_HPLabel);
+	_HPLabel->setPosition(visibleSize.width / 2, 250.0f);
 
 	SQLUtils::createTable();
 
@@ -98,6 +115,7 @@ bool GameScene::init(){
 	_eventDispatcher->addEventListenerWithFixedPriority(mListener, 1);
 
 	schedule(schedule_selector(GameScene::updateWorld), 1.0f/24);
+	Time::getInstance()->setRealMsec(0); // to do: read from database;
 
 	return true;
 }
@@ -105,10 +123,31 @@ bool GameScene::init(){
 void GameScene::updateWorld(float dt){
 	if (isPaused()) return;
 
+	auto time = Time::getInstance();
+	time->addRealMsec(dt * 1000);
+	int hour = time->getVirtualHour();
+	char buffer[1024];
+	sprintf(buffer, "hour: %d", hour);
+	_timeLabel->setString(buffer);
+
+	sprintf(buffer, "HP: %d", _you->getHP());
+	_HPLabel->setString(buffer);
+
+	//add mobs
+	if (hour > 22 || hour < 8) {
+		if (time->toRealSec() % 33 == 13) {
+			CCLOG("add human");
+			auto sp = _spriteManager->createSprite("Human");
+			auto m = dynamic_cast<Mob*>(sp);
+			CC_ASSERT(m);
+			sp->setPosition(_you->getPosition()+ 200 * randomVector(time->toRealSec()));
+		}
+	}
+
 	Vec2 vel(5, 5);
 	vel.scale(_joystick->getGradientVector());
 
-	_you->setPosition(_you->getPosition() + vel);
+	_you->setPosition(_you->getPosition() + vel );
 }
 
 void GameScene::initYou(const Point& pos){
@@ -117,10 +156,6 @@ void GameScene::initYou(const Point& pos){
 	_you->setPosition(pos);
 
 	_holder->addChild(_you, YOU);
-
-	auto h = Human::create();
-	_holder->addChild(h, YOU);
-	h->setPosition(Point(123,312));
 }
 
 GameScene::~GameScene() {
