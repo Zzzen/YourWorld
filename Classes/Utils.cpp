@@ -18,6 +18,10 @@ string str(const Rect& rect) {
 	return s + str(rect.origin) + str(rect.size);
 }
 
+Size getVisibleSize() {
+	return Director::getInstance()->getVisibleSize();
+}
+
 Vec2 randomVector(float radian) {
 	return Vec2(cos(radian), sin(radian));
 }

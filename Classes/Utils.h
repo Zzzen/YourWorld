@@ -15,6 +15,8 @@ void setNodePauseRecursively(Vector<Node*>& nodes, bool paused);
 
 Vec2 randomVector(float radian);
 
+Size getVisibleSize();
+
 class Xu {
 public:
 	Xu(Ref* ref) : _ref(ref) { _ref->retain(); }

@@ -17,7 +17,7 @@ Human * Human::create()
 }
 
 void Human::attack() {
-	auto damage = DamageEvent::create(getPosition(), getBoundingBox(), 100, this);
+	auto damage = DamageEvent::create(getPosition(), getBoundingBox(), getStrength(), this);
 	Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(DamageEvent::getEventName(),
 		damage);
 }

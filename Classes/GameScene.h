@@ -47,8 +47,12 @@ protected:
 
 	void initYou(const Point& pos);
 	void addSettingButton();
+	void addActionButton();
+	void addJoystick();
+	void addLabels();
 	
 	bool _isPaused;
+	GameScene();
 };
 
 

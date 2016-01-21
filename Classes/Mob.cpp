@@ -5,6 +5,10 @@
 static const int MOVE_ACTION_TAG = 333;
 
 void Mob::updateCustom(float dt) {
+	if (getCurrentState() == ATTACK) {
+		return;
+	}
+
 	auto you = You::getInstance();
 	auto gradient = you->getPosition() - getPosition();
 

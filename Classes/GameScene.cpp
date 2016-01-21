@@ -28,31 +28,13 @@ bool GameScene::init(){
 	assert(_holder);
 	Scene::addChild(_holder);
 
-	Size visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	CCASSERT(Director::getInstance()->getVisibleOrigin().length() < std::numeric_limits<float>::epsilon(), "WTF is cocos2dx doing");
 
 
-	//add Joystick
-	_joystick = Joystick::create();
-	assert(_joystick);
-	Scene::addChild(_joystick, ZOrder::JOYSTICK);
-
-	//add setting button
+	addJoystick();
 	addSettingButton();
-
-	//add action button
-	auto button = cocos2d::ui::Button::create("blade.png");
-	assert(button);
-	button->addTouchEventListener([this](Ref *pSender, cocos2d::ui::Widget::TouchEventType type) {
-		if (isPaused()) return;
-		using namespace cocos2d::ui;
-		if (Widget::TouchEventType::BEGAN == type) {
-			_you->startAttacking();
-		}
-	});
-	button->setPosition(Point(visibleSize.width-40,50));
-	Scene::addChild(button, JOYSTICK);
-
+	addActionButton();
+	addLabels();
 
 	_chunkManager = ChunkManager::getInstance();
 	_chunkManager->setLayer(_holder);
@@ -76,19 +58,10 @@ bool GameScene::init(){
 	_chunkManager->updateChunks(Point(1, 2));
 
 
-	initYou(Vec2(origin.x + visibleSize.width / 2,
-		origin.y + visibleSize.height / 2));
+	initYou(Vec2(getVisibleSize().width / 2,
+		         getVisibleSize().height / 2));
 
 
-	_posLabel = Label::create();
-	Scene::addChild(_posLabel);
-	_posLabel->setPosition(visibleSize.width/2, 300);
-	_timeLabel = Label::create();
-	Scene::addChild(_timeLabel);
-	_timeLabel->setPosition(visibleSize.width / 2, 280.0f);
-	_HPLabel = Label::create();
-	Scene::addChild(_HPLabel);
-	_HPLabel->setPosition(visibleSize.width / 2, 250.0f);
 
 	SQLUtils::createTable();
 
@@ -107,7 +80,7 @@ bool GameScene::init(){
 		auto pos = _you->getPosition();
 		for (int x = -1; x < 2; x++) {
 			for (int y = -1; y < 2; y++) {
-				Vec2 vec(x / 2.0f*visibleSize.width, y / 2.0f*visibleSize.height);
+				Vec2 vec(x / 2.0f*getVisibleSize().width, y / 2.0f*getVisibleSize().height);
 				_chunkManager->updateChunks(pos + vec);
 			}
 		}
@@ -134,14 +107,12 @@ void GameScene::updateWorld(float dt){
 	_HPLabel->setString(buffer);
 
 	//add mobs
-	if (hour > 22 || hour < 8) {
-		if (time->toRealSec() % 33 == 13) {
-			CCLOG("add human");
-			auto sp = _spriteManager->createSprite("Human");
-			auto m = dynamic_cast<Mob*>(sp);
-			CC_ASSERT(m);
-			sp->setPosition(_you->getPosition()+ 200 * randomVector(time->toRealSec()));
-		}
+	if (hour > 22 || hour < 8 && time->toRealSec() % 20 == 0) {
+		time->addRealMsec(1000); // to do
+		auto sp = _spriteManager->createSprite("Human");
+		auto m = dynamic_cast<Mob*>(sp);
+		CC_ASSERT(m);
+		sp->setPosition(_you->getPosition()+ 200 * randomVector(time->toRealSec()));
 	}
 
 	Vec2 vel(5, 5);
@@ -169,11 +140,8 @@ void GameScene::addSettingButton() {
 	auto button = Button::create("setting.png");
 	assert(button);
 	button->addTouchEventListener([this](Ref *pSender, cocos2d::ui::Widget::TouchEventType type) {
-		static bool pause = false;
 		if (Widget::TouchEventType::BEGAN == type) {
-			//to do;
-			pause = !pause;
-			pause ? pauseLayer() : resumeLayer();
+			_isPaused ? resumeLayer() : pauseLayer();
 		}
 	});
 	
@@ -182,4 +150,43 @@ void GameScene::addSettingButton() {
 	button->setPosition(Point(size.width + 20, screen.height - size.height));
 
 	Scene::addChild(button, JOYSTICK);
+}
+
+void GameScene::addActionButton()
+{
+	auto button = cocos2d::ui::Button::create("blade.png");
+	assert(button);
+	button->addTouchEventListener([this](Ref *pSender, cocos2d::ui::Widget::TouchEventType type) {
+		if (isPaused()) return;
+		using namespace cocos2d::ui;
+		if (Widget::TouchEventType::BEGAN == type) {
+			_you->startAttacking();
+		}
+	});
+	button->setPosition(Point(getVisibleSize().width - 40, 50));
+	Scene::addChild(button, JOYSTICK);
+}
+
+void GameScene::addJoystick() {
+	_joystick = Joystick::create();
+	assert(_joystick);
+	Scene::addChild(_joystick, ZOrder::JOYSTICK);
+}
+
+void GameScene::addLabels()
+{
+	_posLabel = Label::create();
+	Scene::addChild(_posLabel);
+	_posLabel->setPosition(getVisibleSize().width / 2, 300);
+	_timeLabel = Label::create();
+	Scene::addChild(_timeLabel);
+	_timeLabel->setPosition(getVisibleSize().width / 2, 280.0f);
+	_HPLabel = Label::create();
+	Scene::addChild(_HPLabel);
+	_HPLabel->setPosition(getVisibleSize().width / 2, 250.0f);
+}
+
+GameScene::GameScene():
+	_isPaused(false)
+{
 }
