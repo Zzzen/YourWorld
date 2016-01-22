@@ -22,13 +22,16 @@ public:
 
 	void onMobDied(EventCustom* event);
 
+	//pick items
+	void onYourMove(EventCustom* event);
+
 	static SpriteManager* getInstance();
 	void setLayer(Node* node) { _layer = node; }
 
 	~SpriteManager() {}
 
 	//create sprite and add it to _layer
-	AttackableSprite* createSprite(const string& name);
+	SerializableSprite* createSprite(const string& name);
 
 	void registerCreateFunc(const string& name, function<SerializableSprite* ()> func) {
 		_createFuncs.insert(pair<string, function<SerializableSprite* ()>>(name, func)); 

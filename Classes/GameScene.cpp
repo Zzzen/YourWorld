@@ -10,6 +10,7 @@
 #include "Human.h"
 #include "Time.h"
 #include "Utils.h"
+#include "Dabaojian.h"
 
 USING_NS_CC;
 
@@ -42,6 +43,7 @@ bool GameScene::init(){
 	_spriteManager = SpriteManager::getInstance();
 	_spriteManager->setLayer(_holder);
 	_spriteManager->registerCreateFunc("Human", [] { return Human::create(); });
+	_spriteManager->registerCreateFunc("Dabaojian", [] {return Dabaojian::create(); });
 
 	auto chunkListener = EventListenerCustom::create(ChunkJoinWorldEvent::getName(),
 		CC_CALLBACK_1(SpriteManager::onChunkCreated, _spriteManager));
@@ -54,6 +56,10 @@ bool GameScene::init(){
 	auto mobDieListener = EventListenerCustom::create(MobDieEvent::getName(),
 		CC_CALLBACK_1(SpriteManager::onMobDied, _spriteManager));
 	_eventDispatcher->addEventListenerWithFixedPriority(mobDieListener, 1);
+
+	auto moveListener = EventListenerCustom::create(YourMoveEvent::getName(),
+		CC_CALLBACK_1(SpriteManager::onYourMove, _spriteManager));
+	_eventDispatcher->addEventListenerWithFixedPriority(moveListener, 1);
 
 	_chunkManager->updateChunks(Point(1, 2));
 
@@ -141,7 +147,18 @@ void GameScene::addSettingButton() {
 	assert(button);
 	button->addTouchEventListener([this](Ref *pSender, cocos2d::ui::Widget::TouchEventType type) {
 		if (Widget::TouchEventType::BEGAN == type) {
-			_isPaused ? resumeLayer() : pauseLayer();
+			if (_isPaused) {
+				CC_ASSERT(_inventory->getReferenceCount() == 1);
+				_inventory->removeFromParent();
+				_inventory = nullptr;
+				resumeLayer();
+			}
+			else {
+				_inventory = _you->showInventory();
+				Scene::addChild(_inventory, JOYSTICK);
+				_inventory->setPosition(getVisibleSize() / 2);
+				pauseLayer();
+			}
 		}
 	});
 	
@@ -187,6 +204,7 @@ void GameScene::addLabels()
 }
 
 GameScene::GameScene():
-	_isPaused(false)
+	_isPaused(false),
+	_inventory(nullptr)
 {
 }

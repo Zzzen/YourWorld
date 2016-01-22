@@ -23,7 +23,7 @@ void Mob::updateCustom(float dt) {
 		return;
 	}
 
-	auto moveAction = MoveBy::create(0.3f, gradient.getNormalized() * getMoveSpeed());
+	auto moveAction = MoveBy::create(0.3f, gradient.getNormalized() * getOriginalMoveSpeed());
 	moveAction->setTag(MOVE_ACTION_TAG);
 	runAction(moveAction);
 }

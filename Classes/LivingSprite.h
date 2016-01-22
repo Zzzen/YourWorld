@@ -19,13 +19,14 @@ public:
 	CC_PROPERTY(int, _HP, HP);
 	CC_SYNTHESIZE(int, _age, Age);
 
+	virtual int getMaxHP() const { return _maxHP; }
 protected:
 	LivingSprite();
 
 	bool init() override;
 
 	virtual void die() = 0;
-	virtual int getMaxHP()const = 0;
+	int _maxHP;
 
 	virtual void updateCustom(float dt) = 0;
 	virtual float getUpdateInterval() = 0;
@@ -42,4 +43,5 @@ protected:
 private:
 	//add skeletal animation if file name is specified.
 	void initSkeletalAnimation();
+	virtual int getOriginalMaxHP()const = 0;
 };

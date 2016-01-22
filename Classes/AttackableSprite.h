@@ -2,17 +2,26 @@
 
 #include "LivingSprite.h"
 #include "ui\UILoadingBar.h"
+#include "Item.h"
 
+class Equipment;
 class DamageEvent;
 class AttackableSprite : public LivingSprite {
 public:
-	enum SpriteState
-	{
+	enum SpriteState{
 		IDLE = 1,
 		FOLLOW = 2,
 		ATTACK = 3,
 		FLEE = 4,
 		FREEZED = 5
+	};
+
+	enum EquipmentType {
+		WEAPON = 1,
+		HELMET = 2,
+		CHESTPLATE = 3,
+		LEGGINS = 4,
+		BOOTS = 5
 	};
 
 	//+= state
@@ -30,21 +39,36 @@ public:
 
 	void setHP(int hp) override;
 
-	virtual float getStrength() const = 0;
-	virtual float getArmor() const { return 0; }
-	virtual float getMoveSpeed() const = 0;
+	void pick(Item* item) { _inventory.pushBack(item); item->removeFromParent(); CC_ASSERT(item->getParent() == nullptr); }
 
 	~AttackableSprite() override;
+
+	virtual float getStrength() const { return _strength; }
+	virtual float getArmor() const { return _armor; }
+	virtual float getMoveSpeed() const { return _moveSpeed; }
+
+	virtual void addStrength(float s) { _strength += s; }
+	virtual void addArmor(float a) { _armor += a; }
+	virtual void addMoveSpeed(float m) { _moveSpeed += m; }
 
 protected:
 	bool init() override;
 	bool initWithJson(const Document& json) override;
 
+
+	int maxHP;
+	float _strength;
+	float _armor;
+	float _moveSpeed;
+
+	void equip(Equipment* equip);
 	virtual void attack() = 0;
 
 	//receive damage event, may not be in range.
 	virtual void onAttacked(EventCustom* event);
 
+	map<EquipmentType, Equipment*> _equipments;
+	Vector<Item*> _inventory;
 
 	//prepare actions from 
 	virtual bool initActions();
@@ -57,6 +81,9 @@ protected:
 	AttackableSprite() :_state(IDLE) {}
 
 private:
-	EventListenerCustom* _damageListener;
 	ProgressTimer* _HPBar;
+
+	virtual float getOriginalStrength() const = 0;
+	virtual float getOriginalArmor() const { return 0; }
+	virtual float getOriginalMoveSpeed() const = 0;
 };

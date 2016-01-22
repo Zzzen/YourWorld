@@ -1,5 +1,6 @@
 #include "You.h"
 #include "DamageEvent.h"
+#include "Utils.h"
 
 void You::setPosition(const Vec2& position){
 	auto oldPosition = getPosition();
@@ -17,6 +18,24 @@ void You::setPosition(const Vec2& position){
 		YourMoveEvent::getName(), moveEvent);
 
 	AttackableSprite::setPosition(position);
+}
+
+ScrollView * You::showInventory()
+{
+	auto view = ScrollView::create();
+	view->setContentSize(getVisibleSize()/2.0f);
+	
+	const static int ICON_SIZE = 32;
+	float innerHeight = ICON_SIZE*_inventory.size();
+	view->setInnerContainerSize(Size( 64.0f, innerHeight));
+
+	for (int i = 0; i < _inventory.size(); i++) {
+		auto item = _inventory.at(i);
+		item->setPosition(ICON_SIZE / 2.0f, innerHeight - ICON_SIZE / 2.0f - ICON_SIZE*i);
+		view->addChild(item);
+	}
+
+	return view;
 }
 
 You* You::create() {

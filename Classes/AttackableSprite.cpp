@@ -1,6 +1,7 @@
 #include "AttackableSprite.h"
 #include "DamageEvent.h"
 #include "Utils.h"
+#include "Equipment.h"
 
 
 Document AttackableSprite::toJson() const
@@ -76,12 +77,27 @@ void AttackableSprite::setHP(int hp)
 	_HPBar->setPercentage(100 * getHP() / getMaxHP());
 }
 
+void AttackableSprite::equip(Equipment* equip) {
+	auto it = _equipments.find(equip->_equipmentType);
+	if (it != _equipments.end()) {
+		it->second->detach(this);
+		it->second->release();
+	}
+
+	_equipments[equip->_equipmentType] = equip;
+	equip->attach(this);
+	equip->retain();
+}
+
 AttackableSprite::~AttackableSprite()
 {
-	_eventDispatcher->removeEventListener(_damageListener);
 	for (auto it = _actions.begin(); it != _actions.end(); ) {
 		it->second->release();
 		it = _actions.erase(it);
+	}
+	for (auto it = _equipments.begin(); it != _equipments.end();) {
+		it->second->release();
+		it = _equipments.erase(it);
 	}
 }
 
@@ -96,6 +112,9 @@ bool AttackableSprite::init()
 	addChild(_HPBar);
 	_HPBar->setPercentage(100);
 
+	_strength = getOriginalStrength();
+	_armor = getOriginalArmor();
+	_moveSpeed = getOriginalMoveSpeed();
 
 	if (!LivingSprite::init()) {
 		return false;
@@ -107,10 +126,10 @@ bool AttackableSprite::init()
 
 	setCurrentState(IDLE);
 
-	_damageListener = EventListenerCustom::create(DamageEvent::getEventName(),
+	auto damageListener = EventListenerCustom::create(DamageEvent::getEventName(),
 		CC_CALLBACK_1(AttackableSprite::onAttacked, this));
 
-	_eventDispatcher->addEventListenerWithFixedPriority(_damageListener, 1);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(damageListener, this);
 
 	return true;
 }

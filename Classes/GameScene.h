@@ -3,8 +3,10 @@
 
 #include "cocos2d.h"
 #include "Utils.h"
+#include "UI\UIScrollView.h"
 
 USING_NS_CC;
+using namespace cocos2d::ui;
 
 class You;
 class ChunkManager;
@@ -31,6 +33,7 @@ protected:
 	Label* _posLabel;
 	Label* _timeLabel;
 	Label* _HPLabel;
+	ScrollView* _inventory;
 
 	//now I know why `HelloWorldScene` is a `Layer` ܳ_ܳ
 	Layer* _holder;

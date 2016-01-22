@@ -3,6 +3,7 @@
 #include "CommonDefinition.h"
 #include "SQLUtils.h"
 #include "Human.h"
+#include "You.h"
 
 #define RAPIDJSON_HAS_STDSTRING 1
 #include "json\rapidjson.h"
@@ -54,6 +55,8 @@ void SpriteManager::onMobDied(EventCustom * event)
 {
 	Mob* mob = (static_cast<MobDieEvent*>(event->getUserData()))->getWho();
 	removeSprite(mob);
+	auto dabaojian = createSprite("Dabaojian");
+	dabaojian->setPosition(mob->getPosition());
 }
 
 void SpriteManager::createSprite(const unordered_map<string, string>& map) {
@@ -124,14 +127,28 @@ SpriteManager* SpriteManager::getInstance() {
 	return instance;
 }
 
-AttackableSprite* SpriteManager::createSprite(const string& name) {
+SerializableSprite* SpriteManager::createSprite(const string& name) {
 	auto it = _createFuncs.find(name);
 	CCASSERT(it!=_createFuncs.end(), (name + " not found").c_str());
 
-    auto s = dynamic_cast<AttackableSprite*>((*it).second());
-	CCASSERT(s, (name + " failed to cast").c_str());
+	//to do
+    //auto s = dynamic_cast<AttackableSprite*>((*it).second());
+	//CCASSERT(s, (name + " failed to cast").c_str());
 
+	auto s = (*it).second();
 	addSprite(s);
 
 	return s;
+}
+
+void SpriteManager::onYourMove(EventCustom* event) {
+	You* you = (static_cast<YourMoveEvent*>(event->getUserData()))->getWho();
+	
+	static const int COLLISON_LENGTH = 100;
+	for (SerializableSprite* sp : _sprites) {
+		if ((sp->getPosition() - you->getPosition()).length() > COLLISON_LENGTH) continue;
+		if ((sp->getParent() != _layer)) continue;
+		auto item = dynamic_cast<Item*>(sp);
+		if (item) you->pick(item);
+	}
 }

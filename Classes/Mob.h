@@ -13,10 +13,11 @@ public:
 protected:
 	void updateCustom(float dt) override;
 	float getUpdateInterval() override { return 0.1f; }
-	float getMoveSpeed()const override { return 10.0f; }
 
 	void die() override;
 
+private:
+	float getOriginalMoveSpeed()const override { return 10.0f; }
 };
 
 class MobDieEvent : public SpriteEvent<Mob>

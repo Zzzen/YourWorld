@@ -5,9 +5,11 @@
 
 #include "AttackableSprite.h"
 #include "SpriteEvent.h"
+#include "ui\UIScrollView.h"
+
 
 USING_NS_CC;
-
+using namespace cocos2d::ui;
 
 
 class You : public AttackableSprite {
@@ -16,6 +18,7 @@ public:
 
 	void setPosition(const Vec2& position) override;
 
+	ScrollView* showInventory();
 protected:
 	static You* create();
 
@@ -26,12 +29,13 @@ protected:
 	void updateCustom(float dt) override;
 	float getUpdateInterval() override { return 1.0f; }
 
-	float getStrength()const override { return 10.0f; }
-	float getMoveSpeed() const override { return 15.0f; }
-	int getMaxHP() const override { return 10000; }
 	void die() override {}
 	
 	void attack() override;
+private:
+	int getOriginalMaxHP() const override { return 10000; }
+	float getOriginalStrength()const override { return 10.0f; }
+	float getOriginalMoveSpeed() const override { return 15.0f; }
 };
 
 
