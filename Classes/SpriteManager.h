@@ -4,6 +4,9 @@
 #include "SerializableSprite.h"
 #include "Statue.h"
 
+#define RAPIDJSON_HAS_STDSTRING 1
+#include "json\rapidjson.h"
+#include "json\document.h"
 
 USING_NS_CC;
 using namespace std;
@@ -33,19 +36,21 @@ public:
 	//create sprite and add it to _layer
 	SerializableSprite* createSprite(const string& name);
 
-	void registerCreateFunc(const string& name, function<SerializableSprite* ()> func) {
-		_createFuncs.insert(pair<string, function<SerializableSprite* ()>>(name, func)); 
+	void registerCreateFunc(const string& className, function<SerializableSprite* ()> func) {
+		_createFuncs.insert(pair<string, function<SerializableSprite* ()>>(className, func));
+	}
+	void registerCreateFuncWithJson(const string& className, function< SerializableSprite* (const Document&)> func) {
+		_createFuncsWithJson.insert(pair<string, function< SerializableSprite* (const Document&)>>(className, func));
 	}
 private:
 	SpriteManager() {}
-	void createSprite(const unordered_map<string, string>& map);
+	SerializableSprite* createSprite(const unordered_map<string, string>& map);
 	void createNewSprites(const Chunk * chunk);
 
-	//add sprite to game layer and vector
-	inline void addSprite(SerializableSprite* sprite);
-	inline void removeSprite(SerializableSprite* sprite);
+	//sprites of _layer
+	Vector<SerializableSprite*> getAllSprites();
 
 	Node* _layer;
-	Vector<SerializableSprite*> _sprites;
 	map < string, function< SerializableSprite* ()> > _createFuncs;
+	map < string, function< SerializableSprite* (const Document&)> > _createFuncsWithJson;
 };

@@ -39,7 +39,7 @@ public:
 
 	void setHP(int hp) override;
 
-	void pick(Item* item) { _inventory.pushBack(item); item->removeFromParent(); CC_ASSERT(item->getParent() == nullptr); }
+	void pick(Item* item) { _inventory.pushBack(item); item->removeFromParent(); }
 
 	~AttackableSprite() override;
 

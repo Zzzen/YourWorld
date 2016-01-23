@@ -42,8 +42,10 @@ bool GameScene::init(){
 
 	_spriteManager = SpriteManager::getInstance();
 	_spriteManager->setLayer(_holder);
+	//to do: register all creat functions.
 	_spriteManager->registerCreateFunc("Human", [] { return Human::create(); });
 	_spriteManager->registerCreateFunc("Dabaojian", [] {return Dabaojian::create(); });
+	_spriteManager->registerCreateFuncWithJson("Statue", [](const rapidjson::Document& json) { return Statue::createWithJson(json); });
 
 	auto chunkListener = EventListenerCustom::create(ChunkJoinWorldEvent::getName(),
 		CC_CALLBACK_1(SpriteManager::onChunkCreated, _spriteManager));
@@ -116,6 +118,7 @@ void GameScene::updateWorld(float dt){
 	if (hour > 22 || hour < 8 && time->toRealSec() % 20 == 0) {
 		time->addRealMsec(1000); // to do
 		auto sp = _spriteManager->createSprite("Human");
+		_holder->addChild(sp);
 		auto m = dynamic_cast<Mob*>(sp);
 		CC_ASSERT(m);
 		sp->setPosition(_you->getPosition()+ 200 * randomVector(time->toRealSec()));

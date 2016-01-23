@@ -5,9 +5,7 @@
 #include "Human.h"
 #include "You.h"
 
-#define RAPIDJSON_HAS_STDSTRING 1
-#include "json\rapidjson.h"
-#include "json\document.h"
+
 
 
 using namespace std;
@@ -24,7 +22,8 @@ void SpriteManager::onChunkCreated(EventCustom* event) {
 	
 	//initialize sprites and add thems to the layer.
 	for (const auto& map : sprites) {
-		createSprite(map);
+		auto sp = createSprite(map);
+		if(sp) _layer->addChild(sp);
 	}
 
 	//if no sprite is retrieved
@@ -37,29 +36,24 @@ void SpriteManager::onChunkCreated(EventCustom* event) {
 void SpriteManager::onChunkRemoved(EventCustom* event) {
 	const Chunk* chunk = (static_cast<ChunkDisjoinWorldEvent*>(event->getUserData()))->getWho();
 	auto box = chunk->getBoundingBox();
-
-	std::vector<SerializableSprite*> invisible;
-	for (auto sprite : _sprites) {
-		if (box.containsPoint(sprite->getPosition())) {
-			invisible.push_back(sprite);
+	for (auto sp: getAllSprites()) {
+		if (box.intersectsRect(sp->getBoundingBox())) {
+			SQLUtils::insertSprite(sp);
+			sp->removeFromParent();
 		}
-	}
-	for (auto sprite : invisible) {
-		SQLUtils::insertSprite(sprite);
-		sprite->removeFromParent();
-		_sprites.eraseObject(sprite);
 	}
 }
 
 void SpriteManager::onMobDied(EventCustom * event)
 {
 	Mob* mob = (static_cast<MobDieEvent*>(event->getUserData()))->getWho();
-	removeSprite(mob);
+	_layer->removeChild(mob);
 	auto dabaojian = createSprite("Dabaojian");
+	_layer->addChild(dabaojian);
 	dabaojian->setPosition(mob->getPosition());
 }
 
-void SpriteManager::createSprite(const unordered_map<string, string>& map) {
+SerializableSprite* SpriteManager::createSprite(const unordered_map<string, string>& map) {
 	const int x = stoi(map.at("x")),
 		      y = stoi(map.at("y"));
 	const string className = map.at("className"),
@@ -68,37 +62,22 @@ void SpriteManager::createSprite(const unordered_map<string, string>& map) {
 	Document json;
 	json.Parse(properties.c_str());
 
-	SerializableSprite* sprite = nullptr;
-	if (className == "Statue") {
-		sprite = Statue::createWithJson(json);
-	}
+	auto it = _createFuncsWithJson.find(className);
 
-
-
-	if (!sprite) {
+	if (it == _createFuncsWithJson.end()) {
 		log("unable to instantiate sprite. class name: %s, properties: %s",
 			className.c_str(), properties.c_str());
-		return;
+		return nullptr;
 	}
 
+	auto sprite = (*it).second(json);
 	sprite->setPosition(x, y);
-
-	addSprite(sprite);
 
 	log("SpriteManager::createSprite: x: %d, y: %d, class: %s, properties: %s",
 		x, y, className.c_str(), properties.c_str());
-}
 
-void SpriteManager::addSprite(SerializableSprite* sprite) {
-	_sprites.pushBack(sprite);
-	_layer->addChild(sprite, SPRITE_ZORDER);
+	return sprite;
 }
-
-void SpriteManager::removeSprite(SerializableSprite* sprite) {
-	_sprites.eraseObject(sprite);
-	sprite->removeFromParent();
-}
-
 
 void SpriteManager::createNewSprites(const Chunk* chunk) {
 	auto vecs = chunk->getGradientVectors();
@@ -115,7 +94,7 @@ void SpriteManager::createNewSprites(const Chunk* chunk) {
 	if (variance > 1) {
 		auto statue = Statue::createWithType(Statue::SPEED);
 		statue->setPosition(chunk->getPosition());
-		addSprite(statue);
+		_layer->addChild(statue, SPRITE_ZORDER);
 
 		SQLUtils::insertSprite(statue);
 		log("new statue");
@@ -127,28 +106,34 @@ SpriteManager* SpriteManager::getInstance() {
 	return instance;
 }
 
-SerializableSprite* SpriteManager::createSprite(const string& name) {
-	auto it = _createFuncs.find(name);
-	CCASSERT(it!=_createFuncs.end(), (name + " not found").c_str());
+SerializableSprite* SpriteManager::createSprite(const string& className) {
+	auto it = _createFuncs.find(className);
+	CCASSERT(it!=_createFuncs.end(), (className + " not found").c_str());
 
 	//to do
     //auto s = dynamic_cast<AttackableSprite*>((*it).second());
-	//CCASSERT(s, (name + " failed to cast").c_str());
+	//CCASSERT(s, (className + " failed to cast").c_str());
 
-	auto s = (*it).second();
-	addSprite(s);
-
-	return s;
+	return (*it).second();
 }
 
 void SpriteManager::onYourMove(EventCustom* event) {
 	You* you = (static_cast<YourMoveEvent*>(event->getUserData()))->getWho();
 	
-	static const int COLLISON_LENGTH = 100;
-	for (SerializableSprite* sp : _sprites) {
+	static const int COLLISON_LENGTH = 20;
+	for (SerializableSprite* sp : getAllSprites()) {
 		if ((sp->getPosition() - you->getPosition()).length() > COLLISON_LENGTH) continue;
 		if ((sp->getParent() != _layer)) continue;
 		auto item = dynamic_cast<Item*>(sp);
 		if (item) you->pick(item);
 	}
+}
+
+Vector<SerializableSprite*> SpriteManager::getAllSprites() {
+	Vector<SerializableSprite*> sprites;
+	for (auto child : _layer->getChildren()) {
+		auto s = dynamic_cast<SerializableSprite*>(child);
+		if (s) sprites.pushBack(s);
+	}
+	return sprites;
 }
