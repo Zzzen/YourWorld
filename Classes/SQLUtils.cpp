@@ -51,7 +51,11 @@ void SQLUtils::insertSprite(const SerializableSprite* sprite){
 	sqlite3pp::command cmd(db,
 		"INSERT INTO sprites (x, y, className, properties)"
 		"             VALUES (?,?,?,?);");
-	cmd.binder() << x << y << className.c_str() << properties.c_str();
+	//cmd.binder() << x << y << className<< properties;
+	cmd.bind(1, x);
+	cmd.bind(2, y);
+	cmd.bind(3, className, copy_semantic::copy);
+	cmd.bind(4, properties, copy_semantic::copy);
 	cmd.execute();
 
 	//log("insert msg: %s", db.error_msg());

@@ -8,7 +8,7 @@
 #include "ui\UIButton.h"
 #include "ui\UIWidget.h"
 #include "Human.h"
-#include "Time.h"
+#include "MyTime.h"
 #include "Utils.h"
 #include "Dabaojian.h"
 
@@ -96,7 +96,7 @@ bool GameScene::init(){
 	_eventDispatcher->addEventListenerWithFixedPriority(mListener, 1);
 
 	schedule(schedule_selector(GameScene::updateWorld), 1.0f/24);
-	Time::getInstance()->setRealMsec(0); // to do: read from database;
+	MyTime::getInstance()->setRealMsec(0); // to do: read from database;
 
 	return true;
 }
@@ -104,7 +104,7 @@ bool GameScene::init(){
 void GameScene::updateWorld(float dt){
 	if (isPaused()) return;
 
-	auto time = Time::getInstance();
+	auto time = MyTime::getInstance();
 	time->addRealMsec(dt * 1000);
 	int hour = time->getVirtualHour();
 	char buffer[1024];

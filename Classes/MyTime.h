@@ -1,8 +1,8 @@
 #pragma once
 
-class Time {
+class MyTime {
 public:
-	static Time* getInstance();
+	static MyTime* getInstance();
 
 	void addRealMsec(int msec);
 	void setRealMsec(int msec);

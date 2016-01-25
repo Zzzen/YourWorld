@@ -1,25 +1,25 @@
-#include "Time.h"
+#include "MyTime.h"
 
 static const int TIME_RATIO = 100;
 static const int SEC_OF_DAY = 3600 * 24;
 
-Time* Time::getInstance() {
-	static Time* time = new Time();
+MyTime* MyTime::getInstance() {
+	static MyTime* time = new MyTime();
 	return time;
 }
 
-void Time::addRealMsec(int msec) {
+void MyTime::addRealMsec(int msec) {
 	_realMsec += msec;
 }
 
-void Time::setRealMsec(int msec) {
+void MyTime::setRealMsec(int msec) {
 	_realMsec = msec;
 }
 
-int Time::getVirtualDay() {
+int MyTime::getVirtualDay() {
 	return toRealSec() * TIME_RATIO / SEC_OF_DAY;
 }
 
-int Time::getVirtualHour() {
+int MyTime::getVirtualHour() {
 	return (toRealSec() * TIME_RATIO - getVirtualDay()*SEC_OF_DAY) / 3600 ;
 }
