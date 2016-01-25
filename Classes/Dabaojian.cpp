@@ -1,6 +1,8 @@
 #include "Dabaojian.h"
 #include "cocos2d.h"
 
+const float Dabaojian::STRENGTH = 100.0f;
+
 Dabaojian * Dabaojian::create()
 {
 	auto d = new Dabaojian;
@@ -18,8 +20,10 @@ Dabaojian * Dabaojian::create()
 
 void Dabaojian::attach(AttackableSprite * owner)
 {
+	owner->addStrength(STRENGTH);
 }
 
 void Dabaojian::detach(AttackableSprite * owner)
 {
+	owner->addStrength(STRENGTH);
 }

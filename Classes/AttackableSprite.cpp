@@ -63,12 +63,15 @@ void AttackableSprite::onAttacked(EventCustom * event)
 	CCLOG("%p onAttacked; damage: %f", this, value);
 }
 
-void AttackableSprite::setPosition(const Point& pos)
+void AttackableSprite::setPosition(const Point& position)
 {
-	auto old = getPosition();
-	LivingSprite::setPosition(pos);
+	auto oldPosition = getPosition();
+	LivingSprite::setPosition(position);
 
-	_direction = (pos - old).getNormalized();
+	float flip = position.x > oldPosition.x ? -1 : 1;
+	_skeletalNode->setScaleX(flip);
+
+	_direction = (position - oldPosition).getNormalized();
 }
 
 void AttackableSprite::setHP(int hp)
@@ -78,6 +81,7 @@ void AttackableSprite::setHP(int hp)
 }
 
 void AttackableSprite::equip(Equipment* equip) {
+	//remove original equipment
 	auto it = _equipments.find(equip->_equipmentType);
 	if (it != _equipments.end()) {
 		it->second->detach(this);
@@ -112,9 +116,9 @@ bool AttackableSprite::init()
 	addChild(_HPBar);
 	_HPBar->setPercentage(100);
 
-	_strength = getOriginalStrength();
-	_armor = getOriginalArmor();
-	_moveSpeed = getOriginalMoveSpeed();
+	_originalStrength = getOriginalStrength();
+	_orginalArmor = getOriginalArmor();
+	_originalMoveSpeed = getOriginalMoveSpeed();
 
 	if (!LivingSprite::init()) {
 		return false;
@@ -191,3 +195,13 @@ bool AttackableSprite::initActions()
 
 	return true;
 }
+
+AttackableSprite::AttackableSprite():
+	_state(IDLE),
+	_extraArmor(0.0f),
+	_extraMoveSpeed(0.0f),
+	_extraStrength(0.0f),
+	_originalMoveSpeed(0.0f),
+	_originalStrength(0.0f),
+	_orginalArmor(0.0f)
+{}

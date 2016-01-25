@@ -3,12 +3,13 @@
 static const float PI = 3.1415926f;
 
 
-Joystick::Joystick() {
+Joystick::Joystick():
+	_background(nullptr),
+	_center(nullptr)
+{
 }
 
 Joystick::~Joystick() {
-	// 取消事件监听
-	_eventDispatcher->removeEventListenersForTarget(this);
 }
 
 bool Joystick::init() {
@@ -60,7 +61,7 @@ bool Joystick::init() {
 }
 
 bool Joystick::onTouchBegan(Touch *touch, Event *unused_event) {
-//	log("onTouchBegan");
+	log("onTouchBegan");
 	auto point = convertTouchToNodeSpace(touch);
 	return _center->getBoundingBox().containsPoint(point);
 }

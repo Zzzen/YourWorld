@@ -9,4 +9,7 @@ public:
 	void detach(AttackableSprite* owner) override;
 
 	const string getClassName() const override { return "Dabaojian"; }
+
+protected:
+	static const float STRENGTH;
 };

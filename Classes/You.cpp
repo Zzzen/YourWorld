@@ -1,6 +1,9 @@
 #include "You.h"
 #include "DamageEvent.h"
 #include "Utils.h"
+#include "ui\UIButton.h"
+#include "ui\UIWidget.h"
+#include "Equipment.h"
 
 void You::setPosition(const Vec2& position){
 	auto oldPosition = getPosition();
@@ -8,9 +11,6 @@ void You::setPosition(const Vec2& position){
 	if (oldPosition == position){
 		return;
 	}
-
-	float flip = position.x > oldPosition.x ? 1:-1;
-	_skeletalNode->setScaleX(flip);
 
 	auto moveEvent = YourMoveEvent::createWithWho(this);
 	moveEvent->offset = position - oldPosition;
@@ -22,6 +22,7 @@ void You::setPosition(const Vec2& position){
 
 ScrollView * You::showInventory()
 {
+	using namespace cocos2d::ui;
 	auto view = ScrollView::create();
 	view->setContentSize(getVisibleSize()/2.0f);
 	
@@ -30,9 +31,22 @@ ScrollView * You::showInventory()
 	view->setInnerContainerSize(Size( 64.0f, innerHeight));
 
 	for (int i = 0; i < _inventory.size(); i++) {
-		auto item = _inventory.at(i);
+		Item* item = _inventory.at(i);
+		auto button = Button::create("use.png");
+		CC_ASSERT(button);
+		button->addTouchEventListener([this, item](cocos2d::Ref *pSender, Widget::TouchEventType type) {
+			if (type != Widget::TouchEventType::ENDED) return;
+
+			auto equipment = dynamic_cast<Equipment*>(item);
+			if (equipment) {
+				this->equip(equipment);
+				CCLOG("equip: %s", equipment->getClassName().c_str());
+			}
+		});
 		item->setPosition(ICON_SIZE / 2.0f, innerHeight - ICON_SIZE / 2.0f - ICON_SIZE*i);
+		button->setPosition(Vec2( ICON_SIZE * 3.0f / 2.0f, innerHeight - ICON_SIZE / 2.0f - ICON_SIZE*i));
 		view->addChild(item);
+		view->addChild(button);
 	}
 
 	return view;

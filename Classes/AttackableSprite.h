@@ -43,23 +43,25 @@ public:
 
 	~AttackableSprite() override;
 
-	virtual float getStrength() const { return _strength; }
-	virtual float getArmor() const { return _armor; }
-	virtual float getMoveSpeed() const { return _moveSpeed; }
+	virtual float getStrength() const { return _originalStrength + _extraStrength; }
+	virtual float getArmor() const { return _orginalArmor + _extraArmor; }
+	virtual float getMoveSpeed() const { return _originalMoveSpeed + _extraMoveSpeed; }
 
-	virtual void addStrength(float s) { _strength += s; }
-	virtual void addArmor(float a) { _armor += a; }
-	virtual void addMoveSpeed(float m) { _moveSpeed += m; }
+	virtual void addStrength(float s) { _extraStrength += s; }
+	virtual void addArmor(float a) { _extraArmor += a; }
+	virtual void addMoveSpeed(float m) { _extraMoveSpeed += m; }
 
 protected:
 	bool init() override;
 	bool initWithJson(const Document& json) override;
 
 
-	int maxHP;
-	float _strength;
-	float _armor;
-	float _moveSpeed;
+	float _originalStrength;
+	float _extraStrength;
+	float _orginalArmor;
+	float _extraArmor;
+	float _originalMoveSpeed;
+	float _extraMoveSpeed;
 
 	void equip(Equipment* equip);
 	virtual void attack() = 0;
@@ -78,7 +80,7 @@ protected:
 
 	Vec2 _direction;
 
-	AttackableSprite() :_state(IDLE) {}
+	AttackableSprite();
 
 private:
 	ProgressTimer* _HPBar;

@@ -16,6 +16,7 @@ protected:
 
 	void die() override;
 
+	~Mob() { CCLOG("~Mob()"); }
 private:
 	float getOriginalMoveSpeed()const override { return 10.0f; }
 };
