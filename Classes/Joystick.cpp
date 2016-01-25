@@ -61,7 +61,7 @@ bool Joystick::init() {
 }
 
 bool Joystick::onTouchBegan(Touch *touch, Event *unused_event) {
-	log("onTouchBegan");
+	//log("onTouchBegan");
 	auto point = convertTouchToNodeSpace(touch);
 	return _center->getBoundingBox().containsPoint(point);
 }

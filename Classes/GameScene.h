@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 #include "Utils.h"
 #include "UI\UIScrollView.h"
+#include "FreeArrow.h"
 
 USING_NS_CC;
 using namespace cocos2d::ui;
@@ -30,6 +31,7 @@ public:
 protected:
 	You* _you;
 	Joystick* _joystick;
+	FreeArrow* _freeArrow;
 	Label* _posLabel;
 	Label* _timeLabel;
 	Label* _HPLabel;

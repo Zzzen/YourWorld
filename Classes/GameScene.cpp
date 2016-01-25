@@ -191,6 +191,10 @@ void GameScene::addJoystick() {
 	_joystick = Joystick::create();
 	assert(_joystick);
 	Scene::addChild(_joystick, ZOrder::JOYSTICK);
+
+	_freeArrow = FreeArrow::create();
+	CC_ASSERT(_freeArrow);
+	Scene::addChild(_freeArrow, ZOrder::JOYSTICK - 1); //to do?
 }
 
 void GameScene::addLabels()
@@ -208,6 +212,12 @@ void GameScene::addLabels()
 
 GameScene::GameScene():
 	_isPaused(false),
-	_inventory(nullptr)
+	_inventory(nullptr),
+	_you(nullptr),
+	_joystick(nullptr),
+	_freeArrow(nullptr),
+	_posLabel(nullptr),
+	_timeLabel(nullptr),
+	_HPLabel(nullptr)
 {
 }
