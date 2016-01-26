@@ -4,3 +4,5 @@ proj.android-studio/
 !*/
 !Classes/*
 !Resources/*
+!tools/*
+Classes/i18n.h

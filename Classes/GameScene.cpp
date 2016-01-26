@@ -11,6 +11,8 @@
 #include "MyTime.h"
 #include "Utils.h"
 #include "Dabaojian.h"
+#include "i18n.h"
+
 
 USING_NS_CC;
 
@@ -107,12 +109,9 @@ void GameScene::updateWorld(float dt){
 	auto time = MyTime::getInstance();
 	time->addRealMsec(dt * 1000);
 	int hour = time->getVirtualHour();
-	char buffer[1024];
-	sprintf(buffer, "hour: %d", hour);
-	_timeLabel->setString(buffer);
+	_timeLabel->setString(R::getString(R::HOUR)+": "+to_string(hour));
 
-	sprintf(buffer, "HP: %d", _you->getHP());
-	_HPLabel->setString(buffer);
+	_HPLabel->setString(R::getString(R::HP)+ ": "+to_string(_you->getHP()));
 
 	//add mobs
 	if (hour > 22 || hour < 8 && time->toRealSec() % 20 == 0) {

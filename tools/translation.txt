@@ -1,0 +1,5 @@
+Dabaojian # Daobaojian # 大宝剑
+Equip #  Equip #  装备
+Use # Use # 使用
+Hour  #  Hour  #  小时
+HP # HP #  生命
