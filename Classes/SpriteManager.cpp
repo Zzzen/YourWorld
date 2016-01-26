@@ -48,9 +48,19 @@ void SpriteManager::onMobDied(EventCustom * event)
 {
 	Mob* mob = (static_cast<MobDieEvent*>(event->getUserData()))->getWho();
 	_layer->removeChild(mob);
-	auto dabaojian = createSprite("Dabaojian");
-	_layer->addChild(dabaojian);
-	dabaojian->setPosition(mob->getPosition());
+
+	int addr = (int)mob;
+	addr = addr % 512;
+	if (addr > 256) {
+		auto dabaojian = createSprite("Dabaojian");
+		_layer->addChild(dabaojian);
+		dabaojian->setPosition(mob->getPosition());
+	}
+	else {
+		auto shi = createSprite("Shi");
+		_layer->addChild(shi);
+		shi->setPosition(mob->getPosition());
+	}
 }
 
 SerializableSprite* SpriteManager::createSprite(const unordered_map<string, string>& map) {

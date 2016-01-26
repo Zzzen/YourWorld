@@ -8,4 +8,5 @@ public:
 	Type getItemType()const override { return CONSUMABLES; }
 
 	virtual void beConsumed(AttackableSprite* ) = 0;
+	~Consumable() { CCLOG("~Consumable()"); }
 };

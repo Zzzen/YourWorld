@@ -16,6 +16,7 @@ public:
 	void startSkeletalAnimation();
 	void pauseSkeletalAnimation();
 
+	virtual void addHP(int hp) { setHP(getHP() + hp); }
 	CC_PROPERTY(int, _HP, HP);
 	CC_SYNTHESIZE(int, _age, Age);
 

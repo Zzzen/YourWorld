@@ -1,5 +1,5 @@
 #include "Equipment.h"
-
+#include "i18n.h"
 
 class Dabaojian : public Equipment {
 public:
@@ -9,7 +9,7 @@ public:
 	void detach(AttackableSprite* owner) override;
 
 	const string getClassName() const override { return "Dabaojian"; }
-
+	virtual string getDetails() const override { return R::getString(R::DABAOJIAN_DETAILS); };
 protected:
 	static const float STRENGTH;
 };

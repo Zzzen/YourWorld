@@ -12,7 +12,7 @@
 #include "Utils.h"
 #include "Dabaojian.h"
 #include "i18n.h"
-
+#include "Shi.h"
 
 USING_NS_CC;
 
@@ -47,6 +47,8 @@ bool GameScene::init(){
 	//to do: register all creat functions.
 	_spriteManager->registerCreateFunc("Human", [] { return Human::create(); });
 	_spriteManager->registerCreateFunc("Dabaojian", [] {return Dabaojian::create(); });
+	_spriteManager->registerCreateFunc("Shi", [] {return Shi::create(); });
+
 	_spriteManager->registerCreateFuncWithJson("Statue", [](const rapidjson::Document& json) { return Statue::createWithJson(json); });
 
 	auto chunkListener = EventListenerCustom::create(ChunkJoinWorldEvent::getName(),
@@ -157,6 +159,7 @@ void GameScene::addSettingButton() {
 			}
 			else {
 				_inventory = _you->showInventory();
+				_inventory->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
 				Scene::addChild(_inventory, JOYSTICK);
 				_inventory->setPosition(getVisibleSize() / 2);
 				pauseLayer();

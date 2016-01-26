@@ -5,6 +5,7 @@
 #include "Item.h"
 
 class Equipment;
+class Consumable;
 class DamageEvent;
 class AttackableSprite : public LivingSprite {
 public:
@@ -40,6 +41,8 @@ public:
 	void setHP(int hp) override;
 
 	void pick(Item* item) { _inventory.pushBack(item); item->removeFromParent(); }
+
+	void consume(Consumable* consumable);
 
 	~AttackableSprite() override;
 

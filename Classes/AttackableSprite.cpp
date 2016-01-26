@@ -2,7 +2,7 @@
 #include "DamageEvent.h"
 #include "Utils.h"
 #include "Equipment.h"
-
+#include "Consumable.h"
 
 Document AttackableSprite::toJson() const
 {
@@ -91,6 +91,12 @@ void AttackableSprite::equip(Equipment* equip) {
 	_equipments[equip->_equipmentType] = equip;
 	equip->attach(this);
 	equip->retain();
+}
+
+void AttackableSprite::consume(Consumable * consumable)
+{
+	consumable->beConsumed(this);
+	_inventory.eraseObject(consumable);
 }
 
 AttackableSprite::~AttackableSprite()

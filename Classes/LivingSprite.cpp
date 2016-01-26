@@ -7,11 +7,15 @@ LivingSprite::LivingSprite()
 }
 
 void LivingSprite::setHP(int newHP) {
+	_HP = newHP;
+
+	if (newHP > _maxHP) {
+		_HP = _maxHP;
+	}
+
 	if (newHP < 1) {
 		die();
 	}
-
-	_HP = newHP;
 }
 
 int LivingSprite::getHP() {

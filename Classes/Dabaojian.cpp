@@ -25,5 +25,5 @@ void Dabaojian::attach(AttackableSprite * owner)
 
 void Dabaojian::detach(AttackableSprite * owner)
 {
-	owner->addStrength(STRENGTH);
+	owner->addStrength(-STRENGTH);
 }

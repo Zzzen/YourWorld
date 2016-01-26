@@ -2,6 +2,7 @@
 
 
 #include "SerializableSprite.h"
+#include "i18n.h"
 
 class Item : public SerializableSprite {
 public:
@@ -12,6 +13,7 @@ public:
 	};
 
 	virtual Type getItemType() const = 0;
+	virtual string getDetails() const = 0;
 
 	//play animation
 	void onEnter() override;

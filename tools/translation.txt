@@ -3,3 +3,6 @@ Equip #  Equip #  装备
 Use # Use # 使用
 Hour  #  Hour  #  小时
 HP # HP #  生命
+Dabaojian_details # Dabaojian, add 100 strength # 大宝剑，添加100力量
+Details # Details # 详情
+Shi_details # shi, add 5% HP. # 屎，回复5%生命
