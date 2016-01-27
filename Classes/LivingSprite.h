@@ -45,4 +45,5 @@ private:
 	//add skeletal animation if file name is specified.
 	void initSkeletalAnimation();
 	virtual int getOriginalMaxHP()const = 0;
+	void updateCustomCaller(float dt) { updateCustom(dt); }
 };

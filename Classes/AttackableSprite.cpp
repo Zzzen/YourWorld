@@ -60,7 +60,7 @@ void AttackableSprite::onAttacked(EventCustom * event)
 	auto value = damage->getDamage() - getArmor();
 	value = value < 0 ? 1 : value;
 	setHP(getHP() - value);
-	CCLOG("%p onAttacked; damage: %f", this, value);
+//	CCLOG("%p onAttacked; damage: %f", this, value);
 }
 
 void AttackableSprite::setPosition(const Point& position)
@@ -97,6 +97,36 @@ void AttackableSprite::consume(Consumable * consumable)
 {
 	consumable->beConsumed(this);
 	_inventory.eraseObject(consumable);
+}
+
+Vector<StatusEffect*> AttackableSprite::getStatusEffects()
+{
+	Vector<StatusEffect*> effs;
+	for (auto child : getChildren()) {
+		auto eff = dynamic_cast<StatusEffect*>(child);
+		if (eff) effs.pushBack(eff);
+	}
+	return effs;
+}
+
+void AttackableSprite::addStatusEffect(StatusEffect * effect)
+{
+	//if this kind of effect has been added.
+	auto name = effect->getClassName();
+	for (auto eff : getStatusEffects()) {
+		if (eff->getClassName() == name) {
+			eff->refresh();
+			return;
+		}
+	}
+
+	addChild(effect);
+	effect->setTarget(this);
+}
+
+void AttackableSprite::removeStatusEffect(StatusEffect * effect)
+{
+	removeChild(effect, true);
 }
 
 AttackableSprite::~AttackableSprite()

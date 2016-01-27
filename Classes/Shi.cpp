@@ -1,5 +1,6 @@
 #include "Shi.h"
 #include "AttackableSprite.h"
+#include "Zhongdu.h"
 
 Shi * Shi::create()
 {
@@ -16,5 +17,7 @@ Shi * Shi::create()
 
 void Shi::beConsumed(AttackableSprite* user)
 {
+	auto du = Zhongdu::create();
+	user->addStatusEffect(du);
 	user->addHP(user->getMaxHP()*0.05f);
 }

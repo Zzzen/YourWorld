@@ -82,7 +82,7 @@ bool LivingSprite::init() {
 	_maxHP = getOriginalMaxHP();
 	setHP(_maxHP);
 
-	schedule(CC_SCHEDULE_SELECTOR(LivingSprite::updateCustom), getUpdateInterval(), kRepeatForever, 0);
+	schedule(CC_SCHEDULE_SELECTOR(LivingSprite::updateCustomCaller), getUpdateInterval(), kRepeatForever, 0);
 	initSkeletalAnimation();
 
 	return true;

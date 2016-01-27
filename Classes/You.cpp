@@ -42,15 +42,20 @@ ScrollView * You::showInventory()
 		useBtn->setTitleText(R::getString(R::USE));
 		useBtn->setTitleColor(Color3B(127, 0, 0));
 		CC_ASSERT(useBtn);
-		useBtn->addTouchEventListener([this, item, useBtn, detailBtn](cocos2d::Ref *pSender, Widget::TouchEventType type) {
+		useBtn->addTouchEventListener([this, item, useBtn, detailBtn, view](cocos2d::Ref *pSender, Widget::TouchEventType type) {
 			if (type != Widget::TouchEventType::ENDED) return;
-
+			
 			switch (item->getItemType())
 			{
 			case Item::CONSUMABLES:
 				consume(dynamic_cast<Consumable*>(item));
+				for (Node* child : view->getChildren()) {
+					if (child->getPosition().y > item->getPosition().y)
+						child->setPosition(child->getPosition() - Vec2(0, ICON_SIZE));
+				}
 				useBtn->removeFromParent();
 				detailBtn->removeFromParent();
+				item->removeFromParent();
 				break;
 			case Item::EQUIPMENTS:
 				equip(dynamic_cast<Equipment*>(item));

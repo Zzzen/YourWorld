@@ -3,6 +3,7 @@
 #include "LivingSprite.h"
 #include "ui\UILoadingBar.h"
 #include "Item.h"
+#include "StatusEffect.h"
 
 class Equipment;
 class Consumable;
@@ -43,6 +44,10 @@ public:
 	void pick(Item* item) { _inventory.pushBack(item); item->removeFromParent(); }
 
 	void consume(Consumable* consumable);
+
+	Vector<StatusEffect*> getStatusEffects();
+	void addStatusEffect(StatusEffect* effect);
+	void removeStatusEffect(StatusEffect* effect);
 
 	~AttackableSprite() override;
 
