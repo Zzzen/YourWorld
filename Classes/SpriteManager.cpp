@@ -64,8 +64,8 @@ void SpriteManager::onMobDied(EventCustom * event)
 }
 
 SerializableSprite* SpriteManager::createSprite(const unordered_map<string, string>& map) {
-	const int x = stoi(map.at("x")),
-		      y = stoi(map.at("y"));
+	const int x = atoi(map.at("x").c_str()),
+		      y = atoi(map.at("y").c_str());
 	const string className = map.at("className"),
                  properties = map.at("properties");
 

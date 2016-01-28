@@ -33,6 +33,7 @@ bool GameScene::init(){
 
 	CCASSERT(Director::getInstance()->getVisibleOrigin().length() < std::numeric_limits<float>::epsilon(), "WTF is cocos2dx doing");
 
+	SQLUtils::createTable();
 
 	addJoystick();
 	addSettingButton();
@@ -75,7 +76,6 @@ bool GameScene::init(){
 
 
 
-	SQLUtils::createTable();
 
 	//add move listener
 	auto mListener = EventListenerCustom::create(YourMoveEvent::getName(), [=](EventCustom* event){

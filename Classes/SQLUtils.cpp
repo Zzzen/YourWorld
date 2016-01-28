@@ -1,5 +1,6 @@
 #include "SQLUtils.h"
 
+#include "Utils.h"
 #include "lib/sqlite3pp/sqlite3pp.h"
 #include "CCFileUtils.h"
 

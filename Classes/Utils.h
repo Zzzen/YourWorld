@@ -2,6 +2,9 @@
 
 #include "cocos2d.h"
 
+#include <string>
+#include <sstream>
+
 USING_NS_CC;
 using namespace std;
 
@@ -24,3 +27,15 @@ public:
 
 	Ref* _ref;
 };
+
+
+
+namespace std
+{
+    template < typename T > std::string to_string( const T& n )
+    {
+        std::ostringstream ss;
+        ss << n ;
+        return ss.str() ;
+    }
+}
