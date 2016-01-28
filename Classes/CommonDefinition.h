@@ -33,7 +33,8 @@ struct GridCoordinate
 	int y;
 };
 
-const size_t TILE_SIZE = 16;
+static const size_t TILE_SIZE = 16;
 
+static const char* DEFUALT_FONT = "fonts/Marker Felt.ttf";
 
 #endif

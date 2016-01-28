@@ -3,6 +3,7 @@
 #include "Utils.h"
 #include "Equipment.h"
 #include "Consumable.h"
+#include "CommonDefinition.h"
 
 Document AttackableSprite::toJson() const
 {
@@ -56,10 +57,22 @@ void AttackableSprite::onAttacked(EventCustom * event)
 	if ( damage->getSource()==this || !getBoundingBox().intersectsRect(damage->getRange()) ) {
 		return;
 	}
+	
 	setCurrentState(FREEZED);
 	auto value = damage->getDamage() - getArmor();
 	value = value < 0 ? 1 : value;
 	setHP(getHP() - value);
+
+	//show a damage label
+	auto label = Label::createWithSystemFont(to_string((int)(damage->getDamage())), DEFUALT_FONT, 16);
+	label->setTextColor(Color4B::RED);
+	label->setPosition(0, getBoundingBox().size.height);
+	auto moveBy = MoveBy::create(1.0f, Vec2(0, 20));
+	label->runAction(moveBy);
+	auto scale = ScaleTo::create(moveBy->getDuration(), 1.4f);
+	label->runAction(scale);
+	scheduleOnce([label](float dt) {  label->removeFromParent();  }, moveBy->getDuration(), to_string((long long)label));
+	addChild(label);
 //	CCLOG("%p onAttacked; damage: %f", this, value);
 }
 

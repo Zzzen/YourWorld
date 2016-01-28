@@ -7,6 +7,8 @@ void StatusEffect::setTarget(AttackableSprite * target)
 	begin();
 
 	schedule(CC_SCHEDULE_SELECTOR(StatusEffect::updateCustomCaller), 1.0f, kRepeatForever, 1.0f);
+
+	if (getScheduler()->isTargetPaused(target)) pause();
 }
 
 void StatusEffect::refresh()
