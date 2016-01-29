@@ -29,54 +29,72 @@ bool FreeArrow::init()
 
 	setPosition(Vec2::ZERO);
 
-	_touchListener = EventListenerTouchOneByOne::create();
+	_touchListener = EventListenerTouchAllAtOnce::create();
 
-	_touchListener->setSwallowTouches(true);
-	_touchListener->onTouchBegan =
-		CC_CALLBACK_2(FreeArrow::onTouchBegan, this);
-	_touchListener->onTouchMoved =
-		CC_CALLBACK_2(FreeArrow::onTouchMoved, this);
-	_touchListener->onTouchEnded =
-		CC_CALLBACK_2(FreeArrow::onTouchEnded, this);
+	_touchListener->onTouchesBegan =
+		CC_CALLBACK_2(FreeArrow::onTouchesBegan, this);
+	_touchListener->onTouchesMoved =
+		CC_CALLBACK_2(FreeArrow::onTouchesMoved, this);
+	_touchListener->onTouchesEnded =
+		CC_CALLBACK_2(FreeArrow::onTouchesEnded, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(_touchListener,
 		this);
 
 	return true;
 }
 
-
-bool FreeArrow::onTouchBegan(Touch * touch, Event * unused_event)
+void FreeArrow::onTouchesBegan(const std::vector<Touch*>& touches, Event * event)
 {
-	auto point = convertTouchToNodeSpace(touch);
+	for (auto touch : touches) {
+		auto point = convertTouchToNodeSpace(touch);
 
-	//click on the left part of screen
-	if (getVisibleSize().width*0.382 > point.x) return false;
+		//click on the left part of screen
+		if (getVisibleSize().width*0.382 < point.x) {
+			_isTouched = true;
+			_touchID = touch->getID();
 
-	_arrow->setPosition(point);
-	_arrow->setVisible(true);
-	_arrow->setScale(0.0f);
-
-	return true;
+			_arrow->setPosition(point);
+			_arrow->setVisible(true);
+			_arrow->setScale(0.0f);
+		}
+	}
 }
 
-void FreeArrow::onTouchMoved(Touch * touch, Event * unused_event)
+void FreeArrow::onTouchesMoved(const std::vector<Touch*>& touches, Event * event)
 {
-	auto point = convertTouchToNodeSpace(touch);
-	auto dv = point - _arrow->getPosition();
-	auto scale = dv.length() / (_arrow->getTexture()->getContentSize().height);
-	if (scale > 1.0f) scale = 1.0f;
+	if (!_isTouched) return;
 
-	_arrow->setRotation(MATH_RAD_TO_DEG( -dv.getAngle() ) + 90.0f);
-	_arrow->setScale(scale);
+	for (auto touch : touches) {
+		if (touch->getID() == _touchID) {
+			auto point = convertTouchToNodeSpace(touch);
+			auto dv = point - _arrow->getPosition();
+			auto scale = dv.length() / (_arrow->getTexture()->getContentSize().height);
+			if (scale > 1.0f) scale = 1.0f;
+
+			_arrow->setRotation(MATH_RAD_TO_DEG(-dv.getAngle()) + 90.0f);
+			_arrow->setScale(scale);
+		}
+	}
 }
 
-void FreeArrow::onTouchEnded(Touch * touch, Event * unused_event)
+void FreeArrow::onTouchesEnded(const std::vector<Touch*>& touches, Event * event)
 {
-	_arrow->setVisible(false);
+	if (!_isTouched) return;
+
+	for (auto touch : touches) {
+		if (touch->getID() == _touchID) {
+			_isTouched = false;
+			_touchID = 0;
+
+			_arrow->setVisible(false);
+		}
+	}
 }
+
 
 FreeArrow::FreeArrow():
 	_touchListener(nullptr),
-	_arrow(nullptr)
+	_arrow(nullptr),
+	_isTouched(false)
 {
 }

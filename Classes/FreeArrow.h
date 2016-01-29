@@ -12,10 +12,18 @@ protected:
 	FreeArrow();
 
 	bool init() override;
-	bool onTouchBegan(Touch *touch, Event *unused_event);
-	void onTouchMoved(Touch *touch, Event *unused_event);
-	void onTouchEnded(Touch *touch, Event *unused_event);
+
+	void onTouchesBegan(const std::vector<Touch*>& touches, Event  *event);
+	void onTouchesMoved(const std::vector<Touch*>& touches, Event  *event);
+	void onTouchesEnded(const std::vector<Touch*>& touches, Event  *event);
+	void onTouchesCancelled(const std::vector<Touch*>& touches, Event  *event) { onTouchesEnded(touches, event); }
+
 
 	Sprite* _arrow;
-	EventListenerTouchOneByOne* _touchListener;
+	EventListenerTouchAllAtOnce* _touchListener;
+
+private:
+	int _touchID;
+	bool _isTouched;
+
 };

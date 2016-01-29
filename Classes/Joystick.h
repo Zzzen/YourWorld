@@ -6,17 +6,9 @@
 USING_NS_CC;
 
 class Joystick : public Node{
-private:
-	Joystick();
-
-protected:
-	bool onTouchBegan(Touch *touch, Event *unused_event);
-	void onTouchMoved(Touch *touch, Event *unused_event);
-	void onTouchEnded(Touch *touch, Event *unused_event);
-
 public:
 	//@return a unit vector
-	inline Vec2 getGradientVector(){
+	inline Vec2 getGradientVector() {
 		return _gradientVector;
 	}
 
@@ -24,10 +16,19 @@ public:
 	virtual bool init();
 	CREATE_FUNC(Joystick);
 
-private:
+protected:
+	void onTouchesBegan(const std::vector<Touch*>& touches, Event  *event);
+	void onTouchesMoved(const std::vector<Touch*>& touches, Event  *event);
+	void onTouchesEnded(const std::vector<Touch*>& touches, Event  *event);
+	void onTouchesCancelled(const std::vector<Touch*>& touches, Event  *event) {	onTouchesEnded(touches, event);	}
+
+	Joystick();
+
 	Sprite* _background;
 	Sprite* _center;
 	Vec2 _gradientVector;
+	int _touchID;
+	bool _isTouched;
 
 	double _radius;
 	Vec2 _centralPos;

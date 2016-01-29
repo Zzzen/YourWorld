@@ -1,15 +1,14 @@
 #include "Joystick.h"
+#include "Utils.h"
 
 static const float PI = 3.1415926f;
 
 
 Joystick::Joystick():
 	_background(nullptr),
-	_center(nullptr)
+	_center(nullptr),
+	_isTouched(false)
 {
-}
-
-Joystick::~Joystick() {
 }
 
 bool Joystick::init() {
@@ -30,7 +29,7 @@ bool Joystick::init() {
 		_background->setPosition(_centralPos);
 		addChild(_background);
 
-		setPosition(_centralPos*0.6f);
+		setPosition(_centralPos*0.6f + Vec2(0, getVisibleSize().height*0.2f));
 
 		// joystick的中心点
 		_center = Sprite::create("joystick_center.png");
@@ -40,19 +39,12 @@ bool Joystick::init() {
 		_center->setPosition(_centralPos);
 		addChild(_center);
 
-		// touch event监听
-		auto touchListener = EventListenerTouchOneByOne::create();
-		CC_BREAK_IF(!touchListener);
 
-		touchListener->setSwallowTouches(true);
-		touchListener->onTouchBegan =
-			CC_CALLBACK_2(Joystick::onTouchBegan, this);
-		touchListener->onTouchMoved =
-			CC_CALLBACK_2(Joystick::onTouchMoved, this);
-		touchListener->onTouchEnded =
-			CC_CALLBACK_2(Joystick::onTouchEnded, this);
-		_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener,
-			this);
+		auto listener = EventListenerTouchAllAtOnce::create();
+		listener->onTouchesBegan = CC_CALLBACK_2(Joystick::onTouchesBegan, this);
+		listener->onTouchesMoved = CC_CALLBACK_2(Joystick::onTouchesMoved, this);
+		listener->onTouchesEnded = CC_CALLBACK_2(Joystick::onTouchesEnded, this);
+		_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
 		result = true;
 	} while (0);
@@ -60,31 +52,59 @@ bool Joystick::init() {
 	return result;
 }
 
-bool Joystick::onTouchBegan(Touch *touch, Event *unused_event) {
-	//log("onTouchBegan");
-	auto point = convertTouchToNodeSpace(touch);
-	return _center->getBoundingBox().containsPoint(point);
-}
 
-void Joystick::onTouchMoved(Touch *touch, Event *unused_event) {
-//	log("onTouchMoved");
-	auto point = convertTouchToNodeSpace(touch);
 
-	Vec2 direction(point.x - _centralPos.x, point.y - _centralPos.y);
-	if (direction.length() > _radius) {
-		direction.normalize();
-	}
-	else {
-		direction = direction / _radius;
+void Joystick::onTouchesBegan(const std::vector<Touch*>& touches, Event * event)
+{
+	for (auto touch : touches) {
+		auto point = convertTouchToNodeSpace(touch);
+		if (_center->getBoundingBox().containsPoint(point)) {
+			_isTouched = true;
+			_touchID = touch->getID();
+		}
 	}
 
-	_center->setPosition(direction*_radius + _centralPos);
-
-	_gradientVector = direction;
 }
 
-void Joystick::onTouchEnded(Touch *touch, Event *unused_event) {
-//	log("onTouchEnded");
-	_gradientVector = Vec2::ZERO;
-	_center->setPosition(_centralPos);
+void Joystick::onTouchesMoved(const std::vector<Touch*>& touches, Event * event)
+{
+	if (!_isTouched) return;
+
+	for (auto touch : touches) {
+		// not the touch we care
+		if (touch->getID() != _touchID) continue;
+
+
+		auto point = convertTouchToNodeSpace(touch);
+
+		Vec2 direction(point.x - _centralPos.x, point.y - _centralPos.y);
+		if (direction.length() > _radius) {
+			direction.normalize();
+		}
+		else {
+			direction = direction / _radius;
+		}
+
+		_center->setPosition(direction*_radius + _centralPos);
+
+		_gradientVector = direction;
+	}
+}
+
+void Joystick::onTouchesEnded(const std::vector<Touch*>& touches, Event * event)
+{
+	if (!_isTouched) return;
+
+	for (auto touch : touches) {
+		// not the touch we care
+		if (touch->getID() != _touchID) continue;
+
+		_isTouched = false;
+		_touchID = -1;
+		_gradientVector = Vec2::ZERO;
+		_center->setPosition(_centralPos);
+	}
+}
+
+Joystick::~Joystick() {
 }
