@@ -3,6 +3,25 @@
 using namespace std;
 USING_NS_CC;
 
+
+void showToast(string text)
+{
+	static int pRandom = 0;
+	pRandom = (pRandom + 1) % 5;
+
+	auto label = Label::createWithSystemFont(text, "", 16);
+	label->setPosition(0, getVisibleSize().height - 30 * pRandom);
+
+	auto scene = Director::getInstance()->getRunningScene();
+	if (!scene) return;
+	scene->addChild(label, 128, "Toast");
+
+	auto moveTo = MoveTo::create(4.0f, Vec2(getVisibleSize().width, label->getPosition().y));
+	label->runAction(moveTo);
+
+	label->scheduleOnce([label](float) {label->removeFromParent(); }, moveTo->getDuration(), "label"); //to do
+}
+
 string str(const Point& point) {
 	string s = " Point: ";
 	return s + to_string(point.x) + ", " + to_string(point.y);

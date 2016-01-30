@@ -22,6 +22,9 @@ public:
 
 	void setLayer(Node* node) { _parent = node; }
 	virtual ~ChunkManager();
+
+	static const float CHUNK_WIDTH;
+	static const float CHUNK_HEIGHT;
 private:
 	ChunkManager() {}
 

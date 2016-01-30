@@ -8,6 +8,8 @@
 USING_NS_CC;
 using namespace std;
 
+void showToast(string text);
+
 string str(const Point& point);
 
 string str(const Size& size);

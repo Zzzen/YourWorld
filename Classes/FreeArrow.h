@@ -20,6 +20,7 @@ protected:
 
 
 	Sprite* _arrow;
+	DrawNode* _drawNode;
 	EventListenerTouchAllAtOnce* _touchListener;
 
 private:

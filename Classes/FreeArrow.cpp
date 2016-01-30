@@ -27,6 +27,10 @@ bool FreeArrow::init()
 	addChild(_arrow);
 	_arrow->setVisible(false);
 
+	_drawNode = DrawNode::create();
+	_arrow->addChild(_drawNode);
+	_drawNode->setPosition(Vec2::ZERO);
+
 	setPosition(Vec2::ZERO);
 
 	_touchListener = EventListenerTouchAllAtOnce::create();
@@ -73,6 +77,9 @@ void FreeArrow::onTouchesMoved(const std::vector<Touch*>& touches, Event * event
 
 			_arrow->setRotation(MATH_RAD_TO_DEG(-dv.getAngle()) + 90.0f);
 			_arrow->setScale(scale);
+
+			_drawNode->clear();
+			_drawNode->drawCircle(Vec2::ZERO, _arrow->getTexture()->getContentSize().height / scale, 0, 120, false, Color4F::RED); //to do
 		}
 	}
 }
@@ -87,6 +94,7 @@ void FreeArrow::onTouchesEnded(const std::vector<Touch*>& touches, Event * event
 			_touchID = 0;
 
 			_arrow->setVisible(false);
+			_drawNode->clear();
 		}
 	}
 }
@@ -95,6 +103,7 @@ void FreeArrow::onTouchesEnded(const std::vector<Touch*>& touches, Event * event
 FreeArrow::FreeArrow():
 	_touchListener(nullptr),
 	_arrow(nullptr),
+	_drawNode(nullptr),
 	_isTouched(false)
 {
 }

@@ -13,6 +13,8 @@ static const int BACKGROUND_ZORDER = 1;
 bool Chunk::initTiles(){
 	auto map = cocos2d::experimental::TMXTiledMap::create("tile.tmx");
 	assert(map);
+	auto director = Director::getInstance();
+	map->setScale(director->getContentScaleFactor());
 	addChild(map, BACKGROUND_ZORDER);
 	auto layer = map->getLayer("layer");
 	assert(layer);

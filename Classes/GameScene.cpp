@@ -84,15 +84,13 @@ bool GameScene::init(){
 		auto offset = moveEvent->offset;
 		_holder->setPosition(_holder->getPosition() - offset);
 
-		char buffer[1024];
-		sprintf(buffer, "x: %f, y:%f", _you->getPosition().x, _you->getPosition().y);
-		_posLabel->setString(buffer);
-
 
 		auto pos = _you->getPosition();
+		_posLabel->setString("x: "+to_string(pos.x)+" y: "+to_string(pos.y));
+
 		for (int x = -1; x < 2; x++) {
 			for (int y = -1; y < 2; y++) {
-				Vec2 vec(x / 2.0f*getVisibleSize().width, y / 2.0f*getVisibleSize().height);
+				Vec2 vec(x / 2.0f * ChunkManager::CHUNK_WIDTH, y / 2.0f * ChunkManager::CHUNK_HEIGHT);
 				_chunkManager->updateChunks(pos + vec);
 			}
 		}
@@ -203,13 +201,13 @@ void GameScene::addLabels()
 {
 	_posLabel = Label::create();
 	Scene::addChild(_posLabel);
-	_posLabel->setPosition(getVisibleSize().width / 2, 300);
+	_posLabel->setPosition(getVisibleSize().width / 2, getVisibleSize().height * 0.9f);
 	_timeLabel = Label::create();
 	Scene::addChild(_timeLabel);
-	_timeLabel->setPosition(getVisibleSize().width / 2, 280.0f);
+	_timeLabel->setPosition(getVisibleSize().width / 2, getVisibleSize().height * 0.85f);
 	_HPLabel = Label::create();
 	Scene::addChild(_HPLabel);
-	_HPLabel->setPosition(getVisibleSize().width / 2, 250.0f);
+	_HPLabel->setPosition(getVisibleSize().width / 2, getVisibleSize().height * 0.8f);
 }
 
 GameScene::GameScene():

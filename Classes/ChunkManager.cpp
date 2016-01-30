@@ -1,5 +1,6 @@
 #include "ChunkManager.h"
 #include "PseudorandomNumber.h"
+#include "Utils.h"
 
 #include "math\CCMath.h"
 #include "cocos2d.h"
@@ -8,15 +9,15 @@
 USING_NS_CC;
 
 
-const static float DX = Chunk::SIDE_LENGTH * TILE_SIZE;
-const static float DY = DX;
+const float ChunkManager::CHUNK_WIDTH = Chunk::SIDE_LENGTH * TILE_SIZE;
+const float ChunkManager::CHUNK_HEIGHT = CHUNK_WIDTH;
 
 const static int MAX_CACHED_THUNK = 5;
 
 ChunkManager::~ChunkManager(){
 }
 
-void ChunkManager::updateChunks(const Point& point, bool visible){
+void ChunkManager::updateChunks(const Point& point, bool visible /* = true */ ){
 	if (!visible){
 		return;
 	}
@@ -29,19 +30,18 @@ void ChunkManager::updateChunks(const Point& point, bool visible){
 }
 
 void ChunkManager::discardInvisibleChunk(const Point& pos) {
-	std::vector<Chunk*> invisible;
-	for (auto chunk : _chunks) {
-		if ((chunk->getPosition() - pos).length() > Chunk::SIDE_LENGTH*TILE_SIZE * MAX_CACHED_THUNK) {
-			invisible.push_back(chunk);
-		}
-	}
-	for (auto chunk : invisible) {
-		auto event = ChunkDisjoinWorldEvent::createWithWho(chunk);
-		Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(ChunkDisjoinWorldEvent::getName(),
-			event);
+	for (auto it = _chunks.begin(); it != _chunks.end();) {
+		if (((*it)->getPosition() - pos).length() > Chunk::SIDE_LENGTH*TILE_SIZE * MAX_CACHED_THUNK) {
+			auto event = ChunkDisjoinWorldEvent::createWithWho(*it);
+			Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(ChunkDisjoinWorldEvent::getName(),
+				event);
 
-		chunk->removeFromParent();
-		_chunks.eraseObject(chunk);
+			(*it)->removeFromParent();
+			it = _chunks.erase(it);
+		}
+		else {
+			it++;
+		}
 	}
 }
 
@@ -77,7 +77,7 @@ Chunk* ChunkManager::newChunk(const Point& interior){
 	//new!
 	auto chunk = Chunk::createWithGradientVectors(vecs);
 	assert(chunk);
-	chunk->setPosition(bottomLeft.x*DX, bottomLeft.y*DY);
+	chunk->setPosition(bottomLeft.x*CHUNK_WIDTH, bottomLeft.y*CHUNK_HEIGHT);
 
 	auto event = ChunkJoinWorldEvent::createWithWho(chunk);
 	assert(event);
@@ -113,8 +113,8 @@ bool ChunkManager::contains(const Point& point) const {
 }
 
 GridCoordinate ChunkManager::convertPointToGrid(const Point& point){
-	int x = static_cast<int> (floor(point.x / DX));
-	int y = static_cast<int> (floor(point.y / DY));
+	int x = static_cast<int> (floor(point.x / CHUNK_WIDTH));
+	int y = static_cast<int> (floor(point.y / CHUNK_HEIGHT));
 
 	return GridCoordinate{ x, y };
 }
