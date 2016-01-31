@@ -6,6 +6,7 @@
 #include "Equipment.h"
 #include "Consumable.h"
 #include "i18n.h"
+#include "TextButton.h"
 
 void You::setPosition(const Vec2& position){
 	auto oldPosition = getPosition();
@@ -34,16 +35,15 @@ ScrollView * You::showInventory()
 
 	for (int i = 0; i < _inventory.size(); i++) {
 		Item* item = _inventory.at(i);
-		auto detailBtn = Button::create("40X20.png");
-		detailBtn->setTitleText(R::getString(R::DETAILS));
-		detailBtn->setTitleColor(Color3B(127, 0, 0));
+		auto detailBtn = TextButton::create();
+		detailBtn->setText(R::getString(R::DETAILS));
+		detailBtn->setTextColor(Color4B::MAGENTA);
 
-		auto useBtn = Button::create("40X20.png");
-		useBtn->setTitleText(R::getString(R::USE));
-		useBtn->setTitleColor(Color3B(127, 0, 0));
+		auto useBtn = TextButton::create();
+		useBtn->setText(R::getString(R::USE));
+		useBtn->setTextColor(Color4B::MAGENTA);
 		CC_ASSERT(useBtn);
-		useBtn->addTouchEventListener([this, item, useBtn, detailBtn, view](cocos2d::Ref *pSender, Widget::TouchEventType type) {
-			if (type != Widget::TouchEventType::ENDED) return;
+		useBtn->onTouched = [this, item, useBtn, detailBtn, view]() {
 			
 			switch (item->getItemType())
 			{
@@ -56,6 +56,7 @@ ScrollView * You::showInventory()
 				useBtn->removeFromParent();
 				detailBtn->removeFromParent();
 				item->removeFromParent();
+				view->setInnerContainerSize(view->getInnerContainerSize() - Size(0, ICON_SIZE));
 				break;
 			case Item::EQUIPMENTS:
 				equip(dynamic_cast<Equipment*>(item));
@@ -66,23 +67,28 @@ ScrollView * You::showInventory()
 				CC_ASSERT("unexpected Item type");
 				break;
 			}
-		});
+		};
 		item->setPosition(ICON_SIZE / 2.0f, innerHeight - ICON_SIZE / 2.0f - ICON_SIZE*i);
 		useBtn->setPosition(Vec2( ICON_SIZE * 3.0f / 2.0f, innerHeight - ICON_SIZE / 2.0f - ICON_SIZE*i));
 
-		detailBtn->setPosition(Vec2(ICON_SIZE + useBtn->getRightBoundary(), innerHeight - ICON_SIZE / 2.0f - ICON_SIZE*i));  //to do
-		detailBtn->addTouchEventListener([this, item, detailBtn](cocos2d::Ref *pSender, Widget::TouchEventType type) {
-			if (type != Widget::TouchEventType::ENDED) return;
-			string labelName("detail label");
-			if (detailBtn->getChildByName(labelName)) return;
+		detailBtn->setPosition(Vec2(ICON_SIZE + useBtn->getBoundingBox().getMaxX(), innerHeight - ICON_SIZE / 2.0f - ICON_SIZE*i));  //to do
+		detailBtn->onTouched = [this, item, detailBtn]() {
 
-			Label* label = Label::create();
+			string labelName("detail label");
+			auto label = dynamic_cast<Label*>(detailBtn->getChildByName(labelName));
+			if (label) {
+				label->setVisible(!label->isVisible());
+				return;
+			}
+
+			label = Label::create();
 			label->setName(labelName);
 			label->setString(item->getDetails());
 			detailBtn->addChild(label);
-			label->setPosition(detailBtn->getBoundingBox().size.width + 8.0f, detailBtn->getBoundingBox().size.height / 2.0f);
+			label->setPosition(detailBtn->getBoundingBox().size.width + 8.0f, 0);
 			label->setAnchorPoint(Vec2::ANCHOR_MIDDLE_LEFT);
-		});
+
+		};
 
 		view->addChild(item);
 		view->addChild(useBtn);

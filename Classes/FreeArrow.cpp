@@ -30,6 +30,7 @@ bool FreeArrow::init()
 	_drawNode = DrawNode::create();
 	_arrow->addChild(_drawNode);
 	_drawNode->setPosition(Vec2::ZERO);
+	_circleColor = Color4F::RED;
 
 	setPosition(Vec2::ZERO);
 
@@ -47,13 +48,17 @@ bool FreeArrow::init()
 	return true;
 }
 
+bool FreeArrow::isPointAccepted(const Point& pos) {
+	return getVisibleSize().width*0.5f < pos.x;
+}
+
 void FreeArrow::onTouchesBegan(const std::vector<Touch*>& touches, Event * event)
 {
 	for (auto touch : touches) {
 		auto point = convertTouchToNodeSpace(touch);
 
 		//click on the left part of screen
-		if (getVisibleSize().width*0.382 < point.x) {
+		if (isPointAccepted(point)) {
 			_isTouched = true;
 			_touchID = touch->getID();
 
@@ -79,7 +84,8 @@ void FreeArrow::onTouchesMoved(const std::vector<Touch*>& touches, Event * event
 			_arrow->setScale(scale);
 
 			_drawNode->clear();
-			_drawNode->drawCircle(Vec2::ZERO, _arrow->getTexture()->getContentSize().height / scale, 0, 120, false, Color4F::RED); //to do
+
+			_drawNode->drawCircle(Vec2::ZERO, _arrow->getTexture()->getContentSize().height / scale, 0, 7, false, _circleColor);
 		}
 	}
 }

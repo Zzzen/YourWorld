@@ -31,7 +31,7 @@ bool GameScene::init(){
 	assert(_holder);
 	Scene::addChild(_holder);
 
-	CCASSERT(Director::getInstance()->getVisibleOrigin().length() < std::numeric_limits<float>::epsilon(), "WTF is cocos2dx doing");
+//	CCASSERT(Director::getInstance()->getVisibleOrigin().length() < std::numeric_limits<float>::epsilon(), "WTF is cocos2dx doing");
 
 	SQLUtils::createTable();
 
