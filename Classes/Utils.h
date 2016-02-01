@@ -10,6 +10,15 @@ using namespace std;
 
 void showToast(string text);
 
+template <class RET_TYPE>
+inline RET_TYPE strTo(const string& str)
+{
+	stringstream ss(str);
+	RET_TYPE i;
+	ss >> i;
+	return i;
+}
+
 string str(const Point& point);
 
 string str(const Size& size);

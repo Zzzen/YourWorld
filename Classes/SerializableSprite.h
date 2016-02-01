@@ -17,8 +17,17 @@ public:
 	virtual Document toJson() const;
 	virtual const string getClassName() const = 0;
 
+	SerializableSprite();
+
+	void setRowid(int64_t id) { _rowid = id; }
+
+	int64_t getRowid() const { return _rowid; }
+
 protected:
 	virtual bool initWithJson(const Document& json) { return true; }
+
+	//since rowid is always a 64-bit signed integer in sqlite3.
+	int64_t _rowid;
 };
 
 

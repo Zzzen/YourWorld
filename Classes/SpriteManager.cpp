@@ -4,6 +4,7 @@
 #include "SQLUtils.h"
 #include "Human.h"
 #include "You.h"
+#include "Utils.h"
 
 
 
@@ -38,7 +39,7 @@ void SpriteManager::onChunkRemoved(EventCustom* event) {
 	auto box = chunk->getBoundingBox();
 	for (auto sp: getAllSprites()) {
 		if (box.intersectsRect(sp->getBoundingBox())) {
-			SQLUtils::insertSprite(sp);
+			SQLUtils::addToCache(sp);
 			sp->removeFromParent();
 		}
 	}
@@ -69,6 +70,10 @@ SerializableSprite* SpriteManager::createSprite(const unordered_map<string, stri
 	const string className = map.at("className"),
                  properties = map.at("properties");
 
+	
+	int64_t rowid = strTo<int64_t>(map.at("rowid"));
+	//CC_ASSERT(rowid != 0);
+
 	Document json;
 	json.Parse(properties.c_str());
 
@@ -82,6 +87,7 @@ SerializableSprite* SpriteManager::createSprite(const unordered_map<string, stri
 
 	auto sprite = (*it).second(json);
 	sprite->setPosition(x, y);
+	sprite->setRowid(rowid);
 
 	log("SpriteManager::createSprite: x: %d, y: %d, class: %s, properties: %s",
 		x, y, className.c_str(), properties.c_str());
@@ -106,7 +112,7 @@ void SpriteManager::createNewSprites(const Chunk* chunk) {
 		statue->setPosition(chunk->getPosition());
 		_layer->addChild(statue, SPRITE_ZORDER);
 
-		SQLUtils::insertSprite(statue);
+		SQLUtils::addToCache(statue);
 		log("new statue");
 	}
 }

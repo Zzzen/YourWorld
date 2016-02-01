@@ -7,3 +7,9 @@ Document SerializableSprite::toJson() const {
 	doc.SetObject();
 	return doc;
 }
+
+
+SerializableSprite::SerializableSprite():
+	_rowid(0)
+{
+}

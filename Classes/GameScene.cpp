@@ -13,6 +13,7 @@
 #include "Dabaojian.h"
 #include "i18n.h"
 #include "Shi.h"
+#include "TextButton.h"
 
 USING_NS_CC;
 
@@ -39,6 +40,12 @@ bool GameScene::init(){
 	addSettingButton();
 	addActionButton();
 	addLabels();
+
+	auto saveBtn = TextButton::create();
+	saveBtn->setText(R::getString(R::SAVE));
+	Scene::addChild(saveBtn);
+	saveBtn->setPosition(getVisibleSize().width - 40, getVisibleSize().height - 40);
+	saveBtn->onTouched = []() { SQLUtils::flush(); };
 
 	_chunkManager = ChunkManager::getInstance();
 	_chunkManager->setLayer(_holder);

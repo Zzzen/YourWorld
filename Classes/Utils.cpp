@@ -22,6 +22,7 @@ void showToast(string text)
 	label->scheduleOnce([label](float) {label->removeFromParent(); }, moveTo->getDuration(), "label"); //to do
 }
 
+
 string str(const Point& point) {
 	string s = " Point: ";
 	return s + to_string(point.x) + ", " + to_string(point.y);
