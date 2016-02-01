@@ -11,7 +11,7 @@ USING_NS_CC_MATH;
 */
 struct GradientVectors
 {
-	const Vec2 bottomLeft,
+	Vec2 bottomLeft,
 		bottomRight,
 		topRight,
 		topLeft;

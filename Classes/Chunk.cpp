@@ -10,13 +10,9 @@ enum TerrainType {
 
 static const int BACKGROUND_ZORDER = 1;
 
-bool Chunk::initTiles(){
-	auto map = cocos2d::experimental::TMXTiledMap::create("tile.tmx");
-	assert(map);
-	auto director = Director::getInstance();
-	map->setScale(director->getContentScaleFactor());
-	addChild(map, BACKGROUND_ZORDER);
-	auto layer = map->getLayer("layer");
+bool Chunk::initTiles(const GradientVectors& vectors){
+	_gradientVectors = vectors;
+	auto layer = _map->getLayer("layer");
 	assert(layer);
 
 	for (size_t x = 0; x < SIDE_LENGTH; x++){
@@ -57,8 +53,8 @@ bool Chunk::initTiles(){
 }
 
 Chunk* Chunk::createWithGradientVectors(const GradientVectors& vectors) {
-	auto chunk = new(std::nothrow) Chunk(vectors);
-	if (chunk && chunk->init())
+	auto chunk = new(std::nothrow) Chunk();
+	if (chunk && chunk->init(vectors))
 	{
 		chunk->autorelease();
 		return chunk;
@@ -70,15 +66,23 @@ Chunk* Chunk::createWithGradientVectors(const GradientVectors& vectors) {
 	}
 }
 
-bool Chunk::init() {
+bool Chunk::init(const GradientVectors& vectors) {
 	if (!Node::init()) {
 		return false;
 	}
-	return initTiles();
+
+	_map = cocos2d::experimental::TMXTiledMap::create("tile.tmx");
+	assert(_map);
+	auto director = Director::getInstance();
+	_map->setScale(director->getContentScaleFactor());
+	addChild(_map, BACKGROUND_ZORDER);
+
+	return initTiles(vectors);
 }
 
-Chunk::Chunk(const GradientVectors& vectors):
-  _gradientVectors(vectors)
+Chunk::Chunk():
+	_map(nullptr),
+	_gradientVectors(Vec2::ZERO, Vec2::ZERO, Vec2::ZERO, Vec2::ZERO)
 {
 	setContentSize(Size(SIDE_LENGTH*TILE_SIZE, SIDE_LENGTH*TILE_SIZE));
 	setAnchorPoint(Vec2(0, 0));

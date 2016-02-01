@@ -12,9 +12,18 @@ USING_NS_CC;
 const float ChunkManager::CHUNK_WIDTH = Chunk::SIDE_LENGTH * TILE_SIZE;
 const float ChunkManager::CHUNK_HEIGHT = CHUNK_WIDTH;
 
-const static int MAX_CACHED_THUNK = 5;
+const static int MAX_CACHED_THUNK = 3;
 
 ChunkManager::~ChunkManager(){
+}
+
+ChunkManager::ChunkManager():
+	_parent(nullptr)
+{
+	for (int i = 0; i < 16; i++) {
+		auto chunk = Chunk::createWithGradientVectors(GradientVectors(Vec2::ZERO, Vec2::ZERO, Vec2::ZERO, Vec2::ZERO));
+		_chunks.pushBack(chunk);
+	}
 }
 
 void ChunkManager::updateChunks(const Point& point, bool visible /* = true */ ){
@@ -22,25 +31,24 @@ void ChunkManager::updateChunks(const Point& point, bool visible /* = true */ ){
 		return;
 	}
 
-	discardInvisibleChunk(point);
+	hideDistantChunk(point);
 
 	if (contains(point)) return;
 
 	newChunk(point);
 }
 
-void ChunkManager::discardInvisibleChunk(const Point& pos) {
-	for (auto it = _chunks.begin(); it != _chunks.end();) {
+void ChunkManager::hideDistantChunk(const Point& pos) {
+	auto onScene = getChunksOnScene();
+	for (auto it = onScene.begin(); it != onScene.end(); it++) {
 		if (((*it)->getPosition() - pos).length() > Chunk::SIDE_LENGTH*TILE_SIZE * MAX_CACHED_THUNK) {
 			auto event = ChunkDisjoinWorldEvent::createWithWho(*it);
 			Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(ChunkDisjoinWorldEvent::getName(),
 				event);
 
+			CCLOG("hide Chunk at %s ", str((*it)->getPosition()).c_str());
 			(*it)->removeFromParent();
-			it = _chunks.erase(it);
-		}
-		else {
-			it++;
+			//it = _chunks.erase(it);
 		}
 	}
 }
@@ -51,7 +59,6 @@ Chunk* ChunkManager::newChunk(const Point& interior){
 	auto br = GridCoordinate{ bottomLeft.x + 1, bottomLeft.y };
 	auto tr = GridCoordinate{ bottomLeft.x + 1, bottomLeft.y +1 };
 	auto tl = GridCoordinate{ bottomLeft.x, bottomLeft.y + 1 };
-	log("new Chunk at ( %d, %d ) gridcoordinate.", bottomLeft.x, bottomLeft.y);
 	//get corresponding indexs.
 	auto i1 = convertCoorToIndex(bottomLeft);
 	auto i2 = convertCoorToIndex(br);
@@ -75,8 +82,23 @@ Chunk* ChunkManager::newChunk(const Point& interior){
 	GradientVectors vecs{ v1, v2, v3, v4 };
 
 	//new!
-	auto chunk = Chunk::createWithGradientVectors(vecs);
-	assert(chunk);
+	Chunk* chunk = nullptr;
+	for (auto c : getCachedChunks()) {
+		if (!c->getParent()) {
+			chunk = c;
+			break;
+		}
+	}
+
+	if (chunk) {
+		chunk->initTiles(vecs);
+		CCLOG("reuse Chunk at %f, %f", bottomLeft.x*CHUNK_WIDTH, bottomLeft.y*CHUNK_HEIGHT);
+	}
+	else {
+		chunk = Chunk::createWithGradientVectors(vecs);
+		CCLOG("create chunk at %f, %f", bottomLeft.x*CHUNK_WIDTH, bottomLeft.y*CHUNK_HEIGHT);
+		assert(chunk);
+	}
 	chunk->setPosition(bottomLeft.x*CHUNK_WIDTH, bottomLeft.y*CHUNK_HEIGHT);
 
 	auto event = ChunkJoinWorldEvent::createWithWho(chunk);
@@ -85,7 +107,9 @@ Chunk* ChunkManager::newChunk(const Point& interior){
 		event);
 	
 	_parent->addChild(chunk);
-	_chunks.pushBack(chunk);
+	if (_chunks.find(chunk) == _chunks.end()) {
+		_chunks.pushBack(chunk);
+	}
 
 	return chunk;
 }
@@ -102,8 +126,8 @@ inline Vec2 ChunkManager::rotatedVector(float angle){
 	return unit;
 }
 
-bool ChunkManager::contains(const Point& point) const {
-	for (auto chunk : _chunks){
+bool ChunkManager::contains(const Point& point) {
+	for (auto chunk : getChunksOnScene()){
 	//	Rect boundary(chunk->getPosition(), chunk->getContentSize());
 		if (chunk->getBoundingBox().containsPoint(point)){
 			return true;
@@ -156,4 +180,28 @@ int ChunkManager::convertCoorToIndex(const GridCoordinate& grid){
 
 //	log("index: %d", index);
 	return index;
+}
+
+Vector<Chunk*> ChunkManager::getChunksOnScene()
+{
+	Vector<Chunk*> onScene;
+	
+	for (auto c : _chunks) {
+		if (c->getParent()) {
+			onScene.pushBack(c);
+		}
+	}
+
+	return onScene;
+}
+
+Vector<Chunk*> ChunkManager::getCachedChunks()
+{
+	Vector<Chunk*> cached;
+	for (auto c : _chunks) {
+		if (!c->getParent()) {
+			cached.pushBack(c);
+		}
+	}
+	return cached;
 }

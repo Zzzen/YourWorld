@@ -12,15 +12,16 @@ public:
 
 	~Chunk() override;
 
+	bool initTiles(const GradientVectors& vectors);
+
 	//there are 128 tiles along one side.
 	const static size_t SIDE_LENGTH = 128;
 
 	GradientVectors getGradientVectors() const { return _gradientVectors; }
 protected:
-	Chunk(const GradientVectors& vectors);
+	Chunk();
 
-	bool init() override;
-	bool initTiles();
+	bool init(const GradientVectors& vectors);
 	/*
 	* @param weight: the weight of y, 0<= weight <=1.
 	*/
@@ -28,7 +29,8 @@ protected:
 		return (1 - weight)*x + weight*y;
 	}
 	
-	const GradientVectors _gradientVectors;
+	GradientVectors _gradientVectors;
+	cocos2d::experimental::TMXTiledMap* _map;
 };
 
 /*
