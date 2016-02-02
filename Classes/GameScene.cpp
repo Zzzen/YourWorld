@@ -45,6 +45,7 @@ bool GameScene::init(){
 	saveBtn->setText(R::getString(R::SAVE));
 	Scene::addChild(saveBtn);
 	saveBtn->setPosition(getVisibleSize().width - 40, getVisibleSize().height - 40);
+	//to do: add everything to cache first
 	saveBtn->onTouched = []() { SQLUtils::flush(); };
 
 	_chunkManager = ChunkManager::getInstance();
