@@ -38,8 +38,6 @@ bool LivingSprite::initWithJson(const Document& json) {
 
 	schedule(CC_SCHEDULE_SELECTOR(LivingSprite::updateCustom), getUpdateInterval(), kRepeatForever, 0);
 
-	initSkeletalAnimation();
-
 	assert(json.HasMember("HP") && json["HP"].IsInt());
 	assert(json.HasMember("age") && json["age"].IsInt());
 	setHP(json["HP"].GetInt());

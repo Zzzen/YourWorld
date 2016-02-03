@@ -5,6 +5,8 @@
 #include "Consumable.h"
 #include "CommonDefinition.h"
 
+static const int STATE_ACTION_TAG = 23421;
+
 Document AttackableSprite::toJson() const
 {
 	auto json = LivingSprite::toJson();
@@ -16,13 +18,13 @@ Document AttackableSprite::toJson() const
 
 void AttackableSprite::setCurrentState(SpriteState state)
 {
-	auto lastStateAction = _actions[_state];
+	auto lastStateAction = _actions.at(_state);
 	_skeletalNode->stopAction(lastStateAction);
 
 	_state = state;
 	auto action = _actions[state];
 	CCASSERT(action, "no corresponding action");
-	_skeletalNode->stopAllActions();
+	_skeletalNode->stopAllActionsByTag(STATE_ACTION_TAG);
 	_skeletalNode->runAction(action);
 	action->gotoFrameAndPlay(0, true);
 
@@ -198,11 +200,12 @@ bool AttackableSprite::initWithJson(const Document & json)
 	auto state = static_cast<SpriteState>(json["state"].GetInt());
 	setCurrentState(state);
 
-	return false;
+	return true;
 }
 
 bool AttackableSprite::initActions()
 {
+	using namespace cocostudio::timeline;
 	const string nodeName = getSkeletalFileName();
 	const auto dot = nodeName.find_last_of('.');
 	const string followFile = string(nodeName).insert(dot, "Follow");
@@ -226,21 +229,29 @@ bool AttackableSprite::initActions()
 
 	for (auto pair : _actions) {
 		pair.second->retain();
+		pair.second->setTag(STATE_ACTION_TAG);
 	}
 
 
 	//set action callbacks.
 	auto setIdle = [this] { setCurrentState(IDLE); };
+
 	followAction->setLastFrameCallFunc(setIdle);
 	fleeAction->setLastFrameCallFunc(setIdle);
 	freezedAction->setLastFrameCallFunc(setIdle);
+	attackAction->setLastFrameCallFunc(setIdle);
 
-	auto attackAndIdle = [this, setIdle] {
-		setIdle();
+
+	using namespace cocostudio::timeline;
+	_actions[ATTACK]->setFrameEventCallFunc([this](Frame* frame) {
+		EventFrame* evnt = dynamic_cast<EventFrame*>(frame);
+		CCLOG("index %d", evnt->getFrameIndex());
+		if (!evnt || evnt->getEvent().empty())	return;
+		string evtName = evnt->getEvent();
+		CCASSERT("ATTACK" == evtName, "");
+		CCLOG("bounding box: %s", str(evnt->getNode()->getBoundingBox()).c_str());
 		attack();
-	};
-	attackAction->setLastFrameCallFunc(attackAndIdle);
-
+	});
 
 	return true;
 }

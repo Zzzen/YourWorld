@@ -59,6 +59,7 @@ bool GameScene::init(){
 	_spriteManager->registerCreateFunc("Shi", [] {return Shi::create(); });
 
 	_spriteManager->registerCreateFuncWithJson("Statue", [](const rapidjson::Document& json) { return Statue::createWithJson(json); });
+	_spriteManager->registerCreateFuncWithJson("Human", [](const rapidjson::Document& json) { return Human::createWithJson(json); });
 
 	auto chunkListener = EventListenerCustom::create(ChunkJoinWorldEvent::getName(),
 		CC_CALLBACK_1(SpriteManager::onChunkCreated, _spriteManager));

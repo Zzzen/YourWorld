@@ -19,7 +19,7 @@ TextButton::TextButton():
 	_drawNode(nullptr),
 	_touchListener(nullptr),
 	_sizePolicy(RELATIVE),
-	onTouched([]{}),
+	onTouched(nullptr),
 	_segment(40),
 	_radius(5),
 	_backgroudColor(Color4F::GRAY)
@@ -58,7 +58,7 @@ bool TextButton::init()
 	_touchListener->onTouchEnded = [this](Touch* touch, Event*) {
 		onTouchEnded();
 
-		if (_label->getBoundingBox().containsPoint(convertTouchToNodeSpace(touch))) {
+		if (onTouched && _label->getBoundingBox().containsPoint(convertTouchToNodeSpace(touch))) {
 			Xu xu(this);
 			onTouched();
 		}

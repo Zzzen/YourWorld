@@ -5,6 +5,7 @@
 class Human: public Mob{
 public:
 	static Human* create();
+	static Human* createWithJson(const Document& json);
 
 protected:
 	string getSkeletalFileName() const override { return "res/yourSkeleton.csb"; }

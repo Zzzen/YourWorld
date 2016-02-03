@@ -88,6 +88,7 @@ SerializableSprite* SpriteManager::createSprite(const unordered_map<string, stri
 	auto sprite = (*it).second(json);
 	sprite->setPosition(x, y);
 	sprite->setRowid(rowid);
+	sprite->setLocalZOrder(SPRITE_ZORDER);
 
 	log("SpriteManager::createSprite: x: %d, y: %d, class: %s, properties: %s",
 		x, y, className.c_str(), properties.c_str());
@@ -108,12 +109,12 @@ void SpriteManager::createNewSprites(const Chunk* chunk) {
 
 	log(variance);
 	if (variance > 1) {
-		auto statue = Statue::createWithType(Statue::SPEED);
-		statue->setPosition(chunk->getPosition());
-		_layer->addChild(statue, SPRITE_ZORDER);
+		//auto statue = Statue::createWithType(Statue::SPEED);
+		//statue->setPosition(chunk->getPosition());
+		//_layer->addChild(statue, SPRITE_ZORDER);
 
-		SQLUtils::addToCache(statue);
-		log("new statue");
+		//SQLUtils::addToCache(statue);
+		//log("new statue");
 	}
 }
 

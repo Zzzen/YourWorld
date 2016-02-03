@@ -184,7 +184,7 @@ void SQLUtils::addToCache(const SerializableSprite* sprite){
 
 vector<unordered_map<string, string>> SQLUtils::selectSprites(const pair<int, int>& xRange, const pair<int, int>& yRange) {
 	//if it has been cached.
-	Rect rect(xRange.first, xRange.second, xRange.second - xRange.first, yRange.second);
+	Rect rect(xRange.first, yRange.first, xRange.second - xRange.first, yRange.second - yRange.first);
 	if (isRectCached(rect)) {
 		return getCachedSprites(rect);
 	}
