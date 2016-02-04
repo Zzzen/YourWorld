@@ -31,6 +31,9 @@ public:
 	static SpriteManager* getInstance();
 	void setLayer(Node* node) { _layer = node; }
 
+	//sprites of _layer
+	Vector<SerializableSprite*> getAllSprites();
+
 	~SpriteManager() {}
 
 	//create sprite and add it to _layer
@@ -47,8 +50,6 @@ private:
 	SerializableSprite* createSprite(const unordered_map<string, string>& map);
 	void createNewSprites(const Chunk * chunk);
 
-	//sprites of _layer
-	Vector<SerializableSprite*> getAllSprites();
 
 	Node* _layer;
 	map < string, function< SerializableSprite* ()> > _createFuncs;

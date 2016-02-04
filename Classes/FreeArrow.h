@@ -8,6 +8,8 @@ class FreeArrow : public Node {
 public:
 	static FreeArrow* create();
 
+	std::function<void(const Vec2&)> onTouchEnded;
+
 protected:
 	FreeArrow();
 
@@ -21,7 +23,7 @@ protected:
 	void onTouchesEnded(const std::vector<Touch*>& touches, Event  *event);
 	void onTouchesCancelled(const std::vector<Touch*>& touches, Event  *event) { onTouchesEnded(touches, event); }
 
-	// default angle is 90 degree
+	// default angle is 0 degree
 	Sprite* _arrow;
 	DrawNode* _drawNode;
 	Color4F _circleColor;

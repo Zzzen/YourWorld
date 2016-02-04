@@ -78,15 +78,17 @@ void AttackableSprite::onAttacked(EventCustom * event)
 //	CCLOG("%p onAttacked; damage: %f", this, value);
 }
 
-void AttackableSprite::setPosition(const Point& position)
+void AttackableSprite::setPosition(float x, float y)
 {
-	auto oldPosition = getPosition();
-	LivingSprite::setPosition(position);
+	Point position(x, y);
+	auto prevPosition = getPosition();
+	LivingSprite::setPosition(x, y);
 
-	float flip = position.x > oldPosition.x ? -1 : 1;
+	_direction = (position - prevPosition).getNormalized();
+
+	if (abs(position.x - prevPosition.x) < std::numeric_limits<float>::epsilon()) return;
+	float flip = position.x > prevPosition.x ? -1 : 1;
 	_skeletalNode->setScaleX(flip);
-
-	_direction = (position - oldPosition).getNormalized();
 }
 
 void AttackableSprite::setHP(int hp)
@@ -245,11 +247,10 @@ bool AttackableSprite::initActions()
 	using namespace cocostudio::timeline;
 	_actions[ATTACK]->setFrameEventCallFunc([this](Frame* frame) {
 		EventFrame* evnt = dynamic_cast<EventFrame*>(frame);
-		CCLOG("index %d", evnt->getFrameIndex());
 		if (!evnt || evnt->getEvent().empty())	return;
 		string evtName = evnt->getEvent();
 		CCASSERT("ATTACK" == evtName, "");
-		CCLOG("bounding box: %s", str(evnt->getNode()->getBoundingBox()).c_str());
+		//CCLOG("bounding box: %s", str(evnt->getNode()->getBoundingBox()).c_str());
 		attack();
 	});
 
@@ -263,5 +264,6 @@ AttackableSprite::AttackableSprite():
 	_extraStrength(0.0f),
 	_originalMoveSpeed(0.0f),
 	_originalStrength(0.0f),
-	_orginalArmor(0.0f)
+	_orginalArmor(0.0f),
+	_attackTarget(nullptr)
 {}

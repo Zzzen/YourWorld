@@ -15,6 +15,8 @@
 #include "Shi.h"
 #include "TextButton.h"
 
+#include "Jian.h"
+
 USING_NS_CC;
 
 enum ZOrder
@@ -204,6 +206,13 @@ void GameScene::addJoystick() {
 	_freeArrow = FreeArrow::create();
 	CC_ASSERT(_freeArrow);
 	Scene::addChild(_freeArrow, ZOrder::JOYSTICK - 1); //to do?
+	_freeArrow->onTouchEnded = [this](const Vec2& vec) {
+		CCLOG("Touched %s", str(vec).c_str());
+		auto j = Jian::create(vec.getAngle(), 100, 3, 10, _you);
+		j->setPosition(_you->getPosition());
+		j->start();
+		_holder->addChild(j, ZOrder::YOU);
+	};
 }
 
 void GameScene::addLabels()

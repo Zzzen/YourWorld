@@ -23,7 +23,7 @@ bool FreeArrow::init()
 	_arrow = Sprite::create("arrow.png");
 	CC_ASSERT(_arrow);
 
-	_arrow->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
+	_arrow->setAnchorPoint(Vec2::ANCHOR_MIDDLE_LEFT);
 	addChild(_arrow);
 	_arrow->setVisible(false);
 
@@ -65,6 +65,8 @@ void FreeArrow::onTouchesBegan(const std::vector<Touch*>& touches, Event * event
 			_arrow->setPosition(point);
 			_arrow->setVisible(true);
 			_arrow->setScale(0.0f);
+
+			break;
 		}
 	}
 }
@@ -77,15 +79,16 @@ void FreeArrow::onTouchesMoved(const std::vector<Touch*>& touches, Event * event
 		if (touch->getID() == _touchID) {
 			auto point = convertTouchToNodeSpace(touch);
 			auto dv = point - _arrow->getPosition();
-			auto scale = dv.length() / (_arrow->getTexture()->getContentSize().height);
+			auto scale = dv.length() / (_arrow->getTexture()->getContentSize().width);
 			if (scale > 1.0f) scale = 1.0f;
 
-			_arrow->setRotation(MATH_RAD_TO_DEG(-dv.getAngle()) + 90.0f);
+			_arrow->setRotation(MATH_RAD_TO_DEG(-dv.getAngle()));
 			_arrow->setScale(scale);
 
 			_drawNode->clear();
 
-			_drawNode->drawCircle(Vec2::ZERO, _arrow->getTexture()->getContentSize().height / scale, 0, 7, false, _circleColor);
+			_drawNode->drawCircle(Vec2::ZERO, _arrow->getTexture()->getContentSize().width / scale, 0, 7, false, _circleColor);
+			break;
 		}
 	}
 }
@@ -101,6 +104,12 @@ void FreeArrow::onTouchesEnded(const std::vector<Touch*>& touches, Event * event
 
 			_arrow->setVisible(false);
 			_drawNode->clear();
+
+			if (onTouchEnded) {
+				onTouchEnded(Vec2::forAngle(MATH_DEG_TO_RAD( - _arrow->getRotation())* _arrow->getScale()));
+			}
+
+			break;
 		}
 	}
 }
@@ -110,6 +119,7 @@ FreeArrow::FreeArrow():
 	_touchListener(nullptr),
 	_arrow(nullptr),
 	_drawNode(nullptr),
-	_isTouched(false)
+	_isTouched(false),
+	onTouchEnded(nullptr)
 {
 }

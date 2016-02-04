@@ -9,7 +9,7 @@ Vec2 Joystick::getGradientVector()
 		return Vec2::ZERO;
 	}
 
-	return Vec2::forAngle( MATH_DEG_TO_RAD( - (_arrow->getRotation() - 90.0f) ) ).getNormalized();
+	return Vec2::forAngle( MATH_DEG_TO_RAD( -_arrow->getRotation() ) ).getNormalized();
 }
 
 bool Joystick::isPointAccepted(const Point & pos)

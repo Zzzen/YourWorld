@@ -20,7 +20,7 @@ void You::setPosition(const Vec2& position){
 	Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(
 		YourMoveEvent::getName(), moveEvent);
 
-	AttackableSprite::setPosition(position);
+	AttackableSprite::setPosition(position.x, position.y);
 }
 
 ScrollView * You::showInventory()

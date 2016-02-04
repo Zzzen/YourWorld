@@ -37,7 +37,7 @@ public:
 	// start play attack animation
 	virtual void startAttacking() { if( ATTACK!=_state && FREEZED!=_state) setCurrentState(ATTACK); }
 
-	void setPosition(const Point& pos) override;
+	void setPosition(float x, float y)override; 
 
 	void setHP(int hp) override;
 
