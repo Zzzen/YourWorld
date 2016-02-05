@@ -106,7 +106,7 @@ void FreeArrow::onTouchesEnded(const std::vector<Touch*>& touches, Event * event
 			_drawNode->clear();
 
 			if (onTouchEnded) {
-				onTouchEnded(Vec2::forAngle(MATH_DEG_TO_RAD( - _arrow->getRotation())* _arrow->getScale()));
+				onTouchEnded(Vec2::forAngle(MATH_DEG_TO_RAD( - _arrow->getRotation())) * _arrow->getScale());
 			}
 
 			break;

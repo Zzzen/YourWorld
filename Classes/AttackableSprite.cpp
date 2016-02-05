@@ -18,33 +18,30 @@ Document AttackableSprite::toJson() const
 
 void AttackableSprite::setCurrentState(SpriteState state)
 {
-	auto lastStateAction = _actions.at(_state);
-	_skeletalNode->stopAction(lastStateAction);
-
 	_state = state;
-	auto action = _actions[state];
-	CCASSERT(action, "no corresponding action");
-	_skeletalNode->stopAllActionsByTag(STATE_ACTION_TAG);
-	_skeletalNode->runAction(action);
-	action->gotoFrameAndPlay(0, true);
 
 	switch (state)
 	{
 	case AttackableSprite::IDLE:
 		//walk around
+		_idleAction->gotoFrameAndPlay(0, 21, true);
 		break;
 	case AttackableSprite::FOLLOW:
 		//run towards player
+		_idleAction->gotoFrameAndPlay(0, 21, true);
 		break;
 	case AttackableSprite::ATTACK:
 		//play attackFile animation
+		_idleAction->gotoFrameAndPlay(30, 51, true);
 		break;
 	case AttackableSprite::FLEE:
+		_idleAction->gotoFrameAndPlay(0, 21, true);
 		break;
 	case AttackableSprite::FREEZED:
-		
+		_idleAction->gotoFrameAndPlay(60, 81, true);
 		break;
 	default:
+		CC_ASSERT(false);
 		break;
 	}
 }
@@ -148,10 +145,6 @@ void AttackableSprite::removeStatusEffect(StatusEffect * effect)
 
 AttackableSprite::~AttackableSprite()
 {
-	for (auto it = _actions.begin(); it != _actions.end(); ) {
-		it->second->release();
-		it = _actions.erase(it);
-	}
 	for (auto it = _equipments.begin(); it != _equipments.end();) {
 		it->second->release();
 		it = _equipments.erase(it);
@@ -208,50 +201,24 @@ bool AttackableSprite::initWithJson(const Document & json)
 bool AttackableSprite::initActions()
 {
 	using namespace cocostudio::timeline;
-	const string nodeName = getSkeletalFileName();
-	const auto dot = nodeName.find_last_of('.');
-	const string followFile = string(nodeName).insert(dot, "Follow");
-	const string attackFile = string(nodeName).insert(dot, "Attack");
-	const string fleeFile = string(nodeName).insert(dot, "Flee");
-	const string freezedFile = string(nodeName).insert(dot, "Freezed");
 
-	auto followAction = CSLoader::createTimeline(followFile);
-	auto attackAction = CSLoader::createTimeline(attackFile);
-	auto fleeAction = CSLoader::createTimeline(fleeFile);
-	auto freezedAction = CSLoader::createTimeline(freezedFile);
-
-	CCASSERT( followAction && attackAction && fleeAction && freezedAction,
-		(nodeName + " action files not found.").c_str());
-
-	_actions[IDLE] = _idleAction;
-	_actions[FOLLOW] = followAction;
-	_actions[ATTACK] = attackAction;
-	_actions[FLEE] = fleeAction;
-	_actions[FREEZED] = freezedAction;
-
-	for (auto pair : _actions) {
-		pair.second->retain();
-		pair.second->setTag(STATE_ACTION_TAG);
-	}
-
-
-	//set action callbacks.
-	auto setIdle = [this] { setCurrentState(IDLE); };
-
-	followAction->setLastFrameCallFunc(setIdle);
-	fleeAction->setLastFrameCallFunc(setIdle);
-	freezedAction->setLastFrameCallFunc(setIdle);
-	attackAction->setLastFrameCallFunc(setIdle);
-
-
-	using namespace cocostudio::timeline;
-	_actions[ATTACK]->setFrameEventCallFunc([this](Frame* frame) {
+	_idleAction->setTag(STATE_ACTION_TAG);
+	_idleAction->setFrameEventCallFunc([this](Frame* frame) {
 		EventFrame* evnt = dynamic_cast<EventFrame*>(frame);
 		if (!evnt || evnt->getEvent().empty())	return;
 		string evtName = evnt->getEvent();
-		CCASSERT("ATTACK" == evtName, "");
-		//CCLOG("bounding box: %s", str(evnt->getNode()->getBoundingBox()).c_str());
-		attack();
+		//CCLOG("index: %d : %s", evnt->getFrameIndex() , evtName.c_str());
+		if (evtName.find("_END") != std::string::npos) {
+			setCurrentState(IDLE);
+		}
+		else if ("ATTACK"==evtName)
+		{
+			attack();
+		}
+		else
+		{
+			//CCLOG("no action found for: %s", evtName.c_str());
+		}
 	});
 
 	return true;

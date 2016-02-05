@@ -84,7 +84,6 @@ protected:
 	virtual bool initActions();
 
 	SpriteState _state;
-	map<SpriteState, cocostudio::timeline::ActionTimeline*> _actions;
 
 	Vec2 _direction;
 
