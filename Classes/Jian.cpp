@@ -2,6 +2,8 @@
 #include "AttackableSprite.h"
 #include "SpriteManager.h"
 #include "Utils.h"
+#include "DamageEvent.h"
+
 
 Jian * Jian::create(float direction, float velocity, float duration, float damage, AttackableSprite * source)
 {
@@ -10,6 +12,7 @@ Jian * Jian::create(float direction, float velocity, float duration, float damag
 	j->setRotation(-MATH_RAD_TO_DEG(direction));
 
 	if (j->init()) {
+		j->autorelease();
 		return j;
 	}
 	else {
@@ -35,9 +38,9 @@ void Jian::updateCustom(float dt) {
 		auto att = dynamic_cast<AttackableSprite*>(sp);
 		if (att && isCollided(att) && att!=_source) {
 			Xu x(this);
-			removeFromParent();
 
-			att->setHP(att->getHP() - 5);
+			explode();
+
 			return;
 		}
 	}
@@ -54,4 +57,11 @@ bool Jian::init()
 
 void Jian::explode()
 {
+	auto aabb = getBoundingBox();
+	aabb.size = aabb.size * 1.3f;
+	auto event = DamageEvent::create(getPosition(), aabb, 5.0f, _source);
+
+	_eventDispatcher->dispatchCustomEvent(DamageEvent::getEventName(), event);
+
+	removeFromParent();
 }

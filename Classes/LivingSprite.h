@@ -20,6 +20,8 @@ public:
 	CC_PROPERTY(int, _HP, HP);
 	CC_SYNTHESIZE(int, _age, Age);
 
+	static const string UPDATE_CUSTOM;
+
 	virtual int getMaxHP() const { return _maxHP; }
 protected:
 	LivingSprite();
@@ -45,5 +47,4 @@ private:
 	//add skeletal animation if file name is specified.
 	void initSkeletalAnimation();
 	virtual int getOriginalMaxHP()const = 0;
-	void updateCustomCaller(float dt) { updateCustom(dt); }
 };

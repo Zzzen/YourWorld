@@ -184,7 +184,7 @@ bool AttackableSprite::init()
 	setCurrentState(IDLE);
 
 	auto damageListener = EventListenerCustom::create(DamageEvent::getEventName(),
-		CC_CALLBACK_1(AttackableSprite::onAttacked, this));
+		[this](EventCustom * event) { onAttacked(event); });
 
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(damageListener, this);
 
@@ -264,6 +264,5 @@ AttackableSprite::AttackableSprite():
 	_extraStrength(0.0f),
 	_originalMoveSpeed(0.0f),
 	_originalStrength(0.0f),
-	_orginalArmor(0.0f),
-	_attackTarget(nullptr)
+	_orginalArmor(0.0f)
 {}

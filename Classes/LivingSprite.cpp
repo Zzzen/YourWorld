@@ -1,5 +1,7 @@
 #include "LivingSprite.h"
 
+const string LivingSprite::UPDATE_CUSTOM = "UPDATE_CUSTOM";
+
 LivingSprite::LivingSprite()
 	:_skeletalNode(nullptr),
 	 _idleAction(nullptr)
@@ -35,8 +37,6 @@ bool LivingSprite::initWithJson(const Document& json) {
 	if (!SerializableSprite::initWithJson(json)) {
 		return false;
 	}
-
-	schedule(CC_SCHEDULE_SELECTOR(LivingSprite::updateCustom), getUpdateInterval(), kRepeatForever, 0);
 
 	assert(json.HasMember("HP") && json["HP"].IsInt());
 	assert(json.HasMember("age") && json["age"].IsInt());
@@ -80,7 +80,7 @@ bool LivingSprite::init() {
 	_maxHP = getOriginalMaxHP();
 	setHP(_maxHP);
 
-	schedule(CC_SCHEDULE_SELECTOR(LivingSprite::updateCustomCaller), getUpdateInterval(), kRepeatForever, 0);
+	schedule([this](float dt) { updateCustom(dt); }, getUpdateInterval(), UPDATE_CUSTOM);
 	initSkeletalAnimation();
 
 	return true;
