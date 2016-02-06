@@ -1,6 +1,7 @@
 #pragma once
 #include "SerializableSprite.h"
 #include "cocostudio\CocoStudio.h"
+#include "AnimationConfig.h"
 
 class LivingSprite: public SerializableSprite
 {
@@ -34,17 +35,18 @@ protected:
 	virtual void updateCustom(float dt) = 0;
 	virtual float getUpdateInterval() = 0;
 
-	virtual string getSkeletalFileName() const { return ""; }
+	virtual AnimationConfig getAnimationConfig() const = 0;
 
 	bool initWithJson(const Document& json) override;
 
 	//position of animationNode is ZERO.
 	Node* _skeletalNode;
-	//_idleAction is constructed from the same file as skeletalNode
-	cocostudio::timeline::ActionTimeline* _idleAction;
+	//_stateAction is constructed from the same file as skeletalNode
+	cocostudio::timeline::ActionTimeline* _stateAction;
 
 private:
 	//add skeletal animation if file name is specified.
 	void initSkeletalAnimation();
 	virtual int getOriginalMaxHP()const = 0;
+
 };

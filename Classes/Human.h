@@ -8,7 +8,7 @@ public:
 	static Human* createWithJson(const Document& json);
 
 protected:
-	string getSkeletalFileName() const override { return "res/yourSkeleton.csb"; }
+	AnimationConfig getAnimationConfig() const override { return AnimationConfig::yourSkeleton; }
 	const string getClassName() const override { return "Human"; }
 	
 	void attack() override;

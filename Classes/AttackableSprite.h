@@ -12,9 +12,7 @@ class AttackableSprite : public LivingSprite {
 public:
 	enum SpriteState{
 		IDLE = 1,
-		FOLLOW = 2,
 		ATTACK = 3,
-		FLEE = 4,
 		FREEZED = 5
 	};
 

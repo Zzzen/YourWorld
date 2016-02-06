@@ -22,7 +22,7 @@ public:
 protected:
 	static You* create();
 
-	string getSkeletalFileName() const override  { return "res/yourSkeleton.csb"; }
+	AnimationConfig getAnimationConfig() const override { return AnimationConfig::yourSkeleton; }
 	const string getClassName() const override { return "You"; }
 
 

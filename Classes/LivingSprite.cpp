@@ -4,7 +4,7 @@ const string LivingSprite::UPDATE_CUSTOM = "UPDATE_CUSTOM";
 
 LivingSprite::LivingSprite()
 	:_skeletalNode(nullptr),
-	 _idleAction(nullptr)
+	 _stateAction(nullptr)
 {
 }
 
@@ -47,12 +47,12 @@ bool LivingSprite::initWithJson(const Document& json) {
 }
 
 void LivingSprite::initSkeletalAnimation() {
-	const auto fileName = getSkeletalFileName();
+	const auto fileName = getAnimationConfig().fileName;
 	if (!fileName.empty()) {
 		_skeletalNode = CSLoader::createNode(fileName);
-		_idleAction = CSLoader::createTimeline(fileName);
-		CCASSERT( _skeletalNode && _idleAction , (fileName + " :failed to initialize skeletal animation.").c_str());
-		_skeletalNode->runAction(_idleAction);
+		_stateAction = CSLoader::createTimeline(fileName);
+		CCASSERT( _skeletalNode && _stateAction , (fileName + " :failed to initialize skeletal animation.").c_str());
+		_skeletalNode->runAction(_stateAction);
 
 //		_skeletalNode->setAnchorPoint(Point::ZERO);
 		_skeletalNode->setPosition(Point::ZERO);
@@ -61,14 +61,14 @@ void LivingSprite::initSkeletalAnimation() {
 }
 
 void LivingSprite::startSkeletalAnimation() {
-	if (_idleAction) {
-		_idleAction->gotoFrameAndPlay(0, true);
+	if (_stateAction) {
+		_stateAction->gotoFrameAndPlay(0, getAnimationConfig().idleEndFrame, true);
 	}
 }
 
 void LivingSprite::pauseSkeletalAnimation() {
-	if (_idleAction) {
-		_idleAction->pause();
+	if (_stateAction) {
+		_stateAction->pause();
 	}
 }
 

@@ -24,21 +24,14 @@ void AttackableSprite::setCurrentState(SpriteState state)
 	{
 	case AttackableSprite::IDLE:
 		//walk around
-		_idleAction->gotoFrameAndPlay(0, 21, true);
-		break;
-	case AttackableSprite::FOLLOW:
-		//run towards player
-		_idleAction->gotoFrameAndPlay(0, 21, true);
+		_stateAction->gotoFrameAndPlay(0, getAnimationConfig().idleEndFrame,true);
 		break;
 	case AttackableSprite::ATTACK:
 		//play attackFile animation
-		_idleAction->gotoFrameAndPlay(30, 51, true);
-		break;
-	case AttackableSprite::FLEE:
-		_idleAction->gotoFrameAndPlay(0, 21, true);
+		_stateAction->gotoFrameAndPlay(getAnimationConfig().attackStartFrame, getAnimationConfig().attackEndFrame, true);
 		break;
 	case AttackableSprite::FREEZED:
-		_idleAction->gotoFrameAndPlay(60, 81, true);
+		_stateAction->gotoFrameAndPlay(getAnimationConfig().freezedStartFrame, getAnimationConfig().freezedEndFrame, true);
 		break;
 	default:
 		CC_ASSERT(false);
@@ -202,16 +195,16 @@ bool AttackableSprite::initActions()
 {
 	using namespace cocostudio::timeline;
 
-	_idleAction->setTag(STATE_ACTION_TAG);
-	_idleAction->setFrameEventCallFunc([this](Frame* frame) {
+	_stateAction->setTag(STATE_ACTION_TAG);
+	_stateAction->setFrameEventCallFunc([this](Frame* frame) {
 		EventFrame* evnt = dynamic_cast<EventFrame*>(frame);
 		if (!evnt || evnt->getEvent().empty())	return;
 		string evtName = evnt->getEvent();
 		//CCLOG("index: %d : %s", evnt->getFrameIndex() , evtName.c_str());
-		if (evtName.find("_END") != std::string::npos) {
+		if (evtName.find("End") != std::string::npos) {
 			setCurrentState(IDLE);
 		}
-		else if ("ATTACK"==evtName)
+		else if ("attack"==evtName)
 		{
 			attack();
 		}
