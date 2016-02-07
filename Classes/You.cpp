@@ -111,12 +111,6 @@ You* You::create() {
 	}
 }
 
-void You::attack() {
-	auto damage = DamageEvent::create(getPosition(), getBoundingBox(), getStrength(), this);
-	Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(DamageEvent::getEventName(),
-																	   damage);
-}
-
 You* You::getInstance() {
 	static You* instance = You::create();
 	return instance;

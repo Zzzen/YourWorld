@@ -70,7 +70,7 @@ protected:
 	float _extraMoveSpeed;
 
 	void equip(Equipment* equip);
-	virtual void attack() = 0;
+	virtual void attack();
 
 	//receive damage event, may not be in range.
 	virtual void onAttacked(EventCustom* event);

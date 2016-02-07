@@ -30,8 +30,7 @@ protected:
 	float getUpdateInterval() override { return 1.0f; }
 
 	void die() override {}
-	
-	void attack() override;
+
 private:
 	int getOriginalMaxHP() const override { return 10000; }
 	float getOriginalStrength()const override { return 10.0f; }

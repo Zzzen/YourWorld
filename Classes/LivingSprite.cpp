@@ -49,7 +49,7 @@ bool LivingSprite::initWithJson(const Document& json) {
 void LivingSprite::initSkeletalAnimation() {
 	const auto fileName = getAnimationConfig().fileName;
 	if (!fileName.empty()) {
-		_skeletalNode = CSLoader::createNode(fileName);
+		_skeletalNode = dynamic_cast<cocostudio::timeline::SkeletonNode*>(CSLoader::createNode(fileName));
 		_stateAction = CSLoader::createTimeline(fileName);
 		CCASSERT( _skeletalNode && _stateAction , (fileName + " :failed to initialize skeletal animation.").c_str());
 		_skeletalNode->runAction(_stateAction);

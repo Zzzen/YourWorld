@@ -4,6 +4,7 @@
 #include "Equipment.h"
 #include "Consumable.h"
 #include "CommonDefinition.h"
+#include <iostream>
 
 static const int STATE_ACTION_TAG = 23421;
 
@@ -100,6 +101,20 @@ void AttackableSprite::equip(Equipment* equip) {
 	equip->retain();
 }
 
+void AttackableSprite::attack()
+{
+	const string boneName = "weapon_bone";
+	auto weaponBone = _skeletalNode->getBoneNode(boneName);
+
+	auto skin = weaponBone->getVisibleSkinsRect();
+
+	auto damage = DamageEvent::create(getPosition(),
+		RectApplyAffineTransform(skin, weaponBone->getNodeToParentAffineTransform(getParent())),
+			getStrength(), this);
+	Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(DamageEvent::getEventName(),
+		damage);
+}
+
 void AttackableSprite::consume(Consumable * consumable)
 {
 	consumable->beConsumed(this);
@@ -194,6 +209,28 @@ bool AttackableSprite::initWithJson(const Document & json)
 bool AttackableSprite::initActions()
 {
 	using namespace cocostudio::timeline;
+
+#ifdef DRAW_WEAPON_BOX
+	auto skeletonNode = _skeletalNode;
+	const string boneName = "weapon_bone";
+	auto weaponBone = skeletonNode->getBoneNode(boneName);
+	CC_ASSERT(weaponBone);
+
+	auto drawNode = DrawNode::create();
+	addChild(drawNode);
+
+	schedule([this, weaponBone, drawNode, skeletonNode](float dt){
+		drawNode->clear();
+
+		auto rect = weaponBone->getVisibleSkinsRect();
+
+		auto boneToSkeletonParentTrans = weaponBone->getNodeToParentAffineTransform(this);
+
+		rect = RectApplyAffineTransform(rect, boneToSkeletonParentTrans);
+		drawNode->drawRect(Vec2(rect.getMinX(), rect.getMinY()), Vec2(rect.getMaxX(), rect.getMaxY()), Color4F::RED);
+	
+	},0,"draw box");
+#endif // DRAW_WEAPON_BOX
 
 	_stateAction->setTag(STATE_ACTION_TAG);
 	_stateAction->setFrameEventCallFunc([this](Frame* frame) {

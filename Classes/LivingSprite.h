@@ -40,7 +40,7 @@ protected:
 	bool initWithJson(const Document& json) override;
 
 	//position of animationNode is ZERO.
-	Node* _skeletalNode;
+	cocostudio::timeline::SkeletonNode* _skeletalNode;
 	//_stateAction is constructed from the same file as skeletalNode
 	cocostudio::timeline::ActionTimeline* _stateAction;
 
