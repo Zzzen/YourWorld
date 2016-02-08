@@ -17,7 +17,7 @@ public:
 
 	//+ statue::type
 	Document toJson() const override;
-	const std::string getClassName() const override { return "Statue"; }
+	std::string getClassName() const override { return "Statue"; }
 
 	static Statue* createWithType(const Type type);
 

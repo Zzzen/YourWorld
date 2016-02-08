@@ -37,7 +37,9 @@ public:
 	~SpriteManager() {}
 
 	//create sprite and add it to _layer
-	SerializableSprite* createSprite(const string& name);
+	SerializableSprite* createSprite(const string& className);
+
+	SerializableSprite* createSpriteWithJson(const string& className, const Document& doc);
 
 	void registerCreateFunc(const string& className, function<SerializableSprite* ()> func) {
 		_createFuncs.insert(pair<string, function<SerializableSprite* ()>>(className, func));

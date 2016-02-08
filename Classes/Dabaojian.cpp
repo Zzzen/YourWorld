@@ -18,6 +18,11 @@ Dabaojian * Dabaojian::create()
 	}
 }
 
+Dabaojian * Dabaojian::createWithJson(const Document & doc)
+{
+	return create();
+}
+
 void Dabaojian::attach(AttackableSprite * owner)
 {
 	owner->addStrength(STRENGTH);

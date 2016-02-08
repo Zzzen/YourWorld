@@ -9,7 +9,7 @@ public:
 
 protected:
 	AnimationConfig getAnimationConfig() const override { return AnimationConfig::yourSkeleton; }
-	const string getClassName() const override { return "Human"; }
+	string getClassName() const override { return "Human"; }
 
 private:
 	int getOriginalMaxHP()const override { return 30; }

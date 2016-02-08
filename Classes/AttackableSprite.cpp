@@ -4,18 +4,73 @@
 #include "Equipment.h"
 #include "Consumable.h"
 #include "CommonDefinition.h"
+#include "SpriteManager.h"
+
 #include <iostream>
 
+#define RAPIDJSON_HAS_STDSTRING 1
+#include "json/document.h"
+#include "json/writer.h"
+#include "json/stringbuffer.h"
+
 static const int STATE_ACTION_TAG = 23421;
+
+string jsonToString(const Document& doc) {
+	using namespace rapidjson;
+	StringBuffer sb;
+	Writer<StringBuffer> writer(sb);
+	doc.Accept(writer);
+	return sb.GetString();
+}
 
 Document AttackableSprite::toJson() const
 {
 	auto json = LivingSprite::toJson();
+	auto& allocator = json.GetAllocator();
 
-	json.AddMember("state", rapidjson::Value(_state), json.GetAllocator());
+	json.AddMember("state", rapidjson::Value(_state), allocator);
+
+	rapidjson::Value inventory(kArrayType);
+
+	for (const auto& item : _inventory) {
+		Document doc;
+		doc.SetObject().AddMember("className", rapidjson::Value().SetString(item->getClassName(), allocator), allocator)
+					.AddMember("properties", rapidjson::Value().SetString(jsonToString(item->toJson()), allocator), allocator);
+
+		inventory.PushBack(doc, allocator);
+	}
+
+	json.AddMember("inventory", inventory, allocator);
 
 	return json;
 }
+
+
+bool AttackableSprite::initWithJson(const Document & json)
+{
+	if (!LivingSprite::initWithJson(json)) {
+		return false;
+	}
+
+	assert(json.HasMember("state") && json["state"].IsInt());
+	assert(json.HasMember("inventory") && json["inventory"].IsArray());
+
+	auto state = static_cast<SpriteState>(json["state"].GetInt());
+	setCurrentState(state);
+
+	for (auto it = json["inventorty"].Begin(); it != json["inventorty"].End(); it++) {
+		string className = (*it)["className"].GetString();
+		string properties = (*it)["properties"].GetString();
+		CCLOG("inventory className: %s", className.c_str());
+		auto item = dynamic_cast<Item*>(SpriteManager::getInstance()->createSpriteWithJson(className, Document().Parse((properties.c_str()))));
+		if (item) {
+			pick(item);
+		}
+	}
+
+	return true;
+}
+
 
 void AttackableSprite::setCurrentState(SpriteState state)
 {
@@ -188,20 +243,6 @@ bool AttackableSprite::init()
 		[this](EventCustom * event) { onAttacked(event); });
 
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(damageListener, this);
-
-	return true;
-}
-
-bool AttackableSprite::initWithJson(const Document & json)
-{
-	if (!LivingSprite::initWithJson(json)) {
-		return false;
-	}
-
-	assert(json.HasMember("state") && json["state"].IsInt());
-
-	auto state = static_cast<SpriteState>(json["state"].GetInt());
-	setCurrentState(state);
 
 	return true;
 }

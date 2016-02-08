@@ -23,7 +23,7 @@ protected:
 	static You* create();
 
 	AnimationConfig getAnimationConfig() const override { return AnimationConfig::yourSkeleton; }
-	const string getClassName() const override { return "You"; }
+	string getClassName() const override { return "You"; }
 
 
 	void updateCustom(float dt) override;

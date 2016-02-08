@@ -15,6 +15,11 @@ Shi * Shi::create()
 	}
 }
 
+Shi * Shi::createWithJson(const Document & doc)
+{
+	return create();
+}
+
 void Shi::beConsumed(AttackableSprite* user)
 {
 	auto du = Zhongdu::create();

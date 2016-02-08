@@ -134,6 +134,18 @@ SerializableSprite* SpriteManager::createSprite(const string& className) {
 	return (*it).second();
 }
 
+SerializableSprite* SpriteManager::createSpriteWithJson(const string& className, const Document& doc) {
+	auto it = _createFuncsWithJson.find(className);
+
+	if (it != _createFuncsWithJson.end()) {
+		return (*it).second(doc);
+	}
+	else {
+		log("%s createWithJson not found.", className.c_str());
+		return nullptr;
+	}
+}
+
 void SpriteManager::onYourMove(EventCustom* event) {
 	You* you = (static_cast<YourMoveEvent*>(event->getUserData()))->getWho();
 	

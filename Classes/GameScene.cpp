@@ -48,7 +48,13 @@ bool GameScene::init(){
 	Scene::addChild(saveBtn);
 	saveBtn->setPosition(getVisibleSize().width - 40, getVisibleSize().height - 40);
 	//to do: add everything to cache first
-	saveBtn->onTouched = []() { SQLUtils::flush(); };
+	saveBtn->onTouched = []() { 
+		auto sprites = SpriteManager::getInstance()->getAllSprites();
+		for (const auto& sp : sprites) {
+			SQLUtils::addToCache(sp);
+		}
+		SQLUtils::flush(); 
+	};
 
 	_chunkManager = ChunkManager::getInstance();
 	_chunkManager->setLayer(_holder);
@@ -62,6 +68,8 @@ bool GameScene::init(){
 
 	_spriteManager->registerCreateFuncWithJson("Statue", [](const rapidjson::Document& json) { return Statue::createWithJson(json); });
 	_spriteManager->registerCreateFuncWithJson("Human", [](const rapidjson::Document& json) { return Human::createWithJson(json); });
+	_spriteManager->registerCreateFuncWithJson("Dabaojian", [](const rapidjson::Document& json) {return Dabaojian::createWithJson(json); });
+	_spriteManager->registerCreateFuncWithJson("Shi", [](const rapidjson::Document& json) { return Shi::createWithJson(json); });
 
 	auto chunkListener = EventListenerCustom::create(ChunkJoinWorldEvent::getName(),
 		CC_CALLBACK_1(SpriteManager::onChunkCreated, _spriteManager));

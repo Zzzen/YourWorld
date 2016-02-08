@@ -18,5 +18,4 @@ public:
 	//play animation
 	void onEnter() override;
 	void onExit() override;
-
 };

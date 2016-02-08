@@ -15,7 +15,7 @@ class SerializableSprite : public Sprite {
 public:
 	//stores datum into a json document.
 	virtual Document toJson() const;
-	virtual const string getClassName() const = 0;
+	virtual string getClassName() const = 0;
 
 	SerializableSprite();
 
