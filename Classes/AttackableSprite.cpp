@@ -15,14 +15,6 @@
 
 static const int STATE_ACTION_TAG = 23421;
 
-string jsonToString(const Document& doc) {
-	using namespace rapidjson;
-	StringBuffer sb;
-	Writer<StringBuffer> writer(sb);
-	doc.Accept(writer);
-	return sb.GetString();
-}
-
 Document AttackableSprite::toJson() const
 {
 	auto json = LivingSprite::toJson();
@@ -58,9 +50,11 @@ bool AttackableSprite::initWithJson(const Document & json)
 	auto state = static_cast<SpriteState>(json["state"].GetInt());
 	setCurrentState(state);
 
-	for (auto it = json["inventorty"].Begin(); it != json["inventorty"].End(); it++) {
-		string className = (*it)["className"].GetString();
-		string properties = (*it)["properties"].GetString();
+	const auto& inventory = json["inventory"];
+	for (SizeType i = 0; i < inventory.Size(); i++) {
+		const auto& itemJson = inventory[i];
+		string className = itemJson["className"].GetString();
+		string properties = itemJson["properties"].GetString();
 		CCLOG("inventory className: %s", className.c_str());
 		auto item = dynamic_cast<Item*>(SpriteManager::getInstance()->createSpriteWithJson(className, Document().Parse((properties.c_str()))));
 		if (item) {

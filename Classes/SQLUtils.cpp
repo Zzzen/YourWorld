@@ -19,9 +19,17 @@ using namespace rapidjson;
 using namespace std;
 
 static const string TABLE_NAME = "sprites";
+static string databaseFileName;
+
+
+void SQLUtils::setDatabaseFileName(const string & fileName)
+{
+	databaseFileName = fileName;
+}
 
 static database& getDBInstance() {
-	static std::string fileName = cocos2d::FileUtils::getInstance()->getWritablePath()+"data.sqlite3";
+	assert(databaseFileName.size() > 0);
+	static std::string fileName = cocos2d::FileUtils::getInstance()->getWritablePath() + databaseFileName;
 	static database db(fileName.c_str());
 	return db;
 }
@@ -29,11 +37,13 @@ static database& getDBInstance() {
 // rects that have been read from database. they may intersected.
 static vector<Rect> cachedRecs;
 
-// <rowid, <field name, value>> 
-static unordered_map<int64_t, unordered_map<string, string>> spritesWithId;
+// <rowid, <field name, value>>
+static unordered_map<int64_t, unordered_map<string, string>> spritesWithProperId;
 
-// sprites to insert have a invalid rowid, ie 0.
-static vector<unordered_map<string, string>> spritesWithoutId;
+// sprites to insert have a improper rowid, less than 0.
+static unordered_map<int64_t, unordered_map<string, string>> spritesWithImproperId;
+
+static unordered_map<int64_t, int64_t> improperToProperId;
 
 static Point getPosition(const unordered_map<string, string>& map) {
 	int x = strTo<int>(map.at("x").c_str());
@@ -43,19 +53,19 @@ static Point getPosition(const unordered_map<string, string>& map) {
 
 static vector<unordered_map<string, string>> getCachedSprites(const Rect& rect) {
 	vector<unordered_map<string, string>> toReturn;
-	for (auto it = spritesWithId.begin(); it != spritesWithId.end();) {
+	for (auto it = spritesWithProperId.begin(); it != spritesWithProperId.end();) {
 		if (rect.containsPoint(getPosition((*it).second))) {
 			toReturn.push_back((*it).second);
-			it = spritesWithId.erase(it);
+			it = spritesWithProperId.erase(it);
 		}
 		else {
 			it++;
 		}
 	}
-	for (auto it = spritesWithoutId.begin(); it != spritesWithoutId.end();) {
-		if (rect.containsPoint(getPosition(*it))) {
-			toReturn.push_back(*it);
-			it = spritesWithoutId.erase(it);
+	for (auto it = spritesWithImproperId.begin(); it != spritesWithImproperId.end();) {
+		if (rect.containsPoint(getPosition((*it).second))) {
+			toReturn.push_back((*it).second);
+			it = spritesWithImproperId.erase(it);
 		}
 		else {
 			it++;
@@ -65,7 +75,7 @@ static vector<unordered_map<string, string>> getCachedSprites(const Rect& rect) 
 	return toReturn;
 }
 
-void SQLUtils::flush() {
+unordered_map<int64_t, int64_t>& SQLUtils::flush() {
 	auto& db = getDBInstance();
 	auto raw = db.getRawDb();
 
@@ -77,7 +87,7 @@ void SQLUtils::flush() {
 		"WHERE rowid = ?;";
 	CCASSERT( sqlite3_prepare_v2(raw, update.c_str(), -1, &stmt, 0) == SQLITE_OK, "unable to prepare update stmt");
 
-	for(auto it = spritesWithId.begin(); it != spritesWithId.end();it++)
+	for(auto it = spritesWithProperId.begin(); it != spritesWithProperId.end();it++)
 	{
 		const auto& map = (*it).second;
 		sqlite3_bind_int(stmt, 1, strTo<int>(map.at("x")));
@@ -95,14 +105,15 @@ void SQLUtils::flush() {
 	CCASSERT(sqlite3_finalize(stmt)==SQLITE_OK, "sqlite3_finalize(stmt)!=SQLITE_OK");
 	stmt = nullptr;
 
+	//***** insert sprites with improper rowid ************
 
 	string insert =
 		"INSERT INTO " + TABLE_NAME +
 		"(x, y, className, properties) "
 		"VALUES (?,?,?,?);";
 	CCASSERT(sqlite3_prepare_v2(raw, insert.c_str(), -1, &stmt, 0) == SQLITE_OK, " unable to prepare insert stmt ");
-	for (auto it = spritesWithoutId.begin(); it != spritesWithoutId.end();) {
-		const auto& map = *it;
+	for (auto it = spritesWithImproperId.begin(); it != spritesWithImproperId.end();) {
+		const auto& map = (*it).second;
 
 		sqlite3_bind_int(stmt, 1, strTo<int>(map.at("x")));
 		sqlite3_bind_int(stmt, 2, strTo<int>(map.at("y")));
@@ -115,13 +126,17 @@ void SQLUtils::flush() {
 
 		int64_t rowid = sqlite3_last_insert_rowid(raw);
 		CCLOG("last rowid %d", (int)rowid);
-		spritesWithId[rowid] = map;
+		spritesWithProperId[rowid] = map;
 
-		it = spritesWithoutId.erase(it);
+		improperToProperId[strTo<int64_t>(map.at("rowid"))] = rowid;
+
+		it = spritesWithImproperId.erase(it);
 	}
 
 	CCASSERT(sqlite3_finalize(stmt) == SQLITE_OK, "sqlite3_finalize(stmt)!=SQLITE_OK");
 	stmt = nullptr;
+
+	return improperToProperId;
 }
 
 static bool isRectCached(const Rect& rect) {
@@ -138,7 +153,7 @@ static string getJsonStringFromSprite(const SerializableSprite* sprite){
 	Writer<StringBuffer> writer(sb);
 
 	const auto& json = sprite->toJson();
-	
+
 	json.Accept(writer);
 
 	return sb.GetString();
@@ -150,7 +165,8 @@ void SQLUtils::createTable() {
 		"x INT NOT NULL,				"
 		"y INT NOT NULL,				"
 		"className TEXT NOT NULL,   	"
-		"properties TEXT   );			";
+		"properties TEXT,               "
+		"removed INT DEFAULT 0);		";
 	db.execute(create.c_str());
 	//log("error msg: %s", db.error_msg());
 }
@@ -159,7 +175,7 @@ void SQLUtils::addToCache(const SerializableSprite* sprite){
 	auto& pos = sprite->getPosition();
 	const int x = static_cast<int>(pos.x),
 		y = static_cast<int>(pos.y);
-	auto& className = sprite->getClassName();
+	auto className = sprite->getClassName();
 
 	const auto& properties = getJsonStringFromSprite(sprite);
 
@@ -172,14 +188,12 @@ void SQLUtils::addToCache(const SerializableSprite* sprite){
 	map["properties"] = properties;
 	map["rowid"] = to_string(sprite->getRowid());
 
-	if (sprite->getRowid() != 0) {
-		spritesWithId[sprite->getRowid()] = map;
+	if (sprite->getRowid() >= 0) {
+		spritesWithProperId[sprite->getRowid()] = map;
 	}
 	else {
-		spritesWithoutId.push_back(map);
+		spritesWithImproperId[sprite->getRowid()] = map;
 	}
-
-	return;
 }
 
 vector<unordered_map<string, string>> SQLUtils::selectSprites(const pair<int, int>& xRange, const pair<int, int>& yRange) {
@@ -201,7 +215,8 @@ vector<unordered_map<string, string>> SQLUtils::selectSprites(const pair<int, in
 	string statement("SELECT x, y, className, properties, rowid"
 		" FROM sprites"
 		" WHERE x BETWEEN " + to_string(xLow) + " AND  " + to_string(xUp) +
-		"   AND y BETWEEN " + to_string(yLow) + " AND  " + to_string(yUp));
+		"   AND y BETWEEN " + to_string(yLow) + " AND  " + to_string(yUp) +
+		"   AND removed == 0 ");
 
 	CCLOG("reading from database xLow: %d, xUp: %d, yLow: %d, yUp: %d", xLow, xUp, yLow, yUp);
 
@@ -215,8 +230,26 @@ vector<unordered_map<string, string>> SQLUtils::selectSprites(const pair<int, in
 		}
 
 		int64_t rowid = strTo<int64_t>(map.at("rowid"));
-		spritesWithId[rowid] = map;
+		spritesWithProperId[rowid] = map;
 	}
 
 	return getCachedSprites(rect);
+}
+
+unordered_map<string, string> SQLUtils::selectYou()
+{
+	string statement("SELECT x, y, className, properties, rowid"
+		" FROM sprites Where className = 'You' ;");
+
+	query qry(getDBInstance(), statement.c_str());
+
+	unordered_map<string, string> map;
+
+	for (auto it = qry.begin(); it != qry.end(); ++it) {
+		for (int j = 0; j < qry.column_count(); j++) {
+			map[qry.column_name(j)] = (*it).get<string>(j);
+		}
+	}
+
+	return map;
 }

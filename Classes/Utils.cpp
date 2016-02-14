@@ -23,6 +23,15 @@ void showToast(string text)
 }
 
 
+
+string jsonToString(const rapidjson::Document& doc) {
+	using namespace rapidjson;
+	StringBuffer sb;
+	Writer<StringBuffer> writer(sb);
+	doc.Accept(writer);
+	return sb.GetString();
+}
+
 string str(const Point& point) {
 	string s = " Point: ";
 	return s + to_string(point.x) + ", " + to_string(point.y);

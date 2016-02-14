@@ -4,7 +4,8 @@ const string LivingSprite::UPDATE_CUSTOM = "UPDATE_CUSTOM";
 
 LivingSprite::LivingSprite()
 	:_skeletalNode(nullptr),
-	 _stateAction(nullptr)
+	 _stateAction(nullptr),
+	 _age(0)
 {
 }
 

@@ -1,5 +1,3 @@
-#pragma once
-
 #include "i18n.h"
 #include "cocos2d.h"
 

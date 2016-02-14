@@ -9,7 +9,7 @@ Document SerializableSprite::toJson() const {
 }
 
 
-SerializableSprite::SerializableSprite():
-	_rowid(0)
+SerializableSprite::SerializableSprite()
 {
+	_rowid = RandomHelper::random_int(numeric_limits<int64_t>::min(), -1LL);
 }

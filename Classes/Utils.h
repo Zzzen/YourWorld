@@ -5,6 +5,12 @@
 #include <string>
 #include <sstream>
 
+
+#define RAPIDJSON_HAS_STDSTRING 1
+#include "json/document.h"
+#include "json/writer.h"
+#include "json/stringbuffer.h"
+
 USING_NS_CC;
 using namespace std;
 
@@ -18,6 +24,8 @@ inline RET_TYPE strTo(const string& str)
 	ss >> i;
 	return i;
 }
+
+string jsonToString(const rapidjson::Document& doc);
 
 string str(const Point& point);
 

@@ -8,15 +8,18 @@
 #include "i18n.h"
 #include "TextButton.h"
 
-void You::setPosition(const Vec2& position){
-	auto oldPosition = getPosition();
+void You::setPosition(float x, float y) {
 
-	if (oldPosition == position){
+	const Vec2 position(x, y);
+
+	auto previousPosition = getPosition();
+
+	if (previousPosition == position){
 		return;
 	}
 
 	auto moveEvent = YourMoveEvent::createWithWho(this);
-	moveEvent->offset = position - oldPosition;
+	moveEvent->offset = position - previousPosition;
 	Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(
 		YourMoveEvent::getName(), moveEvent);
 
@@ -96,6 +99,15 @@ ScrollView * You::showInventory()
 	}
 
 	return view;
+}
+
+bool You::initWithJson(const Document & json)
+{
+	if (!AttackableSprite::initWithJson(json)) {
+		return false;
+	}
+
+	return true;
 }
 
 You* You::create() {

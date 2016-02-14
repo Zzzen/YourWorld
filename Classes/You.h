@@ -16,9 +16,14 @@ class You : public AttackableSprite {
 public:
 	static You* getInstance();
 
-	void setPosition(const Vec2& position) override;
+	void setPosition(float x, float y) override;
+
+	void setPosition(const Vec2& pos) override { setPosition(pos.x, pos.y); }
 
 	ScrollView* showInventory();
+
+	bool initWithJson(const Document & json) override;
+
 protected:
 	static You* create();
 
@@ -30,6 +35,7 @@ protected:
 	float getUpdateInterval() override { return 1.0f; }
 
 	void die() override {}
+
 
 private:
 	int getOriginalMaxHP() const override { return 10000; }

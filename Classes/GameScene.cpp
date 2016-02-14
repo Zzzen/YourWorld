@@ -50,10 +50,18 @@ bool GameScene::init(){
 	//to do: add everything to cache first
 	saveBtn->onTouched = []() { 
 		auto sprites = SpriteManager::getInstance()->getAllSprites();
+		vector<SerializableSprite*> spritesWithImproperId;
 		for (const auto& sp : sprites) {
 			SQLUtils::addToCache(sp);
+			if (sp->getRowid() < 0) {
+				spritesWithImproperId.push_back(sp);
+			}
 		}
-		SQLUtils::flush(); 
+		auto& updatedRowids = SQLUtils::flush();
+		for (auto& sp : spritesWithImproperId) {
+			log("update rowid: %lld -> %lld", sp->getRowid(), updatedRowids[sp->getRowid()]);
+			sp->setRowid(updatedRowids[sp->getRowid()]);
+		}
 	};
 
 	_chunkManager = ChunkManager::getInstance();
@@ -152,6 +160,19 @@ void GameScene::initYou(const Point& pos){
 	_you = You::getInstance();
 	assert(_you);
 	_you->setPosition(pos);
+
+	auto map = SQLUtils::selectYou();
+	if (map.size() != 0) {
+		auto x = atoi(map["x"].c_str());
+		auto y = atoi(map["y"].c_str());
+
+		_you->setRowid(strTo<int64_t>(map["rowid"]));
+
+		Document doc;
+		doc.Parse(map["properties"].c_str());
+		_you->initWithJson(doc);
+		log("initilizing you");
+	}
 
 	_holder->addChild(_you, YOU);
 }
