@@ -45,9 +45,11 @@ static unordered_map<int64_t, unordered_map<string, string>> spritesWithImproper
 
 static unordered_map<int64_t, int64_t> improperToProperId;
 
+static vector<int64_t> removedSprites;
+
 static Point getPosition(const unordered_map<string, string>& map) {
-	int x = strTo<int>(map.at("x").c_str());
-	int y = strTo<int>(map.at("y").c_str());
+	int x = strTo<int>(map.at("x"));
+	int y = strTo<int>(map.at("y"));
 	return Point(x, y);
 }
 
@@ -99,7 +101,7 @@ unordered_map<int64_t, int64_t>& SQLUtils::flush() {
 		sqlite3_reset(stmt);
 
 
-		CCLOG(" update ok ");
+		//CCLOG(" update ok ");
 	}
 
 	CCASSERT(sqlite3_finalize(stmt)==SQLITE_OK, "sqlite3_finalize(stmt)!=SQLITE_OK");
@@ -125,12 +127,46 @@ unordered_map<int64_t, int64_t>& SQLUtils::flush() {
 
 
 		int64_t rowid = sqlite3_last_insert_rowid(raw);
-		CCLOG("last rowid %d", (int)rowid);
+		//CCLOG("last rowid %d", (int)rowid);
 		spritesWithProperId[rowid] = map;
 
 		improperToProperId[strTo<int64_t>(map.at("rowid"))] = rowid;
 
 		it = spritesWithImproperId.erase(it);
+	}
+
+	CCASSERT(sqlite3_finalize(stmt) == SQLITE_OK, "sqlite3_finalize(stmt)!=SQLITE_OK");
+	stmt = nullptr;
+
+
+	// remove sprites.
+
+	string remove = "UPDATE " + TABLE_NAME + " SET "
+		" removed = 1 "
+		"WHERE rowid = ?;";
+	CCASSERT(sqlite3_prepare_v2(raw, remove.c_str(), -1, &stmt, 0) == SQLITE_OK, " unable to prepare remove stmt ");
+	for (auto it = removedSprites.begin(); it != removedSprites.end(); it++)
+	{
+		if (*it > 0) {
+			sqlite3_bind_int64(stmt, 1, *it);
+		}
+		else {
+			if (improperToProperId.find(*it) != improperToProperId.end()) {
+				sqlite3_bind_int64(stmt, 1, improperToProperId.find(*it)->second);
+			}
+			else {
+				if (spritesWithImproperId.find(*it) != spritesWithImproperId.end()) {
+					spritesWithImproperId.erase(*it);
+				}
+
+				continue;
+			}
+		}
+
+		CCASSERT(sqlite3_step(stmt) == SQLITE_DONE, "update sqlite3_step(stmt) != SQLITE_DONE ");
+		sqlite3_reset(stmt);
+
+		//CCLOG(" remove %lld ", *it);
 	}
 
 	CCASSERT(sqlite3_finalize(stmt) == SQLITE_OK, "sqlite3_finalize(stmt)!=SQLITE_OK");
@@ -194,6 +230,11 @@ void SQLUtils::addToCache(const SerializableSprite* sprite){
 	else {
 		spritesWithImproperId[sprite->getRowid()] = map;
 	}
+}
+
+void SQLUtils::removeSprite(const SerializableSprite* sprite)
+{
+	removedSprites.push_back(sprite->getRowid());
 }
 
 vector<unordered_map<string, string>> SQLUtils::selectSprites(const pair<int, int>& xRange, const pair<int, int>& yRange) {

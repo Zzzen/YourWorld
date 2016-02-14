@@ -5,6 +5,7 @@
 #include "Consumable.h"
 #include "CommonDefinition.h"
 #include "SpriteManager.h"
+#include "SQLUtils.h"
 
 #include <iostream>
 
@@ -135,6 +136,12 @@ void AttackableSprite::setHP(int hp)
 {
 	LivingSprite::setHP(hp);
 	_HPBar->setPercentage(100 * getHP() / getMaxHP());
+}
+
+void AttackableSprite::pick(Item * item) {
+	SQLUtils::removeSprite(item);
+	_inventory.pushBack(item);
+	item->removeFromParent(); 
 }
 
 void AttackableSprite::equip(Equipment* equip) {

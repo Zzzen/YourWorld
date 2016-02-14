@@ -95,14 +95,13 @@ bool GameScene::init(){
 		CC_CALLBACK_1(SpriteManager::onYourMove, _spriteManager));
 	_eventDispatcher->addEventListenerWithFixedPriority(moveListener, 1);
 
-	_chunkManager->updateChunks(Point(1, 2));
+	//_chunkManager->updateChunks(Point(1, 2));
 
 
 	initYou(Vec2(getVisibleSize().width / 2,
 		         getVisibleSize().height / 2));
 
-
-
+	scheduleOnce([this](float dt) { _chunkManager->updateChunks(Point(1, 2)); }, 2.f, "initial movement");
 
 	//add move listener
 	auto mListener = EventListenerCustom::create(YourMoveEvent::getName(), [=](EventCustom* event){
@@ -171,7 +170,6 @@ void GameScene::initYou(const Point& pos){
 		Document doc;
 		doc.Parse(map["properties"].c_str());
 		_you->initWithJson(doc);
-		log("initilizing you");
 	}
 
 	_holder->addChild(_you, YOU);

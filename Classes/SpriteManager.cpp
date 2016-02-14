@@ -48,7 +48,10 @@ void SpriteManager::onChunkRemoved(EventCustom* event) {
 void SpriteManager::onMobDied(EventCustom * event)
 {
 	Mob* mob = (static_cast<MobDieEvent*>(event->getUserData()))->getWho();
+	
+	SQLUtils::removeSprite(mob);
 	_layer->removeChild(mob);
+
 
 	int addr = (int)mob;
 	addr = addr % 512;

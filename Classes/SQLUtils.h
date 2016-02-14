@@ -10,6 +10,9 @@ namespace SQLUtils {
 	
 	//insert into cache.
 	void addToCache(const SerializableSprite* sprite);
+
+	//rowid may be improper.
+	void removeSprite(const SerializableSprite* sprite);
 	
 	//flush to database and return updated rowid.
 	unordered_map<int64_t, int64_t>& flush();

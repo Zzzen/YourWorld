@@ -39,7 +39,7 @@ public:
 
 	void setHP(int hp) override;
 
-	void pick(Item* item) { _inventory.pushBack(item); item->removeFromParent(); }
+	virtual void pick(Item* item);
 
 	void consume(Consumable* consumable);
 
