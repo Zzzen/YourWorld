@@ -18,6 +18,11 @@ public:
 	const static size_t SIDE_LENGTH = 128;
 
 	GradientVectors getGradientVectors() const { return _gradientVectors; }
+
+	//@param pos in cocos2d-x coordinate.
+	void setTileGID(int gid, const Vec2& pos);
+	//see above
+	int getTileGID(const Vec2& pos) const;
 protected:
 	Chunk();
 
@@ -28,6 +33,8 @@ protected:
 	inline float lerp(float x, float y, float weight) const {
 		return (1 - weight)*x + weight*y;
 	}
+
+	inline Vec2 toTmxCoordinate(const Vec2& pos)const;
 	
 	GradientVectors _gradientVectors;
 	cocos2d::experimental::TMXTiledMap* _map;

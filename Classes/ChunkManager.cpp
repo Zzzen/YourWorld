@@ -14,6 +14,25 @@ const float ChunkManager::CHUNK_HEIGHT = CHUNK_WIDTH;
 
 const static int MAX_CACHED_THUNK = 3;
 
+bool ChunkManager::setTileGID(int gid, const Vec2 & pos)
+{
+	auto chunk = getChunk(pos);
+
+	if (chunk) {
+		chunk->setTileGID(3, pos - chunk->getPosition());
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+int ChunkManager::getTileGID(const Vec2 & pos) const
+{
+	auto chunk = getChunk(pos);
+	return chunk? chunk->getTileGID(pos - chunk->getPosition()): -1;
+}
+
 ChunkManager::~ChunkManager(){
 }
 
@@ -126,7 +145,7 @@ inline Vec2 ChunkManager::rotatedVector(float angle){
 	return unit;
 }
 
-bool ChunkManager::contains(const Point& point) {
+bool ChunkManager::contains(const Point& point) const {
 	for (auto chunk : getChunksOnScene()){
 	//	Rect boundary(chunk->getPosition(), chunk->getContentSize());
 		if (chunk->getBoundingBox().containsPoint(point)){
@@ -182,7 +201,7 @@ int ChunkManager::convertCoorToIndex(const GridCoordinate& grid){
 	return index;
 }
 
-Vector<Chunk*> ChunkManager::getChunksOnScene()
+Vector<Chunk*> ChunkManager::getChunksOnScene() const
 {
 	Vector<Chunk*> onScene;
 	
@@ -195,7 +214,7 @@ Vector<Chunk*> ChunkManager::getChunksOnScene()
 	return onScene;
 }
 
-Vector<Chunk*> ChunkManager::getCachedChunks()
+Vector<Chunk*> ChunkManager::getCachedChunks() const
 {
 	Vector<Chunk*> cached;
 	for (auto c : _chunks) {
@@ -204,4 +223,18 @@ Vector<Chunk*> ChunkManager::getCachedChunks()
 		}
 	}
 	return cached;
+}
+
+Chunk * ChunkManager::getChunk(const Vec2 & pos) const
+{
+	int x = floor(pos.x / CHUNK_WIDTH);
+	int y = floor(pos.y / CHUNK_HEIGHT);
+	Vec2 chunkPos(x*CHUNK_WIDTH, y*CHUNK_HEIGHT);
+
+	for (auto& c : getChunksOnScene()) {
+		if ((c->getPosition() - chunkPos).lengthSquared() < 1.f) {
+			return c;
+		}
+	}
+	return nullptr;
 }

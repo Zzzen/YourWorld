@@ -101,19 +101,22 @@ bool GameScene::init(){
 	initYou(Vec2(getVisibleSize().width / 2,
 		         getVisibleSize().height / 2));
 
-	scheduleOnce([this](float dt) { _chunkManager->updateChunks(Point(1, 2)); }, 2.f, "initial movement");
+	scheduleOnce([this](float dt) { _you->setPosition(_you->getPosition()+Vec2(1.0f, 0.f)); }, 2.f, "initial movement");
+	_holder->setPosition( - _you->getPosition() + getVisibleSize() / 2);
 
 	//add move listener
 	auto mListener = EventListenerCustom::create(YourMoveEvent::getName(), [=](EventCustom* event){
 		auto moveEvent = static_cast<YourMoveEvent*>(event->getUserData());
 	//	log("--------------got move event, x=%f, y=%f", moveEvent->offset.x, moveEvent->offset.y);
 		auto offset = moveEvent->offset;
-		_holder->setPosition(_holder->getPosition() - offset);
-
 
 		auto pos = _you->getPosition();
-		_posLabel->setString("x: "+to_string(pos.x)+" y: "+to_string(pos.y));
 
+		//fix me: sprite is not at center when moving.
+		_holder->setPosition( - pos + getVisibleSize() / 2);
+
+		_posLabel->setString("x: "+to_string(pos.x)+" y: "+to_string(pos.y));
+		
 		for (int x = -1; x < 2; x++) {
 			for (int y = -1; y < 2; y++) {
 				Vec2 vec(x / 2.0f * ChunkManager::CHUNK_WIDTH, y / 2.0f * ChunkManager::CHUNK_HEIGHT);
@@ -162,8 +165,9 @@ void GameScene::initYou(const Point& pos){
 
 	auto map = SQLUtils::selectYou();
 	if (map.size() != 0) {
-		auto x = atoi(map["x"].c_str());
-		auto y = atoi(map["y"].c_str());
+		auto x = strTo<int>(map["x"]);
+		auto y = strTo<int>(map["y"]);
+		_you->setPosition(x, y);
 
 		_you->setRowid(strTo<int64_t>(map["rowid"]));
 

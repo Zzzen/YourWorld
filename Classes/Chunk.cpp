@@ -80,6 +80,29 @@ bool Chunk::init(const GradientVectors& vectors) {
 	return initTiles(vectors);
 }
 
+inline Vec2 Chunk::toTmxCoordinate(const Vec2 & pos) const
+{
+	int x = floor(pos.x);
+	int y = floor(pos.y);
+
+	//convert to tmx coordinate
+	int tx = x / TILE_SIZE;
+	int ty = SIDE_LENGTH - 1 - (y / TILE_SIZE);
+	return Vec2(tx, ty);
+}
+
+void Chunk::setTileGID(int gid, const Vec2 & pos)
+{
+	assert(_map&&_map->getLayer("layer"));
+	_map->getLayer("layer")->setTileGID(gid, toTmxCoordinate(pos));
+}
+
+int Chunk::getTileGID(const Vec2 & pos) const
+{
+	assert(_map&&_map->getLayer("layer"));
+	return _map->getLayer("layer")->getTileGIDAt(toTmxCoordinate(pos));
+}
+
 Chunk::Chunk():
 	_map(nullptr),
 	_gradientVectors(Vec2::ZERO, Vec2::ZERO, Vec2::ZERO, Vec2::ZERO)

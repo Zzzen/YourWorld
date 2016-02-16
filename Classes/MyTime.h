@@ -5,12 +5,13 @@ public:
 	static MyTime* getInstance();
 
 	void addRealMsec(int msec);
-	void setRealMsec(int msec);
+	void setRealMsec(long long msec);
+	long long getRealMesc() const { return _realMsec; }
 
-	int getVirtualHour();
-	int getVirtualDay();
+	int getVirtualHour() const;
+	int getVirtualDay() const;
 
-	int toRealSec() const { return _realMsec / 1000; }
+	long long toRealSec() const { return _realMsec / 1000; }
 private:
-	int _realMsec;
+	long long _realMsec;
 };

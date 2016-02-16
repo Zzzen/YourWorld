@@ -12,14 +12,14 @@ void MyTime::addRealMsec(int msec) {
 	_realMsec += msec;
 }
 
-void MyTime::setRealMsec(int msec) {
+void MyTime::setRealMsec(long long msec) {
 	_realMsec = msec;
 }
 
-int MyTime::getVirtualDay() {
+int MyTime::getVirtualDay() const {
 	return toRealSec() * TIME_RATIO / SEC_OF_DAY;
 }
 
-int MyTime::getVirtualHour() {
+int MyTime::getVirtualHour() const {
 	return (toRealSec() * TIME_RATIO - getVirtualDay()*SEC_OF_DAY) / 3600 ;
 }
