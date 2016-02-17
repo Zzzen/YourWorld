@@ -127,7 +127,6 @@ bool GameScene::init(){
 	_eventDispatcher->addEventListenerWithFixedPriority(mListener, 1);
 
 	schedule(schedule_selector(GameScene::updateWorld), 1.0f/24);
-	MyTime::getInstance()->setRealMsec(0); // to do: read from database;
 
 	return true;
 }

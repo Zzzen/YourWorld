@@ -4,6 +4,7 @@
 #include "lib/sqlite3pp/sqlite3pp.h"
 #include "CCFileUtils.h"
 #include "ChunkManager.h"
+#include "MyTime.h"
 
 #include "sqlite3.h"
 
@@ -19,8 +20,9 @@ using namespace rapidjson;
 using namespace std;
 
 static const string TABLE_NAME = "sprites";
-static string databaseFileName;
+static const string TIME_CLASS = "MyTime";
 
+static string databaseFileName;
 
 void SQLUtils::setDatabaseFileName(const string & fileName)
 {
@@ -172,6 +174,13 @@ unordered_map<int64_t, int64_t>& SQLUtils::flush() {
 	CCASSERT(sqlite3_finalize(stmt) == SQLITE_OK, "sqlite3_finalize(stmt)!=SQLITE_OK");
 	stmt = nullptr;
 
+	auto msec = MyTime::getInstance()->getRealMesc();
+	string updateTime =
+		"UPDATE " + TABLE_NAME + " SET "
+		"  properties = " + " '" + to_string(msec) + "' "
+		"WHERE className = " + " '" + TIME_CLASS + "'   ";
+	db.execute(updateTime.c_str());
+
 	return improperToProperId;
 }
 
@@ -204,7 +213,29 @@ void SQLUtils::createTable() {
 		"properties TEXT,               "
 		"removed INT DEFAULT 0);		";
 	db.execute(create.c_str());
+
+	int hMax = numeric_limits<int>::max() / 2;
+	string insert =
+		"INSERT INTO " + TABLE_NAME +
+		"(x, y, className, properties, removed) "
+		"SELECT " + to_string(hMax) + " , " + to_string(hMax) + " , '" + TIME_CLASS + "' , " + " '0' " + ", 1 "
+		"WHERE NOT EXISTS (SELECT 1 FROM " + TABLE_NAME + " WHERE " + "className = '" + TIME_CLASS + "' );";
+	db.execute(insert.c_str());
 	//log("error msg: %s", db.error_msg());
+
+	//load time from database
+	string loadTime = "SELECT properties FROM " + TABLE_NAME + " WHERE className = '" + TIME_CLASS + "' ;";
+	query qry(db, loadTime.c_str());
+
+	assert(qry.begin() != qry.end());
+
+	//fix me: REMOVE IT
+	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i) {}
+
+	string properties = (*(qry.begin())).get<const char*>(0);
+	log(properties.c_str());
+	auto msec = strTo<int64_t>(properties);
+	MyTime::getInstance()->setRealMsec(msec);
 }
 
 void SQLUtils::addToCache(const SerializableSprite* sprite){
