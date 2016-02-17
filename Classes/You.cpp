@@ -18,12 +18,12 @@ void You::setPosition(float x, float y) {
 		return;
 	}
 
+	AttackableSprite::setPosition(position.x, position.y);
+
 	auto moveEvent = YourMoveEvent::createWithWho(this);
 	moveEvent->offset = position - previousPosition;
 	Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(
 		YourMoveEvent::getName(), moveEvent);
-
-	AttackableSprite::setPosition(position.x, position.y);
 }
 
 ScrollView * You::showInventory()

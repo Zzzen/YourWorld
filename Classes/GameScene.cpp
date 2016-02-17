@@ -19,6 +19,8 @@
 
 USING_NS_CC;
 
+static const int FPS = 24;
+
 enum ZOrder
 {
 	YOU = 200,
@@ -112,7 +114,6 @@ bool GameScene::init(){
 
 		auto pos = _you->getPosition();
 
-		//fix me: sprite is not at center when moving.
 		_holder->setPosition( - pos + getVisibleSize() / 2);
 
 		_posLabel->setString("x: "+to_string(pos.x)+" y: "+to_string(pos.y));
@@ -126,7 +127,7 @@ bool GameScene::init(){
 	});
 	_eventDispatcher->addEventListenerWithFixedPriority(mListener, 1);
 
-	schedule(schedule_selector(GameScene::updateWorld), 1.0f/24);
+	schedule(schedule_selector(GameScene::updateWorld), 1.0f/FPS);
 
 	return true;
 }
@@ -141,14 +142,17 @@ void GameScene::updateWorld(float dt){
 
 	_HPLabel->setString(R::getString(R::HP)+ ": "+to_string(_you->getHP()));
 
-	//add mobs
-	if (hour > 22 || hour < 8 && time->toRealSec() % 20 == 0) {
-		time->addRealMsec(1000); // to do
-		auto sp = _spriteManager->createSprite("Human");
-		_holder->addChild(sp, JOYSTICK);
-		auto m = dynamic_cast<Mob*>(sp);
-		CC_ASSERT(m);
-		sp->setPosition(_you->getPosition()+ 200 * randomVector(time->toRealSec()));
+	//add mobs at night
+	if (hour > 22 || hour < 8) {
+		auto fre = 1.f / dt;
+		float p = 1.f / (5 * fre);
+		if (RandomHelper::random_real(0.f, 1.f) < p) {
+			auto sp = _spriteManager->createSprite("Human");
+			_holder->addChild(sp, JOYSTICK);
+			auto m = dynamic_cast<Mob*>(sp);
+			CC_ASSERT(m);
+			sp->setPosition(_you->getPosition() + 200 * Vec2::forAngle(RandomHelper::random_real(0.f, 3.14159f)));
+		}
 	}
 
 	Vec2 vel(5, 5);

@@ -51,10 +51,6 @@ Size getVisibleSize() {
 	return Director::getInstance()->getVisibleSize();
 }
 
-Vec2 randomVector(float radian) {
-	return Vec2(cos(radian), sin(radian));
-}
-
 void setNodePauseRecursively(Vector<Node*>& nodes, bool pause)
 {
 	if (pause) {
