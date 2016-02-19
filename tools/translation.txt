@@ -10,3 +10,6 @@ Save # Save # 保存游戏
 StartNewGame # Start new game # 开始新游戏
 LoadGame # Load game # 读取游戏
 Setting # Setting # 设置
+Input_name # Input name # 输入名称
+Confirm_input # Confirm input # 确认输入
+Delete # Delete # 删除

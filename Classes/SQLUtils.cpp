@@ -233,7 +233,7 @@ void SQLUtils::createTable() {
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i) {}
 
 	string properties = (*(qry.begin())).get<const char*>(0);
-	log(properties.c_str());
+//	log(properties.c_str());
 	auto msec = strTo<int64_t>(properties);
 	MyTime::getInstance()->setRealMsec(msec);
 }

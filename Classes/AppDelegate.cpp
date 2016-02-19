@@ -1,14 +1,22 @@
 #include "AppDelegate.h"
 #include "StartScene.h"
+#include "audio/include/SimpleAudioEngine.h"
 //#include "GameScene.h"
 
 USING_NS_CC;
+using namespace CocosDenshion;
 
 static cocos2d::Size designResolutionSize = cocos2d::Size(480, 320);
 static cocos2d::Size smallResolutionSize = cocos2d::Size(480, 320);
 static cocos2d::Size mediumResolutionSize = cocos2d::Size(1024, 768);
 static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
 static Size debugSize(960, 540);
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32 || CC_TARGET_PLATFORM == CC_PLATFORM_WINRT )
+static const char* BACKGROUND_MUSIC = "audio/background.wav";
+#else
+static const char* BACKGROUND_MUSIC = "audio/background.mp3";
+#endif // CC_PLATFOR_WIN32
 
 AppDelegate::AppDelegate() {
 
@@ -80,6 +88,10 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	auto scene = StartScene::create();
 	assert(scene);
 
+	if (UserDefault::getInstance()->getBoolForKey("enableBackgroudMusic", true)) {
+		SimpleAudioEngine::getInstance()->playBackgroundMusic(BACKGROUND_MUSIC, true);
+	}
+
     // run
     director->runWithScene(scene);
 
@@ -91,7 +103,7 @@ void AppDelegate::applicationDidEnterBackground() {
     Director::getInstance()->stopAnimation();
 
     // if you use SimpleAudioEngine, it must be pause
-    // SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+    SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
 }
 
 // this function will be called when the app is active again
@@ -99,5 +111,5 @@ void AppDelegate::applicationWillEnterForeground() {
     Director::getInstance()->startAnimation();
 
     // if you use SimpleAudioEngine, it must resume here
-    // SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+    SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
 }

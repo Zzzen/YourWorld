@@ -9,10 +9,22 @@
 
 #include <iostream>
 
+#include "audio/include/SimpleAudioEngine.h"
+
+using namespace CocosDenshion;
+
 #define RAPIDJSON_HAS_STDSTRING 1
 #include "json/document.h"
 #include "json/writer.h"
 #include "json/stringbuffer.h"
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32 || CC_TARGET_PLATFORM == CC_PLATFORM_WINRT )
+static const char* HIT_EFFECT = "audio/hit.wav";
+#elif (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID )
+static const char* HIT_EFFECT = "audio/hit.ogg";
+#else
+static const char* HIT_EFFECT = "audio/hit.mp3"
+#endif // CC_PLATFOR_WIN32
 
 static const int STATE_ACTION_TAG = 23421;
 
@@ -116,6 +128,10 @@ void AttackableSprite::onAttacked(EventCustom * event)
 	label->runAction(scale);
 	scheduleOnce([label](float dt) {  label->removeFromParent();  }, moveBy->getDuration(), to_string((long long)label));
 	addChild(label);
+
+	if (UserDefault::getInstance()->getBoolForKey("enableHitEffect", true)) {
+		SimpleAudioEngine::getInstance()->playEffect(HIT_EFFECT);
+	}
 //	CCLOG("%p onAttacked; damage: %f", this, value);
 }
 

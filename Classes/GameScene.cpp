@@ -241,7 +241,6 @@ void GameScene::addJoystick() {
 	CC_ASSERT(_freeArrow);
 	Scene::addChild(_freeArrow, ZOrder::JOYSTICK - 1); //to do?
 	_freeArrow->onTouchEnded = [this](const Vec2& vec) {
-		CCLOG("Touched %s", str(vec).c_str());
 		auto j = Jian::create(vec.getAngle(), 100, 3, 10, _you);
 		j->setPosition(_you->getPosition());
 		j->start();

@@ -52,15 +52,13 @@ void SpriteManager::onMobDied(EventCustom * event)
 	SQLUtils::removeSprite(mob);
 	_layer->removeChild(mob);
 
-
-	int addr = (int)mob;
-	addr = addr % 512;
-	if (addr > 256) {
+	auto rand = RandomHelper::random_real(0.f, 1.f);
+	if (rand < 1.f / 4.f) {
 		auto dabaojian = createSprite("Dabaojian");
 		_layer->addChild(dabaojian);
 		dabaojian->setPosition(mob->getPosition());
 	}
-	else {
+	else if(rand > 0.9f ) {
 		auto shi = createSprite("Shi");
 		_layer->addChild(shi);
 		shi->setPosition(mob->getPosition());
