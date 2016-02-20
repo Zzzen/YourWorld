@@ -11,5 +11,5 @@ struct AnimationConfig{
     int freezedEndFrame;
 
     static const AnimationConfig yourSkeleton;
-
+	static const AnimationConfig cao;
 };

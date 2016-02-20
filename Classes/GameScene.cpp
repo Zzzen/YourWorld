@@ -14,10 +14,13 @@
 #include "i18n.h"
 #include "Shi.h"
 #include "TextButton.h"
-
+#include "Cao.h"
 #include "Jian.h"
 
 USING_NS_CC;
+
+#define REGISTER_CREATE(manager, Type) manager->registerCreateFunc( #Type , [] { return Type::create(); })
+#define REGISTER_CREATE_JSON(manager, Type) manager->registerCreateFuncWithJson( #Type , [](const rapidjson::Document& json) { return Type::createWithJson(json); })
 
 static const int FPS = 24;
 
@@ -72,14 +75,20 @@ bool GameScene::init(){
 	_spriteManager = SpriteManager::getInstance();
 	_spriteManager->setLayer(_holder);
 	//to do: register all creat functions.
-	_spriteManager->registerCreateFunc("Human", [] { return Human::create(); });
-	_spriteManager->registerCreateFunc("Dabaojian", [] {return Dabaojian::create(); });
-	_spriteManager->registerCreateFunc("Shi", [] {return Shi::create(); });
+	REGISTER_CREATE(_spriteManager, Human);
+	REGISTER_CREATE(_spriteManager, Dabaojian);
+	REGISTER_CREATE(_spriteManager, Shi);
+	REGISTER_CREATE(_spriteManager, Cao);
 
-	_spriteManager->registerCreateFuncWithJson("Statue", [](const rapidjson::Document& json) { return Statue::createWithJson(json); });
-	_spriteManager->registerCreateFuncWithJson("Human", [](const rapidjson::Document& json) { return Human::createWithJson(json); });
-	_spriteManager->registerCreateFuncWithJson("Dabaojian", [](const rapidjson::Document& json) {return Dabaojian::createWithJson(json); });
-	_spriteManager->registerCreateFuncWithJson("Shi", [](const rapidjson::Document& json) { return Shi::createWithJson(json); });
+	REGISTER_CREATE_JSON(_spriteManager, Statue);
+	REGISTER_CREATE_JSON(_spriteManager, Human);
+	REGISTER_CREATE_JSON(_spriteManager, Dabaojian);
+	REGISTER_CREATE_JSON(_spriteManager, Shi);
+	REGISTER_CREATE_JSON(_spriteManager, Cao);
+
+	schedule([this](float dt) {
+		_spriteManager->updateVas(dt);
+	}, 0.3f, "Update");
 
 	auto chunkListener = EventListenerCustom::create(ChunkJoinWorldEvent::getName(),
 		CC_CALLBACK_1(SpriteManager::onChunkCreated, _spriteManager));

@@ -19,7 +19,7 @@ public:
 
 	virtual void addHP(int hp) { setHP(getHP() + hp); }
 	CC_PROPERTY(int, _HP, HP);
-	CC_SYNTHESIZE(int, _age, Age);
+	CC_SYNTHESIZE(int64_t, _timeOfBirth, TimeOfBirth);
 
 	static const string UPDATE_CUSTOM;
 
@@ -33,7 +33,7 @@ protected:
 	int _maxHP;
 
 	virtual void updateCustom(float dt) = 0;
-	virtual float getUpdateInterval() = 0;
+	virtual float getUpdateInterval()const = 0;
 
 	virtual AnimationConfig getAnimationConfig() const = 0;
 

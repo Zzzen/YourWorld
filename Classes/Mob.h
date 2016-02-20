@@ -12,7 +12,7 @@ public:
 
 protected:
 	void updateCustom(float dt) override;
-	float getUpdateInterval() override { return 0.1f; }
+	float getUpdateInterval()const override { return 0.1f; }
 
 	void die() override;
 

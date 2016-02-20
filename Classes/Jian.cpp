@@ -33,10 +33,10 @@ Jian::Jian(float duration, const Vec2 & deltaVec, AttackableSprite * source):
 }
 
 void Jian::updateCustom(float dt) {
-	auto sprites = SpriteManager::getInstance()->getAllSprites();
+	auto sprites = SpriteManager::getInstance()->getVas();
 	for (auto sp : sprites) {
-		auto att = dynamic_cast<AttackableSprite*>(sp);
-		if (att && isCollided(att) && att!=_source) {
+		//auto att = dynamic_cast<AttackableSprite*>(sp);
+		if (sp && isCollided(sp) && sp !=_source) {
 			Xu x(this);
 
 			explode();
@@ -57,11 +57,15 @@ bool Jian::init()
 
 void Jian::explode()
 {
+	//fix me: remove it
+	unschedule(CC_SCHEDULE_SELECTOR(Jian::updateCustom));
+
 	auto aabb = getBoundingBox();
 	aabb.size = aabb.size * 1.3f;
 	auto event = DamageEvent::create(getPosition(), aabb, 5.0f, _source);
 
 	_eventDispatcher->dispatchCustomEvent(DamageEvent::getEventName(), event);
+
 
 	removeFromParent();
 }

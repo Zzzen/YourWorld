@@ -2,6 +2,7 @@
 
 #include "cocos2d.h"
 #include "SerializableSprite.h"
+#include "AttackableSprite.h"
 #include "Statue.h"
 
 #define RAPIDJSON_HAS_STDSTRING 1
@@ -11,7 +12,6 @@
 USING_NS_CC;
 using namespace std;
 
-class AttackableSprite;
 class Chunk;
 class SpriteManager 
 {
@@ -34,6 +34,10 @@ public:
 	//sprites of _layer
 	Vector<SerializableSprite*> getAllSprites();
 
+	//
+	Vector<AttackableSprite*> getVas() const { return _vas; }
+	void updateVas(float dt);
+
 	~SpriteManager() {}
 
 	//create sprite and add it to _layer
@@ -52,6 +56,7 @@ private:
 	SerializableSprite* createSprite(const unordered_map<string, string>& map);
 	void createNewSprites(const Chunk * chunk);
 
+	Vector<AttackableSprite*> _vas;
 
 	Node* _layer;
 	map < string, function< SerializableSprite* ()> > _createFuncs;

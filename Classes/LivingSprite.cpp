@@ -1,12 +1,13 @@
 #include "LivingSprite.h"
+#include "MyTime.h"
 
 const string LivingSprite::UPDATE_CUSTOM = "UPDATE_CUSTOM";
 
 LivingSprite::LivingSprite()
 	:_skeletalNode(nullptr),
-	 _stateAction(nullptr),
-	 _age(0)
+	 _stateAction(nullptr)
 {
+	_timeOfBirth = MyTime::getInstance()->getRealMesc();
 }
 
 void LivingSprite::setHP(int newHP) {
@@ -29,7 +30,7 @@ Document LivingSprite::toJson() const {
 	auto json = SerializableSprite::toJson();
 
 	json.AddMember("HP", rapidjson::Value(_HP), json.GetAllocator());
-	json.AddMember("age", rapidjson::Value(_age), json.GetAllocator());
+	json.AddMember("timeOfBirth", rapidjson::Value(_timeOfBirth), json.GetAllocator());
 
 	return json;
 }
@@ -40,9 +41,9 @@ bool LivingSprite::initWithJson(const Document& json) {
 	}
 
 	assert(json.HasMember("HP") && json["HP"].IsInt());
-	assert(json.HasMember("age") && json["age"].IsInt());
+	assert(json.HasMember("timeOfBirth") && json["timeOfBirth"].IsInt64());
 	setHP(json["HP"].GetInt());
-	setAge(json["age"].GetInt());
+	setTimeOfBirth(json["timeOfBirth"].GetInt64());
 
 	return true;
 }
@@ -62,6 +63,7 @@ void LivingSprite::initSkeletalAnimation() {
 }
 
 void LivingSprite::startSkeletalAnimation() {
+	assert(_stateAction);
 	if (_stateAction) {
 		_stateAction->gotoFrameAndPlay(0, getAnimationConfig().idleEndFrame, true);
 	}

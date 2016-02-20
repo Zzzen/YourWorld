@@ -26,7 +26,7 @@ using namespace rapidjson;
 static string getRecordFileName() {
 	auto utils = FileUtils::getInstance();
 	auto path = utils->getWritablePath();
-
+	
 	return path + "records.json";
 }
 

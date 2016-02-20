@@ -52,6 +52,10 @@ void SpriteManager::onMobDied(EventCustom * event)
 	SQLUtils::removeSprite(mob);
 	_layer->removeChild(mob);
 
+	if (_vas.find(mob) != _vas.end()) {
+		_vas.erase(_vas.find(mob));
+	}
+
 	auto rand = RandomHelper::random_real(0.f, 1.f);
 	if (rand < 1.f / 4.f) {
 		auto dabaojian = createSprite("Dabaojian");
@@ -63,6 +67,9 @@ void SpriteManager::onMobDied(EventCustom * event)
 		_layer->addChild(shi);
 		shi->setPosition(mob->getPosition());
 	}
+	auto cao = createSprite("Cao");
+	_layer->addChild(cao);
+	cao->setPosition(mob->getPosition());
 }
 
 SerializableSprite* SpriteManager::createSprite(const unordered_map<string, string>& map) {
@@ -166,4 +173,16 @@ Vector<SerializableSprite*> SpriteManager::getAllSprites() {
 		if (s) sprites.pushBack(s);
 	}
 	return sprites;
+}
+
+void SpriteManager::updateVas(float dt)
+{
+	_vas.clear();
+	static const float LENGTH = 500.f;
+	for (auto& sp : getAllSprites()) {
+		auto a = dynamic_cast<AttackableSprite*>(sp);
+		if (a && (a->getPosition() - You::getInstance()->getPosition()).lengthSquared() < LENGTH * LENGTH) {
+			_vas.pushBack(a);
+		}
+	}
 }
