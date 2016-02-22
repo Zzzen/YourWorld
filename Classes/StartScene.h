@@ -1,5 +1,7 @@
 #pragma once
 
+#include "DialogLayer.h"
+
 #include "cocos2d.h"
 
 
@@ -29,10 +31,10 @@ private:
 
 	Node* _frontNode;
 
-	Layer* _inputLayer;
+	DialogLayer* _inputLayer;
 	TextFieldTTF* _input;
 
-	Layer* _recordLayer;
+	DialogLayer* _recordLayer;
 
 	rapidjson::Document _record;
 

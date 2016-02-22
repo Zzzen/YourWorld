@@ -88,7 +88,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	auto scene = StartScene::create();
 	assert(scene);
 
-	if (UserDefault::getInstance()->getBoolForKey("enableBackgroudMusic", true)) {
+	if (UserDefault::getInstance()->getBoolForKey("enableBackgroudMusic", false)) {
 		SimpleAudioEngine::getInstance()->playBackgroundMusic(BACKGROUND_MUSIC, true);
 	}
 

@@ -23,7 +23,7 @@ Jian * Jian::create(float direction, float velocity, float duration, float damag
 
 bool Jian::isCollided(AttackableSprite * sprite) const
 {
-	return getBoundingBox().intersectsRect(sprite->getBoundingBox());
+	return getBoundingBox().intersectsRect(sprite->getBoundingBox()) && _source != sprite ;
 }
 
 Jian::Jian(float duration, const Vec2 & deltaVec, AttackableSprite * source):
@@ -32,40 +32,21 @@ Jian::Jian(float duration, const Vec2 & deltaVec, AttackableSprite * source):
 {
 }
 
-void Jian::updateCustom(float dt) {
-	auto sprites = SpriteManager::getInstance()->getVas();
-	for (auto sp : sprites) {
-		//auto att = dynamic_cast<AttackableSprite*>(sp);
-		if (sp && isCollided(sp) && sp !=_source) {
-			Xu x(this);
-
-			explode();
-
-			return;
-		}
-	}
+Jian::~Jian() {
+	//log("~Jian  %p", this);
 }
 
 bool Jian::init()
 {
-	if (!initWithFile("Jian.png")) return false;
-
-	schedule(CC_SCHEDULE_SELECTOR(Jian::updateCustom), 0.1f);
-
-	return true;
+	return initWithFile("jian.png");
 }
 
 void Jian::explode()
 {
-	//fix me: remove it
-	unschedule(CC_SCHEDULE_SELECTOR(Jian::updateCustom));
-
 	auto aabb = getBoundingBox();
 	aabb.size = aabb.size * 1.3f;
 	auto event = DamageEvent::create(getPosition(), aabb, 5.0f, _source);
 
 	_eventDispatcher->dispatchCustomEvent(DamageEvent::getEventName(), event);
 
-
-	removeFromParent();
 }

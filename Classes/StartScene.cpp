@@ -97,14 +97,9 @@ void StartScene::initKeyboardListener()
 
 void StartScene::initInputLayer()
 {
-	_inputLayer = LayerColor::create(Color4B(255,0,255,180), getContentSize().width, getContentSize().height);
+	_inputLayer = DialogLayer::create(Color4B(255,0,255,180));
 	_inputLayer->setVisible(false);
 	addChild(_inputLayer, 100);
-
-	auto swallower = EventListenerTouchOneByOne::create();
-	swallower->onTouchBegan = [this](Touch*, Event*) { return _inputLayer->isVisible(); };
-	swallower->setSwallowTouches(true);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(swallower, _inputLayer);
 
 	_input = TextFieldTTF::textFieldWithPlaceHolder(R::getString(R::INPUT_NAME),
 		"",
@@ -170,14 +165,9 @@ void StartScene::initInputLayer()
 
 void StartScene::initRecordLayer()
 {
-	_recordLayer = LayerColor::create(Color4B(255, 0, 255, 180), getContentSize().width, getContentSize().height);
+	_recordLayer = DialogLayer::create(Color4B(255, 0, 255, 180));
 	_recordLayer->setVisible(false);
 	addChild(_recordLayer, 100);
-
-	auto swallower = EventListenerTouchOneByOne::create();
-	swallower->onTouchBegan = [this](Touch*, Event*) { return _recordLayer->isVisible(); };
-	swallower->setSwallowTouches(true);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(swallower, _recordLayer);
 }
 
 void StartScene::onLoadButtonClicked()

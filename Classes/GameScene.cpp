@@ -16,6 +16,7 @@
 #include "TextButton.h"
 #include "Cao.h"
 #include "Jian.h"
+#include "BulletManager.h"
 
 USING_NS_CC;
 
@@ -115,6 +116,10 @@ bool GameScene::init(){
 	scheduleOnce([this](float dt) { _you->setPosition(_you->getPosition()+Vec2(1.0f, 0.f)); }, 2.f, "initial movement");
 	_holder->setPosition( - _you->getPosition() + getVisibleSize() / 2);
 
+	schedule([](float) {
+		BulletManager::getInstance()->updateBullets();
+	}, 0.1f, "updateBullets");
+
 	//add move listener
 	auto mListener = EventListenerCustom::create(YourMoveEvent::getName(), [=](EventCustom* event){
 		auto moveEvent = static_cast<YourMoveEvent*>(event->getUserData());
@@ -152,7 +157,7 @@ void GameScene::updateWorld(float dt){
 	_HPLabel->setString(R::getString(R::HP)+ ": "+to_string(_you->getHP()));
 
 	//add mobs at night
-	if (hour > 22 || hour < 8) {
+	//if (hour > 22 || hour < 8) {
 		auto fre = 1.f / dt;
 		float p = 1.f / (5 * fre);
 		if (RandomHelper::random_real(0.f, 1.f) < p) {
@@ -162,7 +167,7 @@ void GameScene::updateWorld(float dt){
 			CC_ASSERT(m);
 			sp->setPosition(_you->getPosition() + 200 * Vec2::forAngle(RandomHelper::random_real(0.f, 3.14159f)));
 		}
-	}
+	//}
 
 	Vec2 vel(5, 5);
 	vel.scale(_joystick->getGradientVector());

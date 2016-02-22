@@ -129,7 +129,7 @@ void AttackableSprite::onAttacked(EventCustom * event)
 	scheduleOnce([label](float dt) {  label->removeFromParent();  }, moveBy->getDuration(), to_string((long long)label));
 	addChild(label);
 
-	if (UserDefault::getInstance()->getBoolForKey("enableHitEffect", true)) {
+	if (UserDefault::getInstance()->getBoolForKey("enableHitEffect", false)) {
 		SimpleAudioEngine::getInstance()->playEffect(HIT_EFFECT);
 	}
 //	CCLOG("%p onAttacked; damage: %f", this, value);

@@ -14,10 +14,10 @@ public:
 	bool isCollided(AttackableSprite* sprite) const override;
 	Jian(float duration, const Vec2& deltaVec, AttackableSprite* source);
 
+	~Jian() override;
+
 protected:
 	bool init() override;
-
-	void updateCustom(float dt);
 
 	void explode() override;
 	float _damage;

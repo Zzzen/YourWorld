@@ -3,6 +3,7 @@
 Cao * Cao::createWithJson(const rapidjson::Document & json)
 {
 	auto cao = create();
+
 	if (cao && cao->initWithJson(json)) {
 		return cao;
 	}

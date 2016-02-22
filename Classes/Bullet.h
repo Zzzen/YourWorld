@@ -13,10 +13,17 @@ public:
 
 	virtual void start() { runAction(_moveBy); }
 
-	Bullet(float duration, const Vec2& deltaVec, AttackableSprite* source);
-protected:
+	virtual bool isDone() { return _moveBy->isDone(); }
+
 	virtual void explode() = 0;
 
+	Bullet(float duration, const Vec2& deltaVec, AttackableSprite* source);
+
+	void onEnter() override;
+	
+	void onExit() override;
+
+protected:
 	AttackableSprite* _source;
 	MoveBy* _moveBy;
 };
