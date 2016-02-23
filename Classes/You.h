@@ -28,6 +28,7 @@ protected:
 	static You* create();
 
 	AnimationConfig getAnimationConfig() const override { return AnimationConfig::yourSkeleton; }
+	PhysicsBodyConfig getPhysicsBodyConfig() const override { return PhysicsBodyConfig::YOU; }
 	string getClassName() const override { return "You"; }
 
 

@@ -67,9 +67,14 @@ void SpriteManager::onMobDied(EventCustom * event)
 		_layer->addChild(shi);
 		shi->setPosition(mob->getPosition());
 	}
+	
+	auto pos = mob->getPosition();
 	auto cao = createSprite("Cao");
 	_layer->addChild(cao);
 	cao->setPosition(mob->getPosition());
+	cao->getPhysicsBody()->removeFromWorld();
+	Director::getInstance()->getScheduler()->schedule([pos, cao](float) {cao->setPosition(pos); }, cao, 0.f, 1, .0f, false, "set correct position");
+	//Director::getInstance()->getScheduler()->schedule([cao](float) {log("... cao %s", str(cao->getPosition()).c_str()); }, cao, 0.3f, false, "14851");
 }
 
 SerializableSprite* SpriteManager::createSprite(const unordered_map<string, string>& map) {

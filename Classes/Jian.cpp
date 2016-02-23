@@ -20,11 +20,11 @@ Jian * Jian::create(float direction, float velocity, float duration, float damag
 		return nullptr;
 	}
 }
-
-bool Jian::isCollided(AttackableSprite * sprite) const
-{
-	return getBoundingBox().intersectsRect(sprite->getBoundingBox()) && _source != sprite ;
-}
+//
+//bool Jian::isCollided(AttackableSprite * sprite) const
+//{
+//	return getBoundingBox().intersectsRect(sprite->getBoundingBox()) && _source != sprite ;
+//}
 
 Jian::Jian(float duration, const Vec2 & deltaVec, AttackableSprite * source):
 	Bullet(duration, deltaVec, source),
@@ -32,13 +32,51 @@ Jian::Jian(float duration, const Vec2 & deltaVec, AttackableSprite * source):
 {
 }
 
-Jian::~Jian() {
-	//log("~Jian  %p", this);
-}
-
 bool Jian::init()
 {
-	return initWithFile("jian.png");
+	if (!initWithFile("jian.png")) {
+		return false;
+	}
+
+	initPhysicsBody();
+	return true;
+}
+
+void Jian::initPhysicsBody()
+{
+	auto body = PhysicsBody::createBox(getContentSize());
+	body->setGroup(-2);
+
+	body->setCategoryBitmask(PhysicsBodyConfig::BULLET.categoryBitmask);
+	body->setCollisionBitmask(PhysicsBodyConfig::BULLET.collisionBitmask);
+	body->setContactTestBitmask(PhysicsBodyConfig::BULLET.contactTestBitmask);
+
+	setPhysicsBody(body);
+
+	auto contactListener = EventListenerPhysicsContactWithGroup::create(-2);
+	contactListener->onContactBegin = [this](PhysicsContact& contact) {
+		auto nodeA = contact.getShapeA()->getBody()->getNode();
+		auto nodeB = contact.getShapeB()->getBody()->getNode();
+
+		if ( (nodeA == this && nodeB != _source)
+			|| (nodeB == this && nodeA != _source)) {
+			explode();
+		
+			//if (nodeA != this) {
+			//	nodeA->getPhysicsBody()->applyImpulse(nodeA->getPhysicsBody()->getMass()*Vec2(10, 10));
+			//}
+			//else {
+			//	nodeB->getPhysicsBody()->applyImpulse(nodeB->getPhysicsBody()->getMass()*Vec2(10, 10));
+			//}
+
+			//retain();
+			removeFromParent();
+			//scheduleOnce([this](float dt) { release(); }, 0.f, "onContact");
+		}
+
+		return false;
+	};
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
 }
 
 void Jian::explode()

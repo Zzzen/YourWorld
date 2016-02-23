@@ -18,4 +18,5 @@ public:
 	string getClassName() const { return "Cao"; }
 private:
 	AnimationConfig getAnimationConfig() const override { return AnimationConfig::cao; }
+	PhysicsBodyConfig getPhysicsBodyConfig() const override { return PhysicsBodyConfig::MOB; }
 };

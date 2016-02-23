@@ -9,21 +9,22 @@ class AttackableSprite;
 class Bullet : public Sprite {
 public:
 
-	virtual bool isCollided(AttackableSprite* sprite) const = 0;
+	//virtual bool isCollided(AttackableSprite* sprite) const = 0;
 
-	virtual void start() { runAction(_moveBy); }
+	virtual void start() { runAction(_moveBy); schedule([this](float) { _isDone = true; }, _moveBy->getDuration(), "set _isDone"); }
 
-	virtual bool isDone() { return _moveBy->isDone(); }
+	virtual bool isDone() { return _isDone; }
 
 	virtual void explode() = 0;
 
 	Bullet(float duration, const Vec2& deltaVec, AttackableSprite* source);
 
-	void onEnter() override;
-	
-	void onExit() override;
+	virtual void initPhysicsBody() = 0;
+
+	~Bullet() override;
 
 protected:
+	bool _isDone;
 	AttackableSprite* _source;
 	MoveBy* _moveBy;
 };

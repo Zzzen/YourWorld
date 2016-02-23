@@ -1,24 +1,21 @@
 #include "Bullet.h"
-#include "BulletManager.h"
 
 Bullet::Bullet(const float duration, const Vec2& deltaVec, AttackableSprite* source):
 	_source(source),
-	_moveBy(MoveBy::create(duration, deltaVec))
+	_moveBy(MoveBy::create(duration, deltaVec)),
+	_isDone(false)
 {
+	scheduleOnce([this](float dt) {
+		if (getParent()) {
+			removeFromParent();
+		}
+		else {
+			log("%s", "wtf");
+		}
+	}, duration, "remove for time out");
 }
 
-void Bullet::onEnter()
+Bullet::~Bullet()
 {
-	BulletManager::getInstance()->addBullet(this);
-	
-	_moveBy->retain();
-
-	Sprite::onEnter();
-}
-
-void Bullet::onExit()
-{
-	_moveBy->release();
-
-	Sprite::onExit();
+	log("~Bullet ___ %p", this);
 }

@@ -16,7 +16,6 @@
 #include "TextButton.h"
 #include "Cao.h"
 #include "Jian.h"
-#include "BulletManager.h"
 
 USING_NS_CC;
 
@@ -32,9 +31,11 @@ enum ZOrder
 };
 
 bool GameScene::init(){
-	if (!Scene::init()){
+	if (!Scene::initWithPhysics()){
 		return false;
 	}
+	getPhysicsWorld()->setGravity(Vec2::ZERO);
+	getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
 
 	_holder = Layer::create();
 	assert(_holder);
@@ -116,10 +117,6 @@ bool GameScene::init(){
 	scheduleOnce([this](float dt) { _you->setPosition(_you->getPosition()+Vec2(1.0f, 0.f)); }, 2.f, "initial movement");
 	_holder->setPosition( - _you->getPosition() + getVisibleSize() / 2);
 
-	schedule([](float) {
-		BulletManager::getInstance()->updateBullets();
-	}, 0.1f, "updateBullets");
-
 	//add move listener
 	auto mListener = EventListenerCustom::create(YourMoveEvent::getName(), [=](EventCustom* event){
 		auto moveEvent = static_cast<YourMoveEvent*>(event->getUserData());
@@ -179,6 +176,7 @@ void GameScene::initYou(const Point& pos){
 	_you = You::getInstance();
 	assert(_you);
 	_you->setPosition(pos);
+	_you->retain();
 
 	auto map = SQLUtils::selectYou();
 	if (map.size() != 0) {
@@ -260,6 +258,15 @@ void GameScene::addJoystick() {
 		j->start();
 		_holder->addChild(j, ZOrder::YOU);
 	};
+
+	//schedule([this](float) {
+	//	for (int i = 0; i < 360; i += 30) {
+	//		auto j = Jian::create(MATH_DEG_TO_RAD(i), 100, 3, 10, _you);
+	//		j->setPosition(_you->getPosition());
+	//		j->start();
+	//		_holder->addChild(j, ZOrder::YOU);
+	//	}
+	//}, 1.3f, "feafsegh");
 }
 
 void GameScene::addLabels()

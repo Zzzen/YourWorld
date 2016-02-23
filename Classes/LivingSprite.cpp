@@ -87,7 +87,20 @@ bool LivingSprite::init() {
 	schedule([this](float dt) { updateCustom(dt); }, getUpdateInterval(), UPDATE_CUSTOM);
 	initSkeletalAnimation();
 
+	initPhysicsBody();
+	
 	return true;
+}
+
+void LivingSprite::initPhysicsBody()
+{
+	auto ss = _skeletalNode->getBoundingBox().size;
+	auto body = PhysicsBody::createBox(ss);
+	setPhysicsBody(body);
+	body->setCategoryBitmask(getPhysicsBodyConfig().categoryBitmask);
+	body->setCollisionBitmask(getPhysicsBodyConfig().collisionBitmask);
+	body->setContactTestBitmask(getPhysicsBodyConfig().contactTestBitmask);
+	body->setGroup(-1);
 }
 
 

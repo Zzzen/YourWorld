@@ -14,6 +14,8 @@ protected:
 	void updateCustom(float dt) override;
 	float getUpdateInterval()const override { return 0.1f; }
 
+	PhysicsBodyConfig getPhysicsBodyConfig() const override { return PhysicsBodyConfig::MOB; }
+
 	void die() override;
 
 	~Mob() { CCLOG("~Mob()"); }

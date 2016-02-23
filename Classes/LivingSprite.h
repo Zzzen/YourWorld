@@ -2,6 +2,7 @@
 #include "SerializableSprite.h"
 #include "cocostudio\CocoStudio.h"
 #include "AnimationConfig.h"
+#include "CommonDefinition.h"
 
 class LivingSprite: public SerializableSprite
 {
@@ -29,6 +30,8 @@ protected:
 
 	bool init() override;
 
+	virtual void initPhysicsBody();
+
 	virtual void die() = 0;
 	int _maxHP;
 
@@ -36,6 +39,7 @@ protected:
 	virtual float getUpdateInterval()const = 0;
 
 	virtual AnimationConfig getAnimationConfig() const = 0;
+	virtual PhysicsBodyConfig getPhysicsBodyConfig() const = 0;
 
 	bool initWithJson(const Document& json) override;
 

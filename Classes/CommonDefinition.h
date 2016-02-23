@@ -1,5 +1,4 @@
-#ifndef __COMMONDEFINITION_H__
-#define __COMMONDEFINITION_H__
+#pragma once
 
 #include "math\Vec2.h"
 
@@ -33,8 +32,23 @@ struct GridCoordinate
 	int y;
 };
 
+struct PhysicsBodyConfig {
+	enum Tag {
+		MOB_TAG = 100,
+		BULLET_TAG = 101,
+		YOU_TAG = 102
+	};
+
+	Tag tag;
+	int categoryBitmask;
+	int collisionBitmask;
+	int contactTestBitmask;
+
+	static const PhysicsBodyConfig MOB;
+	static const PhysicsBodyConfig BULLET;
+	static const PhysicsBodyConfig YOU;
+};
+
 static const int TILE_SIZE = 16;
 
 static const char* DEFUALT_FONT = "fonts/Marker Felt.ttf";
-
-#endif
