@@ -7,6 +7,7 @@
 #include "Consumable.h"
 #include "i18n.h"
 #include "TextButton.h"
+#include "Utils.h"
 
 void You::setPosition(float x, float y) {
 
@@ -47,7 +48,6 @@ ScrollView * You::showInventory()
 		useBtn->setTextColor(Color4B::MAGENTA);
 		CC_ASSERT(useBtn);
 		useBtn->onTouched = [this, item, useBtn, detailBtn, view]() {
-			
 			switch (item->getItemType())
 			{
 			case Item::CONSUMABLES:
@@ -66,6 +66,9 @@ ScrollView * You::showInventory()
 				break;
 			case Item::OTHERS:
 				break;
+			case Item::THROWABLE:
+				_itemToThrow = dynamic_cast<ThrowableItem*>(item);
+				_itemLabel->setTexture(item->getTexture());
 			default:
 				CC_ASSERT("unexpected Item type");
 				break;
@@ -123,9 +126,69 @@ You* You::create() {
 	}
 }
 
+You::You():
+	_itemLabel(nullptr),
+	_itemToThrow(nullptr)
+{
+}
+
+You::~You()
+{
+	CC_SAFE_RELEASE_NULL(_itemLabel);
+}
+
 You* You::getInstance() {
 	static You* instance = You::create();
 	return instance;
+}
+
+bool You::init()
+{
+	if (!AttackableSprite::init()) { return false; }
+
+	_itemLabel = Sprite::create("defaultItem.png");
+	_itemLabel->retain();
+	
+	Vec2 defaultPos(0.8f * getVisibleSize().width, 0.15f* getVisibleSize().height);
+	_itemLabel->setPosition(defaultPos);
+
+	auto throwListener = EventListenerTouchOneByOne::create();
+	throwListener->setSwallowTouches(true);
+	throwListener->onTouchBegan = [this](Touch* touch, Event*) {
+		auto parent = _itemLabel->getParent();
+		assert(parent != nullptr);
+		auto pos = parent->convertTouchToNodeSpace(touch);
+		return _itemLabel->getBoundingBox().containsPoint(pos);
+	};
+	throwListener->onTouchMoved = [this](Touch* touch, Event*) {
+		if(!_itemToThrow) return;
+
+		auto parent = _itemLabel->getParent();
+		assert(parent != nullptr);
+		auto pos = parent->convertTouchToNodeSpace(touch);
+		_itemLabel->setPosition(pos);
+	};
+	throwListener->onTouchCancelled = [this, throwListener](Touch* touch, Event* event) {
+		throwListener->onTouchEnded(touch, event);
+	};
+	throwListener->onTouchEnded =  [this, defaultPos](Touch* touch, Event*) {
+		//getParent of `this`
+		auto pos = getParent()->convertTouchToNodeSpace(touch);
+		if (_inventory.find(_itemToThrow) != _inventory.end()) {
+			_itemToThrow->beThrowed(this, pos);
+			_inventory.eraseObject(_itemToThrow);
+			_itemToThrow = nullptr;
+		}
+
+		_itemLabel->setTexture("defaultItem.png");
+
+		auto moveTo = MoveTo::create(0.1f, defaultPos);
+		_itemLabel->runAction(moveTo);
+	};
+
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(throwListener, _itemLabel);
+	
+	return true;
 }
 
 void You::updateCustom(float dt) {

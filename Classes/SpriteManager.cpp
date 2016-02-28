@@ -48,33 +48,42 @@ void SpriteManager::onChunkRemoved(EventCustom* event) {
 void SpriteManager::onMobDied(EventCustom * event)
 {
 	Mob* mob = (static_cast<MobDieEvent*>(event->getUserData()))->getWho();
+
+	auto rand = RandomHelper::random_real(0.f, 1.f);
+	Sprite* dropped = nullptr;
+	if (rand < 0.2f) {
+		dropped = createSprite("Dabaojian");
+	}
+	else if(rand < 0.4f) {
+		dropped = createSprite("Shi");
+	}
+	else if (rand < 0.7f) {
+		dropped = createSprite("Cao");
+	}
+	else if (rand < 1.f) {
+		dropped = createSprite("LiZhiSeed");
+	}
+
+	if (dropped) {
+		_layer->addChild(dropped, mob->getLocalZOrder());
+		dropped->setPosition(mob->getPosition());
+		
+		//should be caused by physics engine
+		if (dynamic_cast<LivingSprite*>(dropped)) {
+			auto pos = mob->getPosition();
+			Director::getInstance()->getScheduler()->schedule([pos, dropped](float) {dropped->setPosition(pos); }, dropped, 0.f, 1, .0f, false, "set correct position");
+		}
+	}
 	
+	//Director::getInstance()->getScheduler()->schedule([cao](float) {log("... cao %s", str(cao->getPosition()).c_str()); }, cao, 0.3f, false, "14851");
+
+
 	SQLUtils::removeSprite(mob);
 	_layer->removeChild(mob);
 
 	if (_vas.find(mob) != _vas.end()) {
 		_vas.erase(_vas.find(mob));
 	}
-
-	auto rand = RandomHelper::random_real(0.f, 1.f);
-	if (rand < 1.f / 4.f) {
-		auto dabaojian = createSprite("Dabaojian");
-		_layer->addChild(dabaojian);
-		dabaojian->setPosition(mob->getPosition());
-	}
-	else if(rand > 0.9f ) {
-		auto shi = createSprite("Shi");
-		_layer->addChild(shi);
-		shi->setPosition(mob->getPosition());
-	}
-	
-	auto pos = mob->getPosition();
-	auto cao = createSprite("Cao");
-	_layer->addChild(cao);
-	cao->setPosition(mob->getPosition());
-	cao->getPhysicsBody()->removeFromWorld();
-	Director::getInstance()->getScheduler()->schedule([pos, cao](float) {cao->setPosition(pos); }, cao, 0.f, 1, .0f, false, "set correct position");
-	//Director::getInstance()->getScheduler()->schedule([cao](float) {log("... cao %s", str(cao->getPosition()).c_str()); }, cao, 0.3f, false, "14851");
 }
 
 SerializableSprite* SpriteManager::createSprite(const unordered_map<string, string>& map) {
@@ -167,7 +176,7 @@ void SpriteManager::onYourMove(EventCustom* event) {
 		if ((sp->getPosition() - you->getPosition()).length() > COLLISON_LENGTH) continue;
 		if ((sp->getParent() != _layer)) continue;
 		auto item = dynamic_cast<Item*>(sp);
-		if (item) you->pick(item);
+		if (item && item->isPickable()) you->pick(item);
 	}
 }
 

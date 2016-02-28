@@ -9,7 +9,8 @@ public:
 	enum Type {
 		EQUIPMENTS = 1,
 		CONSUMABLES = 2,
-		OTHERS = 3
+		OTHERS = 3,
+		THROWABLE = 4
 	};
 
 	virtual Type getItemType() const = 0;
@@ -18,4 +19,10 @@ public:
 	//play animation
 	void onEnter() override;
 	void onExit() override;
+
+	virtual bool isPickable() const;
+
+	Item();
+protected:
+	bool _pickable;
 };

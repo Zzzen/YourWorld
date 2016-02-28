@@ -30,8 +30,10 @@ public:
 	~GameScene();
 protected:
 	You* _you;
+
 	Joystick* _joystick;
 	FreeArrow* _freeArrow;
+
 	Label* _posLabel;
 	Label* _timeLabel;
 	Label* _HPLabel;

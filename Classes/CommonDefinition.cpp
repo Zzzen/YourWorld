@@ -20,3 +20,10 @@ const PhysicsBodyConfig PhysicsBodyConfig::YOU = {
 	0x00000000,
 	0x00FF0000
 };
+
+const PhysicsBodyConfig PhysicsBodyConfig::CROP = {
+	PhysicsBodyConfig::Tag::CROP_TAG,
+	0x00000000,
+	0x00000000,
+	0x00000000
+};

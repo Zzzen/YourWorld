@@ -16,6 +16,8 @@
 #include "TextButton.h"
 #include "Cao.h"
 #include "Jian.h"
+#include "LiZhi.h"
+#include "LiZhiSeed.h"
 
 USING_NS_CC;
 
@@ -81,12 +83,16 @@ bool GameScene::init(){
 	REGISTER_CREATE(_spriteManager, Dabaojian);
 	REGISTER_CREATE(_spriteManager, Shi);
 	REGISTER_CREATE(_spriteManager, Cao);
+	REGISTER_CREATE(_spriteManager, LiZhi);
+	REGISTER_CREATE(_spriteManager, LiZhiSeed);
 
 	REGISTER_CREATE_JSON(_spriteManager, Statue);
 	REGISTER_CREATE_JSON(_spriteManager, Human);
 	REGISTER_CREATE_JSON(_spriteManager, Dabaojian);
 	REGISTER_CREATE_JSON(_spriteManager, Shi);
 	REGISTER_CREATE_JSON(_spriteManager, Cao);
+	REGISTER_CREATE_JSON(_spriteManager, LiZhi);
+	REGISTER_CREATE_JSON(_spriteManager, LiZhiSeed);
 
 	schedule([this](float dt) {
 		_spriteManager->updateVas(dt);
@@ -176,7 +182,9 @@ void GameScene::initYou(const Point& pos){
 	_you = You::getInstance();
 	assert(_you);
 	_you->setPosition(pos);
-	_you->retain();
+
+	auto label = _you->getItemLabel();
+	addChild(label, ZOrder::JOYSTICK);
 
 	auto map = SQLUtils::selectYou();
 	if (map.size() != 0) {

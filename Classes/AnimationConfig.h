@@ -12,4 +12,5 @@ struct AnimationConfig{
 
     static const AnimationConfig yourSkeleton;
 	static const AnimationConfig cao;
+	static const AnimationConfig liZhi;
 };

@@ -20,5 +20,4 @@ bool Cao::isPluckable() const
 
 void Cao::bePlucked()
 {
-	log("bePlucked() is not implemented.", "");
 }

@@ -25,3 +25,13 @@ void Item::onExit() {
 
 	stopAllActionsByTag(ENTER_ACTIONS);
 }
+
+bool Item::isPickable() const
+{
+	return _pickable;
+}
+
+Item::Item():
+	_pickable(true)
+{
+}

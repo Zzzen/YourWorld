@@ -9,3 +9,7 @@ const AnimationConfig AnimationConfig::yourSkeleton = {
 const AnimationConfig AnimationConfig::cao = {
 	"res/cao.csb", 40
 };
+
+const AnimationConfig AnimationConfig::liZhi = {
+	"res/liZhi.csb", 4
+};

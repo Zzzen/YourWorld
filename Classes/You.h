@@ -6,6 +6,7 @@
 #include "AttackableSprite.h"
 #include "SpriteEvent.h"
 #include "ui\UIScrollView.h"
+#include "ThrowableItem.h"
 
 
 USING_NS_CC;
@@ -24,19 +25,29 @@ public:
 
 	bool initWithJson(const Document & json) override;
 
-protected:
+	Sprite* getItemLabel() const { return _itemLabel; }
+
 	static You* create();
+	You();
+	~You();
+
+protected:
 
 	AnimationConfig getAnimationConfig() const override { return AnimationConfig::yourSkeleton; }
 	PhysicsBodyConfig getPhysicsBodyConfig() const override { return PhysicsBodyConfig::YOU; }
 	string getClassName() const override { return "You"; }
 
+	bool init() override;
 
 	void updateCustom(float dt) override;
 	float getUpdateInterval()const override { return 1.0f; }
 
 	void die() override {}
 
+	//display which is being prepared to throw
+	Sprite* _itemLabel;
+
+	ThrowableItem* _itemToThrow;
 
 private:
 	int getOriginalMaxHP() const override { return 10000; }

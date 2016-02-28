@@ -36,7 +36,8 @@ struct PhysicsBodyConfig {
 	enum Tag {
 		MOB_TAG = 100,
 		BULLET_TAG = 101,
-		YOU_TAG = 102
+		YOU_TAG = 102,
+		CROP_TAG = 103
 	};
 
 	Tag tag;
@@ -47,6 +48,7 @@ struct PhysicsBodyConfig {
 	static const PhysicsBodyConfig MOB;
 	static const PhysicsBodyConfig BULLET;
 	static const PhysicsBodyConfig YOU;
+	static const PhysicsBodyConfig CROP;
 };
 
 static const int TILE_SIZE = 16;

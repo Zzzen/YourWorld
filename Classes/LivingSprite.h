@@ -20,6 +20,7 @@ public:
 
 	virtual void addHP(int hp) { setHP(getHP() + hp); }
 	CC_PROPERTY(int, _HP, HP);
+	//in millionsecond
 	CC_SYNTHESIZE(int64_t, _timeOfBirth, TimeOfBirth);
 
 	static const string UPDATE_CUSTOM;
