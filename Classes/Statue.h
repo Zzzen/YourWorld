@@ -2,7 +2,7 @@
 #define __STATUE_H__
 
 #include "SerializableSprite.h"
-#include "SpriteEvent.h"
+#include "SpriteEventData.h"
 
 
 class Statue : public SerializableSprite {
@@ -29,14 +29,14 @@ protected:
 	bool initWithType(const Type type);
 };
 
-class StatueJoinWorldEvent : SpriteEvent<Statue> {
+class StatueJoinWorldEvent : SpriteEventData<Statue> {
 public:
 	static std::string getName() {
 		return "statue_join_world_event";
 	}
 };
 
-class StatueDisjoinWorldEvent : SpriteEvent<Statue> {
+class StatueDisjoinWorldEvent : SpriteEventData<Statue> {
 public:
 	static std::string getName() {
 		return "statue_disjoin_world_event";

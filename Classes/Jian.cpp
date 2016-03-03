@@ -2,7 +2,7 @@
 #include "AttackableSprite.h"
 #include "SpriteManager.h"
 #include "Utils.h"
-#include "DamageEvent.h"
+#include "DamageEventData.h"
 
 
 Jian * Jian::create(float direction, float velocity, float duration, float damage, AttackableSprite * source)
@@ -83,8 +83,8 @@ void Jian::explode()
 {
 	auto aabb = getBoundingBox();
 	aabb.size = aabb.size * 1.3f;
-	auto event = DamageEvent::create(getPosition(), aabb, 5.0f, _source);
+	auto event = DamageEventData::create(getPosition(), aabb, 5.0f, _source);
 
-	_eventDispatcher->dispatchCustomEvent(DamageEvent::getEventName(), event);
+	_eventDispatcher->dispatchCustomEvent(DamageEventData::getEventName(), event);
 
 }

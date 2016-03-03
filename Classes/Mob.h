@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AttackableSprite.h"
-#include "SpriteEvent.h"
+#include "SpriteEventData.h"
 
 USING_NS_CC;
 
@@ -23,7 +23,7 @@ private:
 	float getOriginalMoveSpeed()const override { return 10.0f; }
 };
 
-class MobDieEvent : public SpriteEvent<Mob>
+class MobDieEvent : public SpriteEventData<Mob>
 {
 public:
 	static MobDieEvent* createWithWho(Mob* const sprite) {

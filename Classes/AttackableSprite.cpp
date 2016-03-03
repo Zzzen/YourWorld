@@ -1,5 +1,5 @@
 #include "AttackableSprite.h"
-#include "DamageEvent.h"
+#include "DamageEventData.h"
 #include "Utils.h"
 #include "Equipment.h"
 #include "Consumable.h"
@@ -106,7 +106,7 @@ void AttackableSprite::setCurrentState(SpriteState state)
 void AttackableSprite::onAttacked(EventCustom * event)
 {
 	Xu xu(this);
-	auto damage = static_cast<DamageEvent*> (event->getUserData());
+	auto damage = static_cast<DamageEventData*> (event->getUserData());
 	CCASSERT(damage, "Something is wrong with damage event");
 
 	if ( damage->getSource()==this || !getBoundingBox().intersectsRect(damage->getRange()) ) {
@@ -180,10 +180,10 @@ void AttackableSprite::attack()
 
 	auto skin = weaponBone->getVisibleSkinsRect();
 
-	auto damage = DamageEvent::create(getPosition(),
+	auto damage = DamageEventData::create(getPosition(),
 		RectApplyAffineTransform(skin, weaponBone->getNodeToParentAffineTransform(getParent())),
 			getStrength(), this);
-	Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(DamageEvent::getEventName(),
+	Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(DamageEventData::getEventName(),
 		damage);
 }
 
@@ -256,7 +256,7 @@ bool AttackableSprite::init()
 
 	setCurrentState(IDLE);
 
-	auto damageListener = EventListenerCustom::create(DamageEvent::getEventName(),
+	auto damageListener = EventListenerCustom::create(DamageEventData::getEventName(),
 		[this](EventCustom * event) { onAttacked(event); });
 
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(damageListener, this);

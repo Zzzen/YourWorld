@@ -1,5 +1,5 @@
 #include "Human.h"
-#include "DamageEvent.h"
+#include "DamageEventData.h"
 
 
 Human * Human::create()

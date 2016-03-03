@@ -7,7 +7,7 @@ USING_NS_CC;
 class AttackableSprite;
 
 
-class DamageEvent : public Ref {
+class DamageEventData : public Ref {
 public:
 	enum Type {
 		PHYSICAL = 0,
@@ -24,9 +24,9 @@ public:
 	bool affects(Rect r) { return _range.intersectsRect(r); }
 
 	//@param source can be nullptr
-	static DamageEvent* create(Point pos, Rect range, float damage, AttackableSprite* source);
+	static DamageEventData* create(Point pos, Rect range, float damage, AttackableSprite* source);
 
-	virtual ~DamageEvent();
+	virtual ~DamageEventData();
 
 protected:
 	//class Effect {
@@ -44,5 +44,5 @@ protected:
 
 	AttackableSprite* const _source;
 
-	DamageEvent(Point pos, Rect range, float damage, AttackableSprite* source);
+	DamageEventData(Point pos, Rect range, float damage, AttackableSprite* source);
 };

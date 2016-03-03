@@ -4,7 +4,7 @@
 #include "cocos2d.h"
 
 #include "AttackableSprite.h"
-#include "SpriteEvent.h"
+#include "SpriteEventData.h"
 #include "ui\UIScrollView.h"
 #include "ThrowableItem.h"
 
@@ -57,7 +57,7 @@ private:
 
 
 
-class YourMoveEvent : public SpriteEvent<You> {
+class YourMoveEvent : public SpriteEventData<You> {
 public:
 	static YourMoveEvent* createWithWho(You* const sprite) {
 		auto event = new YourMoveEvent();

@@ -1,22 +1,22 @@
-#include "DamageEvent.h"
+#include "DamageEventData.h"
 
 #include "AttackableSprite.h"
 
-DamageEvent * DamageEvent::create(Point pos, Rect range, float damage, AttackableSprite * source)
+DamageEventData * DamageEventData::create(Point pos, Rect range, float damage, AttackableSprite * source)
 {
-	auto d = new DamageEvent(pos, range, damage, source);
+	auto d = new DamageEventData(pos, range, damage, source);
 	d->autorelease();
 	return d;
 }
 
-DamageEvent::~DamageEvent()
+DamageEventData::~DamageEventData()
 {
 	if (_source) {
 		_source->release();
 	}
 }
 
-DamageEvent::DamageEvent(Point pos, Rect range, float damage, AttackableSprite* source) :
+DamageEventData::DamageEventData(Point pos, Rect range, float damage, AttackableSprite* source) :
 	_pos(pos),
 	_range(range),
 	_damage(damage),

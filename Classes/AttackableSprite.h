@@ -7,7 +7,7 @@
 
 class Equipment;
 class Consumable;
-class DamageEvent;
+class DamageEventData;
 class AttackableSprite : public LivingSprite {
 public:
 	enum SpriteState{

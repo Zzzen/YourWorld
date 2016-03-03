@@ -1,15 +1,12 @@
-#ifndef __SPRITE_EVENT_H__
-#define __SPRITE_EVENT_H__
+#pragma once
 
 
-class You;
-class Chunk;
 template <typename SpriteType>
-class SpriteEvent: public Ref {
+class SpriteEventData: public Ref {
 public:
 	inline SpriteType* getWho() { return _who; }
 	
-	virtual ~SpriteEvent() { _who->release(); }
+	virtual ~SpriteEventData() { if (_who) { _who->release(); } }
 
 protected:
 	SpriteType* _who;
@@ -20,9 +17,5 @@ protected:
 		return true;
 	}
 
-	SpriteEvent(): _who(nullptr) {}
+	SpriteEventData(): _who(nullptr) {}
 };
-
-
-
-#endif // !__SPRITE_EVENT_H__

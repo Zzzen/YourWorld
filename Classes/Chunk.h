@@ -3,7 +3,7 @@
 
 #include "CommonDefinition.h"
 #include "cocos2d.h"
-#include "SpriteEvent.h"
+#include "SpriteEventData.h"
 
 class Chunk : public Node
 {
@@ -44,7 +44,7 @@ protected:
 	@brief holds a reference to Chunk, retains and releases the ownership automatically.
 */
 
-class ChunkJoinWorldEvent : public SpriteEvent<Chunk> {
+class ChunkJoinWorldEvent : public SpriteEventData<Chunk> {
 public:
 	static ChunkJoinWorldEvent* createWithWho(Chunk* const sprite) {
 		auto event = new ChunkJoinWorldEvent();
@@ -59,7 +59,7 @@ public:
 	}
 };
 
-class ChunkDisjoinWorldEvent: public SpriteEvent<Chunk>
+class ChunkDisjoinWorldEvent: public SpriteEventData<Chunk>
 {
 public:
 	static ChunkDisjoinWorldEvent* createWithWho(Chunk* const sprite) {

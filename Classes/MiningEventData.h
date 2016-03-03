@@ -1,12 +1,12 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "SpriteEvent.h"
+#include "SpriteEventData.h"
 #include "AttackableSprite.h"
 
 USING_NS_CC;
 
-class MiningEventData : public SpriteEvent<AttackableSprite> {
+class MiningEventData : public SpriteEventData<AttackableSprite> {
 public:
 	MiningEventData* create(AttackableSprite* source, const Rect& affectedArea);
 
