@@ -15,7 +15,7 @@ public:
 	bool initTiles(const GradientVectors& vectors);
 
 	//there are 128 tiles along one side.
-	const static size_t SIDE_LENGTH = 128;
+	const static int SIDE_LENGTH = 128;
 
 	GradientVectors getGradientVectors() const { return _gradientVectors; }
 

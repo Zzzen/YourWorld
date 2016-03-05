@@ -7,7 +7,7 @@ USING_NS_CC;
 
 class Mineral : public SerializableSprite {
 public:
-	virtual void onMined(MiningEventData * data) = 0;
+	virtual void onMined(const MiningEventData& data) = 0;
 
 	//_miningLisener is enabled by default.
 	virtual void enableMiningListener();

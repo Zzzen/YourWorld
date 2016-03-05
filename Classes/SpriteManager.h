@@ -46,9 +46,11 @@ public:
 	SerializableSprite* createSpriteWithJson(const string& className, const Document& doc);
 
 	void registerCreateFunc(const string& className, function<SerializableSprite* ()> func) {
+		CCASSERT(className.size() != 0, "className must not be empty");
 		_createFuncs.insert(pair<string, function<SerializableSprite* ()>>(className, func));
 	}
 	void registerCreateFuncWithJson(const string& className, function< SerializableSprite* (const Document&)> func) {
+		CCASSERT(className.size() != 0, "className must not be empty");
 		_createFuncsWithJson.insert(pair<string, function< SerializableSprite* (const Document&)>>(className, func));
 	}
 private:

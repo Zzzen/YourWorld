@@ -5,7 +5,7 @@
 #include "Human.h"
 #include "You.h"
 #include "Utils.h"
-
+#include "DirtyMarker.h"
 
 
 
@@ -22,15 +22,26 @@ void SpriteManager::onChunkCreated(EventCustom* event) {
 		pair<int, int>(pos.y, pos.y + Chunk::SIDE_LENGTH*TILE_SIZE));
 	
 	//initialize sprites and add thems to the layer.
+	
+	//whether this chunk has been created
+	bool beenCreated = false;
 	for (const auto& map : sprites) {
+		if (map.at("className") == "DirtyMarker") {
+			beenCreated = true;
+			continue;
+		}
+
 		auto sp = createSprite(map);
 		if(sp) _layer->addChild(sp);
 	}
 
-	//if no sprite is retrieved
-	bool noSprite = sprites.size() == 0;
-	if (noSprite) {
+	if (!beenCreated) {
 		createNewSprites(chunk);
+		auto marker = DirtyMarker::create();
+		auto position = chunk->getPosition() +
+			Vec2(Chunk::SIDE_LENGTH * TILE_SIZE, Chunk::SIDE_LENGTH * TILE_SIZE) / 2.f;
+		marker->setPosition(position);
+		_layer->addChild(marker);
 	}
 }
 
@@ -129,14 +140,19 @@ void SpriteManager::createNewSprites(const Chunk* chunk) {
 	float mean = (a1 + a2 + a3 + a4) / 4;
 	float variance = abs(a1 - mean) + abs(a2 - mean) + abs(a3 - mean) + abs(a4 - mean);
 
-	log(variance);
-	if (variance > 1) {
-		//auto statue = Statue::createWithType(Statue::SPEED);
-		//statue->setPosition(chunk->getPosition());
-		//_layer->addChild(statue, SPRITE_ZORDER);
+	log("variance: %4.3f", variance);
+	while (variance>1.f)
+	{
+		variance -= 0.6f;
+		float chunkSize = Chunk::SIDE_LENGTH * TILE_SIZE;
+		float dx = sin(variance * 123) / 2.f + 0.5f;
+		float dy = sin(variance * 321) / 2.f + 0.f;
+		auto boulder = createSprite("Boulder");
+		boulder->setPosition(chunk->getPosition() + Vec2(dx * chunkSize, dy * chunkSize));
 
-		//SQLUtils::addToCache(statue);
-		//log("new statue");
+		log("boudler: %s", str(boulder->getPosition()).c_str());                                  
+
+		_layer->addChild(boulder, SPRITE_ZORDER);
 	}
 }
 

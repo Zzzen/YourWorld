@@ -18,6 +18,8 @@
 #include "Jian.h"
 #include "LiZhi.h"
 #include "LiZhiSeed.h"
+#include "Boulder.h"
+#include "Rock.h"
 
 USING_NS_CC;
 
@@ -85,6 +87,8 @@ bool GameScene::init(){
 	REGISTER_CREATE(_spriteManager, Cao);
 	REGISTER_CREATE(_spriteManager, LiZhi);
 	REGISTER_CREATE(_spriteManager, LiZhiSeed);
+	REGISTER_CREATE(_spriteManager, Boulder);
+	REGISTER_CREATE(_spriteManager, Rock);
 
 	REGISTER_CREATE_JSON(_spriteManager, Statue);
 	REGISTER_CREATE_JSON(_spriteManager, Human);
@@ -93,6 +97,8 @@ bool GameScene::init(){
 	REGISTER_CREATE_JSON(_spriteManager, Cao);
 	REGISTER_CREATE_JSON(_spriteManager, LiZhi);
 	REGISTER_CREATE_JSON(_spriteManager, LiZhiSeed);
+	REGISTER_CREATE_JSON(_spriteManager, Boulder);
+	REGISTER_CREATE_JSON(_spriteManager, Rock);
 
 	schedule([this](float dt) {
 		_spriteManager->updateVas(dt);

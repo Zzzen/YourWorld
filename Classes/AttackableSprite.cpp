@@ -6,6 +6,7 @@
 #include "CommonDefinition.h"
 #include "SpriteManager.h"
 #include "SQLUtils.h"
+#include "MiningEventData.h"
 
 #include <iostream>
 
@@ -68,7 +69,7 @@ bool AttackableSprite::initWithJson(const Document & json)
 		const auto& itemJson = inventory[i];
 		string className = itemJson["className"].GetString();
 		string properties = itemJson["properties"].GetString();
-		CCLOG("inventory className: %s", className.c_str());
+		//CCLOG("inventory className: %s", className.c_str());
 		auto item = dynamic_cast<Item*>(SpriteManager::getInstance()->createSpriteWithJson(className, Document().Parse((properties.c_str()))));
 		if (item) {
 			pick(item);
@@ -162,13 +163,13 @@ void AttackableSprite::pick(Item * item) {
 
 void AttackableSprite::equip(Equipment* equip) {
 	//remove original equipment
-	auto it = _equipments.find(equip->_equipmentType);
+	auto it = _equipments.find(equip->getEquipmentType());
 	if (it != _equipments.end()) {
 		it->second->detach(this);
 		it->second->release();
 	}
 
-	_equipments[equip->_equipmentType] = equip;
+	_equipments[equip->getEquipmentType()] = equip;
 	equip->attach(this);
 	equip->retain();
 }
@@ -177,6 +178,7 @@ void AttackableSprite::attack()
 {
 	const string boneName = "weapon_bone";
 	auto weaponBone = _skeletalNode->getBoneNode(boneName);
+	assert(weaponBone);
 
 	auto skin = weaponBone->getVisibleSkinsRect();
 
@@ -185,6 +187,9 @@ void AttackableSprite::attack()
 			getStrength(), this);
 	Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(DamageEventData::getEventName(),
 		damage);
+
+	auto mine = MiningEventData::create(this, skin);
+	_eventDispatcher->dispatchCustomEvent(MiningEventData::getEventName(), mine);
 }
 
 void AttackableSprite::consume(Consumable * consumable)

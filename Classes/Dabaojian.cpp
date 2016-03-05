@@ -7,7 +7,6 @@ Dabaojian * Dabaojian::create()
 {
 	auto d = new Dabaojian;
 	if (d && d->initWithFile("dabaojian.png")) {
-		d->_equipmentType = AttackableSprite::EquipmentType::WEAPON;
 		d->autorelease();
 		return d;
 	}

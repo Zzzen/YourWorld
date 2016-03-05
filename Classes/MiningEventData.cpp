@@ -10,6 +10,8 @@ MiningEventData * MiningEventData::create(AttackableSprite * source, const Rect 
 }
 
 MiningEventData::MiningEventData(const Rect & affectedArea):
-	_affectedArea(affectedArea)
+	_affectedArea(affectedArea),
+	_toolType(ToolType::EMPTY),
+	_damage(10)
 {
 }

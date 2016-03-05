@@ -10,6 +10,17 @@ USING_NS_CC;
 using namespace std;
 using namespace rapidjson;
 
+#define CREATE_WITH_JSON_FUNC(Type) static Type* createWithJson(const Document& json){      \
+									    auto object = Type::create();						\
+										if (object && object->initWithJson(json)) {			\
+											return object;									\
+										}else{												\
+											CC_SAFE_DELETE(object);							\
+											return nullptr;									\
+										}													\
+									}
+
+
 // base class of everything except tmx
 class SerializableSprite : public Sprite {
 public:

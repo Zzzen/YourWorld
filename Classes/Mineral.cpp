@@ -4,12 +4,12 @@
 Mineral::Mineral():
 	_miningListener(nullptr)
 {
-	_miningListener = EventListenerCustom::create(MiningEventData::getName(), 
+	_miningListener = EventListenerCustom::create(MiningEventData::getEventName(), 
 		[this](EventCustom * eventCustom){
 		auto data = static_cast<MiningEventData*>(eventCustom->getUserData());
 		assert(data);
 		if (data) {
-			onMined(data);
+			onMined(*data);
 		}
 	});
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(_miningListener, this);

@@ -9,8 +9,10 @@ public:
 	void attach(AttackableSprite* owner) override;
 	void detach(AttackableSprite* owner) override;
 
+	AttackableSprite::EquipmentType getEquipmentType() const { return AttackableSprite::EquipmentType::WEAPON; }
+
 	string getClassName() const override { return "Dabaojian"; }
-	virtual string getDetails() const override { return R::getString(R::DABAOJIAN_DETAILS); };
+	string getDetails() const override { return R::getString(R::DABAOJIAN_DETAILS); };
 protected:
 	static const float STRENGTH;
 };

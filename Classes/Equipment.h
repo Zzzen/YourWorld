@@ -5,7 +5,7 @@
 
 class Equipment : public Item {
 public:
-	AttackableSprite::EquipmentType _equipmentType;
+	virtual AttackableSprite::EquipmentType getEquipmentType() const = 0;
 	virtual void attach(AttackableSprite* owner) = 0;
 	virtual void detach(AttackableSprite* owner) = 0;
 
