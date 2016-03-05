@@ -45,9 +45,9 @@ bool Crop::initWithJson(const Document & json)
 {
 	if (!LivingSprite::initWithJson(json)) return false;
 
-	assert(json.HasMember("_lastPluckedTime") && json["_lastPluckedTime"].IsInt64());
+	assert(json.HasMember("lastPluckedTime") && json["lastPluckedTime"].IsInt64());
 
-	setLastPluckedTime(json["_lastPluckedTime"].GetInt64());
+	setLastPluckedTime(json["lastPluckedTime"].GetInt64());
 
 	return true;
 }
@@ -56,7 +56,7 @@ Document Crop::toJson() const
 {
 	auto json = LivingSprite::toJson();
 
-	json.AddMember("_lastPluckedTime", rapidjson::Value(_lastPluckedTime), json.GetAllocator());
+	json.AddMember("lastPluckedTime", rapidjson::Value(_lastPluckedTime), json.GetAllocator());
 
 	return json;
 }
