@@ -112,7 +112,7 @@ bool GameScene::init(){
 		CC_CALLBACK_1(SpriteManager::onChunkRemoved, _spriteManager));
 	_eventDispatcher->addEventListenerWithFixedPriority(chunkListener, 1);
 
-	auto mobDieListener = EventListenerCustom::create(MobDieEvent::getName(),
+	auto mobDieListener = EventListenerCustom::create(MobDieEventData::getName(),
 		CC_CALLBACK_1(SpriteManager::onMobDied, _spriteManager));
 	_eventDispatcher->addEventListenerWithFixedPriority(mobDieListener, 1);
 

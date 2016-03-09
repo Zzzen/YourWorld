@@ -9,7 +9,7 @@ class Mob : public AttackableSprite {
 public:
 	virtual float getAlarmDistance() const;
 
-
+	Mob();
 protected:
 	void updateCustom(float dt) override;
 	float getUpdateInterval()const override { return 0.1f; }
@@ -18,16 +18,18 @@ protected:
 
 	void die() override;
 
+	AttackableSprite* _attackTarget;
+
 	~Mob() { CCLOG("~Mob()"); }
 private:
 	float getOriginalMoveSpeed()const override { return 10.0f; }
 };
 
-class MobDieEvent : public SpriteEventData<Mob>
+class MobDieEventData : public SpriteEventData<Mob>
 {
 public:
-	static MobDieEvent* createWithWho(Mob* const sprite) {
-		auto event = new MobDieEvent();
+	static MobDieEventData* createWithWho(Mob* const sprite) {
+		auto event = new MobDieEventData();
 		event->initWithWho(sprite);
 
 		event->autorelease();

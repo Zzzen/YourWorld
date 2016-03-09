@@ -5,12 +5,11 @@
 static const int MOVE_ACTION_TAG = 333;
 
 void Mob::updateCustom(float dt) {
-	if (getCurrentState() == ATTACK) {
+	if (getCurrentState() == ATTACK || !_attackTarget) {
 		return;
 	}
 
-	auto you = You::getInstance();
-	auto gradient = you->getPosition() - getPosition();
+	auto gradient = _attackTarget->getPosition() - getPosition();
 
 	stopActionByTag(MOVE_ACTION_TAG);
 
@@ -32,8 +31,22 @@ float Mob::getAlarmDistance() const {
 	return 400.0f;
 }
 
+Mob::Mob():
+	_attackTarget(You::getInstance())
+{
+	auto targetDied = EventListenerCustom::create(MobDieEventData::getName(), [this](EventCustom * event) {
+		auto mob = static_cast<MobDieEventData*>(event->getUserData())->getWho();
+		assert(mob);
+		if ( mob == _attackTarget ) {
+			_attackTarget = nullptr;
+		}
+	});
+
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(targetDied, this);
+}
+
 void Mob::die() {
-	auto event = MobDieEvent::createWithWho(this);
-	Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(MobDieEvent::getName(),
+	auto event = MobDieEventData::createWithWho(this);
+	Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(MobDieEventData::getName(),
 																	   event);
 }

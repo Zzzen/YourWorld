@@ -58,7 +58,7 @@ void SpriteManager::onChunkRemoved(EventCustom* event) {
 
 void SpriteManager::onMobDied(EventCustom * event)
 {
-	Mob* mob = (static_cast<MobDieEvent*>(event->getUserData()))->getWho();
+	Mob* mob = (static_cast<MobDieEventData*>(event->getUserData()))->getWho();
 
 	auto rand = RandomHelper::random_real(0.f, 1.f);
 	Sprite* dropped = nullptr;

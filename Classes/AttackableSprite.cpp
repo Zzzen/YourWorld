@@ -127,7 +127,7 @@ void AttackableSprite::onAttacked(EventCustom * event)
 	label->runAction(moveBy);
 	auto scale = ScaleTo::create(moveBy->getDuration(), 1.4f);
 	label->runAction(scale);
-	scheduleOnce([label](float dt) {  label->removeFromParent();  }, moveBy->getDuration(), to_string((long long)label));
+	scheduleOnce([label](float dt) {  label->removeFromParent();  }, moveBy->getDuration(), to_string(RandomHelper::random_int(numeric_limits<int>::min(), numeric_limits<int>::max())));
 	addChild(label);
 
 	if (UserDefault::getInstance()->getBoolForKey("enableHitEffect", false)) {
