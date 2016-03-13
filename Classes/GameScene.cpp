@@ -20,6 +20,7 @@
 #include "LiZhiSeed.h"
 #include "Boulder.h"
 #include "Rock.h"
+#include "Skeleton.h"
 
 USING_NS_CC;
 
@@ -89,6 +90,7 @@ bool GameScene::init(){
 	REGISTER_CREATE(_spriteManager, LiZhiSeed);
 	REGISTER_CREATE(_spriteManager, Boulder);
 	REGISTER_CREATE(_spriteManager, Rock);
+	REGISTER_CREATE(_spriteManager, Skeleton);
 
 	REGISTER_CREATE_JSON(_spriteManager, Statue);
 	REGISTER_CREATE_JSON(_spriteManager, Human);
@@ -99,6 +101,7 @@ bool GameScene::init(){
 	REGISTER_CREATE_JSON(_spriteManager, LiZhiSeed);
 	REGISTER_CREATE_JSON(_spriteManager, Boulder);
 	REGISTER_CREATE_JSON(_spriteManager, Rock);
+	REGISTER_CREATE_JSON(_spriteManager, Skeleton);
 
 	schedule([this](float dt) {
 		_spriteManager->updateVas(dt);
@@ -170,7 +173,7 @@ void GameScene::updateWorld(float dt){
 		auto fre = 1.f / dt;
 		float p = 1.f / (5 * fre);
 		if (RandomHelper::random_real(0.f, 1.f) < p) {
-			auto sp = _spriteManager->createSprite("Human");
+			auto sp = _spriteManager->createSprite("Skeleton");
 			_holder->addChild(sp, JOYSTICK);
 			auto m = dynamic_cast<Mob*>(sp);
 			CC_ASSERT(m);
